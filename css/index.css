@@ -2920,3 +2920,7 @@ kbd {
 img {
   margin: 0;
 }
+#sidebar .sidebar-ov .sidebar-ov-cc img {
+  margin-left: auto;
+  margin-right: auto;
+}
