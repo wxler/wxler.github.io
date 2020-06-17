@@ -2917,3 +2917,6 @@ kbd {
     width: 100%;
   }
 }
+img {
+  margin: 0;
+}
