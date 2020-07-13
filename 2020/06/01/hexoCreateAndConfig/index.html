@@ -52,7 +52,7 @@ var CONFIG = {
   sourcePath: {"js":"js","css":"css","images":"images"},
 };
 
-window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Lei's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">使用hexo平台从0搭建个人博客</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-06-01</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2020-06-17</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">2.2k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">13分</span></span></div></header><div class="post-body"><p>搭建这个博客，花费了我不少时间，这期间我遇到各种各样的问题，这些问题本可以避免，因操作不规范、对指令代码的不理解、网络不稳定、配置上的错误，使得最后暴露出来的各种bug很不容易解决。前前后后我也重新搭建了三次，经历了心态上的各种起伏。为此，我记录下我制作的过程，让想和我一样自建博客的人少走一些弯路。</p>
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Lei's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">使用hexo平台从0搭建个人博客</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-06-01</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2020-06-17</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">2.2k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">14分</span></span></div></header><div class="post-body"><p>搭建这个博客，花费了我不少时间，这期间我遇到各种各样的问题，这些问题本可以避免，因操作不规范、对指令代码的不理解、网络不稳定、配置上的错误，使得最后暴露出来的各种bug很不容易解决。前前后后我也重新搭建了三次，经历了心态上的各种起伏。为此，我记录下我制作的过程，让想和我一样自建博客的人少走一些弯路。</p>
 <p>我使用的hexo博客框架，stun主题，搭建环境和过程可分为几个部分:</p>
 <ol>
 <li>安装git</li>
@@ -60,60 +60,81 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <li>安装hexo</li>
 <li>hexo搭桥github</li>
 <li>hexo-admin使用</li>
-<li>npm&amp;hexo常用命令<a id="more"></a>
-
-</li>
+<li>npm&amp;hexo常用命令</li>
 </ol>
+<a id="more"></a>
 
         <h2 id="安装git"   >
           <a href="#安装git" class="heading-link"><i class="fas fa-link"></i></a>安装git</h2>
       
+
         <h3 id="git下载"   >
           <a href="#git下载" class="heading-link"><i class="fas fa-link"></i></a>git下载</h3>
-      <p>下载<span class="exturl"><a class="exturl__link"   href="https://git-scm.com/download"  target="_blank" rel="noopener">git</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，双击安装，然后一直next，按键Ctrl+r，然后在弹出框中出入cmd，在弹出的界面输入git，回车,出来一大串命令符就代表安装成功了。可以使用git version查看自己的git版本。</p>
+      
+<p>下载<span class="exturl"><a class="exturl__link"   href="https://git-scm.com/download"  target="_blank" rel="noopener">git</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，双击安装，然后一直next，按键Ctrl+r，然后在弹出框中出入cmd，在弹出的界面输入git，回车,出来一大串命令符就代表安装成功了。可以使用git version查看自己的git版本。</p>
 
         <h3 id="git配置"   >
           <a href="#git配置" class="heading-link"><i class="fas fa-link"></i></a>git配置</h3>
-      <ol>
-<li>git安装好去GitHub上注册一个账号，注册好后，桌面空白地方右键选择Git Bash，要git账户进行环境配置  <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//usename是用户名</span><br><span class="line">git config --global user.name <span class="string">"username"</span></span><br><span class="line">git config --global user.email <span class="string">"username@email.com"</span></span><br></pre></td></tr></table></div></figure></li>
-<li>当以上命令执行结束后，可用 <code>git config --global --list</code> 命令查看配置是否OK<br>
+      
+<ol>
+<li>git安装好去GitHub上注册一个账号，注册好后，桌面空白地方右键选择Git Bash，要git账户进行环境配置</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">//usename是用户名</span><br><span class="line">git config --global user.name <span class="string">"username"</span></span><br><span class="line">git config --global user.email <span class="string">"username@email.com"</span></span><br></pre></td></tr></table></div></figure>
+<ol start="2">
+<li>当以上命令执行结束后，可用 <code>git config --global --list</code> 命令查看配置是否OK<br />
+
         <img     class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="/images/pasted-8.png?show=inline"  style="display: inline-block;"  alt="upload successful">
+          src="/images/loading.svg" data-src="/images/pasted-8.png?show=inline"  style="display: inline-block;"  alt="upload successful" />
       </li>
-<li>在命令框中输入命令<code>ssh-keygen -t rsa</code>，连敲三次回车键，结束后去系统盘目录下（一般在 C:\Users\你的用户名.ssh）(mac: /Users/用户/.ssh）查看是否有。ssh文件夹生成，此文件夹中以下两个文件<br>
+<li>在命令框中输入命令<code>ssh-keygen -t rsa</code>，连敲三次回车键，结束后去系统盘目录下（一般在 C:\Users\你的用户名.ssh）(mac: /Users/用户/.ssh）查看是否有。ssh文件夹生成，此文件夹中以下两个文件<br />
+
         <img     class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="/images/pasted-9.png?show=inline"  style="display: inline-block;"  alt="upload successful">
+          src="/images/loading.svg" data-src="/images/pasted-9.png?show=inline"  style="display: inline-block;"  alt="upload successful" />
       </li>
-<li>将ssh文件夹中的公钥（ id_rsa.pub）添加到GitHub管理平台中，在GitHub的个人账户的设置中找到如下界面，title随便起一个，将公钥（ id_rsa.pub）文件中内容复制粘贴到key中，然后点击Ass SSH key<br>
+<li>将ssh文件夹中的公钥（ id_rsa.pub）添加到GitHub管理平台中，在GitHub的个人账户的设置中找到如下界面，title随便起一个，将公钥（ id_rsa.pub）文件中内容复制粘贴到key中，然后点击Ass SSH key<br />
+
         <img     class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="/images/pasted-10.png?show=inline"  style="display: inline-block;"  alt="upload successful">
-      <br>5、测试一下配置是否成功，在Git Bush命令框（就是刚才配置账号和邮箱的命令框）中继续输入命令<code>ssh -T git@github.com</code>，回车,出现如下界面即说明成功<br>
+          src="/images/loading.svg" data-src="/images/pasted-10.png?show=inline"  style="display: inline-block;"  alt="upload successful" />
+      <br />
+5、测试一下配置是否成功，在Git Bush命令框（就是刚才配置账号和邮箱的命令框）中继续输入命令<code>ssh -T git@github.com</code>，回车,出现如下界面即说明成功<br />
+
         <img     class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="/images/pasted-11.png?show=inline"  style="display: inline-block;"  alt="upload successful">
+          src="/images/loading.svg" data-src="/images/pasted-11.png?show=inline"  style="display: inline-block;"  alt="upload successful" />
       </li>
 </ol>
 
         <h2 id="安装nodejs"   >
           <a href="#安装nodejs" class="heading-link"><i class="fas fa-link"></i></a>安装nodejs</h2>
-      <p>Hexo是基于nodeJS环境的静态博客，里面的npm工具很有用。下载<span class="exturl"><a class="exturl__link"   href="https://nodejs.org/en/"  target="_blank" rel="noopener">nodejs</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，(说明：LTS为长期支持版，Current为当前最新版)，下载后一路next进行安装，在git bash下使用node -v查看版本。</p>
+      
+<p>Hexo是基于nodeJS环境的静态博客，里面的npm工具很有用。下载<span class="exturl"><a class="exturl__link"   href="https://nodejs.org/en/"  target="_blank" rel="noopener">nodejs</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，(说明：LTS为长期支持版，Current为当前最新版)，下载后一路next进行安装，在git bash下使用node -v查看版本。</p>
 
         <h2 id="安装hexo"   >
           <a href="#安装hexo" class="heading-link"><i class="fas fa-link"></i></a>安装hexo</h2>
-      <p>我建议先看一下npm&amp;hexo常用命令部分，了解命令的结构和大体含义之后，在配置的过程中可以避免很多错误，少走很多弯路。<br>执行 <code>npm config list</code>查看当前的配置，如下所示：<br>
+      
+<p>我建议先看一下npm&amp;hexo常用命令部分，了解命令的结构和大体含义之后，在配置的过程中可以避免很多错误，少走很多弯路。<br />
+执行 <code>npm config list</code>查看当前的配置，如下所示：<br />
+
         <img     class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="/images/pasted-12.png?show=inline"  style="display: inline-block;"  alt="upload successful">
-      <br>可以看到，最初的镜像地址是官方的npm镜像，我最初使用的就是这个配置，执行起来很不稳定，导致大多数错误都是网络问题导致的,执行如下命令,切换淘宝镜像</p>
+          src="/images/loading.svg" data-src="/images/pasted-12.png?show=inline"  style="display: inline-block;"  alt="upload successful" />
+      <br />
+可以看到，最初的镜像地址是官方的npm镜像，我最初使用的就是这个配置，执行起来很不稳定，导致大多数错误都是网络问题导致的,执行如下命令,切换淘宝镜像</p>
 <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm install -g cnpm --registry=https://registry.npm.taobao.org</span><br><span class="line">npm config <span class="built_in">set</span> registry https://registry.npm.taobao.org</span><br></pre></td></tr></table></div></figure>
-<p>接下来，就可以安装hexo了，执行<code>npm install -g hexo-cli</code>或<code>npm install -g hexo</code>，如果之前安装失败，可以先执行<code>npm uninstall hexo-cli -g</code>或<code>npm uninstall hexo -g</code> 卸载hexo，再进行安装，结果如下：<br>
+<p>接下来，就可以安装hexo了，执行<code>npm install -g hexo-cli</code>或<code>npm install -g hexo</code>，如果之前安装失败，可以先执行<code>npm uninstall hexo-cli -g</code>或<code>npm uninstall hexo -g</code> 卸载hexo，再进行安装，结果如下：<br />
+
         <img     class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="/images/pasted-14.png?show=inline"  style="display: inline-block;"  alt="upload successful">
-      <br>查看版本信息<code>hexo v</code><br>
+          src="/images/loading.svg" data-src="/images/pasted-14.png?show=inline"  style="display: inline-block;"  alt="upload successful" />
+      <br />
+查看版本信息<code>hexo v</code><br />
+
         <img     class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="/images/pasted-16.png?show=inline"  style="display: inline-block;"  alt="upload successful">
-      <br>初始化hexo,执行 <code>hexo init myblog</code>，然后<code>cd myblog</code>，再次执行<code>hexo v</code>，就可以看到hexo的版本：<br>
+          src="/images/loading.svg" data-src="/images/pasted-16.png?show=inline"  style="display: inline-block;"  alt="upload successful" />
+      <br />
+初始化hexo,执行 <code>hexo init myblog</code>，然后<code>cd myblog</code>，再次执行<code>hexo v</code>，就可以看到hexo的版本：<br />
+
         <img     class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="/images/pasted-18.png?show=inline"  style="display: inline-block;"  alt="upload successful">
-      <br>打开myblog文件夹，我们可以看到hexo的结构</p>
+          src="/images/loading.svg" data-src="/images/pasted-18.png?show=inline"  style="display: inline-block;"  alt="upload successful" />
+      <br />
+打开myblog文件夹，我们可以看到hexo的结构</p>
 <blockquote>
 <ul>
 <li>node_modules：是依赖包</li>
@@ -123,52 +144,93 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <li>themes：主题</li>
 <li>_config.yml：整个博客的配置</li>
 <li>db.json：source解析所得到的</li>
-<li>package.json：项目所需模块项目的配置信息  </li>
+<li>package.json：项目所需模块项目的配置信息</li>
 </ul>
 </blockquote>
 <p>到这里我们的hexo博客就安装完成啦，只有搭桥到github,才能进行部署。</p>
 
         <h2 id="hexo搭桥github"   >
           <a href="#hexo搭桥github" class="heading-link"><i class="fas fa-link"></i></a>hexo搭桥github</h2>
-      <p>创建一个repo，名称为yourname.github.io,其中yourname是你的github名称，按照这个规则创建才有用，这个仓库就是存放你博客的地方。</p>
+      
+<p>创建一个repo，<span class="exturl"><a class="exturl__link"   href="http://xn--yourname-wg0m349bjs5h.github.io"  target="_blank" rel="noopener">名称为yourname.github.io</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>,其中yourname是你的github名称，按照这个规则创建才有用，这个仓库就是存放你博客的地方。</p>
 <ol>
-<li>用编辑器打开你的blog项目，修改_config.yml  <figure class="highlight plain"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:  </span><br><span class="line">	type: git</span><br><span class="line">	repo:https:&#x2F;&#x2F;github.com&#x2F;YourgithubName&#x2F;YourgithubName.github.io.git</span><br><span class="line">	branch: master</span><br></pre></td></tr></table></div></figure></li>
-<li>回到gitbash中，进入你的blog目录，分别执行以下命令：<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></table></div></figure>
-需要注意的是，hexo 3.0把服务器独立成个别模块，需要单独安装：<code>npm i hexo-server</code></li>
-<li>打开浏览器输入：<code>http://localhost:4000</code></li>
-<li>先安装一波：<code>npm install hexo-deployer-git --save</code>（这样才能将你写好的文章部署到github服务器上并让别人浏览到） </li>
-<li>执行命令<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></div></figure></li>
+<li>用编辑器打开你的blog项目，修改_config.yml</li>
+</ol>
+<figure class="highlight plain"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">deploy:  </span><br><span class="line">	type: git</span><br><span class="line">	repo:https:&#x2F;&#x2F;github.com&#x2F;YourgithubName&#x2F;YourgithubName.github.io.git</span><br><span class="line">	branch: master</span><br></pre></td></tr></table></div></figure>
+<ol start="2">
+<li>回到gitbash中，进入你的blog目录，分别执行以下命令：</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo server</span><br></pre></td></tr></table></div></figure>
+<p>需要注意的是，hexo 3.0把服务器独立成个别模块，需要单独安装：<code>npm i hexo-server</code><br />
+3. 打开浏览器输入：<code>http://localhost:4000</code><br />
+4. 先安装一波：<code>npm install hexo-deployer-git --save</code>（这样才能将你写好的文章部署到github服务器上并让别人浏览到）<br />
+5. 执行命令</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo clean</span><br><span class="line">hexo generate</span><br><span class="line">hexo deploy</span><br></pre></td></tr></table></div></figure>
+<ol start="6">
 <li>在浏览器中输入<code>http://yourgithubname.github.io</code>就可以看到你的个人博客啦。</li>
 </ol>
 <p>我使用的主题是stun，如果大家也想使用这个主题，可以到<span class="exturl"><a class="exturl__link"   href="https://liuyib.github.io/hexo-theme-stun/zh-CN/"  target="_blank" rel="noopener"> hexo-theme-stun</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>查阅配置。</p>
 
         <h2 id="hexo-admin使用"   >
           <a href="#hexo-admin使用" class="heading-link"><i class="fas fa-link"></i></a>hexo-admin使用</h2>
-      <p>用原生的方法来管理博文十分的不便，因此便有了Hexo Admin这一插件来方便我们的操作。执行<code>npm install --save hexo-admin</code>安装hexo-admin，安装成功后，在<code>http://localhost:4000/admin</code>就可以访问hexo-admin页面。<br>详细情形我就不多说了，推荐大家到<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/nineya_com/article/details/103380243?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase"  target="_blank" rel="noopener">hexo博客使用hexo-admin插件管理文章</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，这位作者的<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/nineya_com/article/details/103384546"  target="_blank" rel="noopener">hexo-admin插件windows系统插入图片失败问题</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>修复了windows下粘贴图片的裂图和显示功能，我使用起来非常好，推荐大家看看。</p>
+      
+<p>用原生的方法来管理博文十分的不便，因此便有了Hexo Admin这一插件来方便我们的操作。执行<code>npm install --save hexo-admin</code>安装hexo-admin，安装成功后，在<code>http://localhost:4000/admin</code>就可以访问hexo-admin页面。<br />
+详细情形我就不多说了，推荐大家到<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/nineya_com/article/details/103380243?utm_medium=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase"  target="_blank" rel="noopener">hexo博客使用hexo-admin插件管理文章</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，这位作者的<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/nineya_com/article/details/103384546"  target="_blank" rel="noopener">hexo-admin插件windows系统插入图片失败问题</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>修复了windows下粘贴图片的裂图和显示功能，我使用起来非常好，推荐大家看看。</p>
 <p>除此之外，我还要强调一点，hexo-admin创建文章的时候，首先创建英文名，再在里面编辑成中文，这样你的文章显示的链接就不会带有中文了。hexo-admin的文章只有未发布状态才能删除，并且删除后在source/_discarded文件夹，未发布变成draft,发布直接到post。</p>
 
-        <h2 id="npm-amp-hexo常用命令"   >
-          <a href="#npm-amp-hexo常用命令" class="heading-link"><i class="fas fa-link"></i></a>npm&amp;hexo常用命令</h2>
+        <h2 id="npmhexo常用命令"   >
+          <a href="#npmhexo常用命令" class="heading-link"><i class="fas fa-link"></i></a>npm&amp;hexo常用命令</h2>
       
-        <h3 id="npm-amp-cnpm介绍"   >
-          <a href="#npm-amp-cnpm介绍" class="heading-link"><i class="fas fa-link"></i></a>npm&amp;cnpm介绍</h3>
-      <p>npm（node package manager）：nodejs的包管理器，用于node插件管理（包括安装、卸载、管理依赖等），使用<code>npm -v</code>查看版本信息。</p>
-<p>cnpm:因为npm安装插件是从国外服务器下载，受网络的影响比较大，可能会出现异常，如果npm的服务器在中国就好了，所以我们乐于分享的淘宝团队干了这事。来自官网：“这是一个完整 npmjs.org 镜像，你可以用此代替官方版本(只读)，同步频率目前为 10分钟 一次以保证尽量与官方服务同步”，更多详情可以查看<span class="exturl"><a class="exturl__link"   href="https://developer.aliyun.com/mirror/NPM?from=tnpm"  target="_blank" rel="noopener">淘宝 NPM 镜像</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，使用<code>cnpm -v</code>查看版本信息。</p>
+
+        <h3 id="npmcnpm介绍"   >
+          <a href="#npmcnpm介绍" class="heading-link"><i class="fas fa-link"></i></a>npm&amp;cnpm介绍</h3>
+      
+<p>npm（node package manager）：nodejs的包管理器，用于node插件管理（包括安装、卸载、管理依赖等），使用<code>npm -v</code>查看版本信息。</p>
+<p>cnpm:因为npm安装插件是从国外服务器下载，受网络的影响比较大，可能会出现异常，如果npm的服务器在中国就好了，所以我们乐于分享的淘宝团队干了这事。来自官网：“这是一个完整 <span class="exturl"><a class="exturl__link"   href="http://npmjs.org"  target="_blank" rel="noopener">npmjs.org</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span> 镜像，你可以用此代替官方版本(只读)，同步频率目前为 10分钟 一次以保证尽量与官方服务同步”，更多详情可以查看<span class="exturl"><a class="exturl__link"   href="https://developer.aliyun.com/mirror/NPM?from=tnpm"  target="_blank" rel="noopener">淘宝 NPM 镜像</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，使用<code>cnpm -v</code>查看版本信息。</p>
 <p>npm和cnpm安装命令一样，只不过是多了一个c。</p>
 
         <h3 id="npm命令"   >
           <a href="#npm命令" class="heading-link"><i class="fas fa-link"></i></a>npm命令</h3>
-      <p>使用npm命令首先要设置下载的镜像，模式是npm官网的镜像(服务器在国外)，建议设置国内的淘宝镜像,设置以后我们就可以用npm从淘宝镜像下载数据了<br>永久使用：<br><code>npm config set registry https://registry.npm.taobao.org</code><br>临时使用：<br><code>npm install node-sass --registry=http://registry.npm.taobao.org</code><br>还有个清除缓存命令，可以解决些奇怪的问题:<br><code>npm cache clean --force</code><br>查看已安装的npm插件，这个命令很实用，可以查看缺少哪些插件<br><code>npm ls --depth 0</code><br>可以通过定制的 cnpm 命令行工具代替默认的 npm<br><code>npm install -g cnpm --registry=http://registry.npm.taobao.org</code><br><strong>在使用过程中要么用npm，要么用cnpm，不能混用</strong><br>查看当前的配置命令<code>npm config list</code>,操作之前一定要先查看配置再进行操作。<br><strong>下面需要强调后缀参数的作用和区别</strong><br><code>npm install packagename --save 或 -S</code><br>–save、-S参数意思是把模块的版本信息保存到dependencies（生产环境依赖）中，即你的package.json文件的dependencies字段中。<br><code>npm install packagename --save-dev 或 -D</code><br>–save-dev 、 -D参数意思是吧模块版本信息保存到devDependencies（开发环境依赖）中，即你的package.json文件的devDependencies字段中。<br><code>npm install packagename -g 或 --global</code><br>安装全局的模块（不加参数的时候默认安装本地模块），<br><strong>使用npm安装插件的时候一定要加上–save添加依赖，否则容易出错</strong> ，更多关于npm详情，请点击<span class="exturl"><a class="exturl__link"   href="https://segmentfault.com/a/1190000012099112?utm_source=tag-newest"  target="_blank" rel="noopener">npm常用命令及参数详解</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+      
+<p>使用npm命令首先要设置下载的镜像，模式是npm官网的镜像(服务器在国外)，建议设置国内的淘宝镜像,设置以后我们就可以用npm从淘宝镜像下载数据了<br />
+永久使用：<br />
+<code>npm config set registry https://registry.npm.taobao.org</code><br />
+临时使用：<br />
+<code>npm install node-sass --registry=http://registry.npm.taobao.org</code><br />
+还有个清除缓存命令，可以解决些奇怪的问题:<br />
+<code>npm cache clean --force</code><br />
+查看已安装的npm插件，这个命令很实用，可以查看缺少哪些插件<br />
+<code>npm ls --depth 0</code><br />
+可以通过定制的 cnpm 命令行工具代替默认的 npm<br />
+<code>npm install -g cnpm --registry=http://registry.npm.taobao.org</code><br />
+<strong>在使用过程中要么用npm，要么用cnpm，不能混用</strong><br />
+查看当前的配置命令<code>npm config list</code>,操作之前一定要先查看配置再进行操作。<br />
+<strong>下面需要强调后缀参数的作用和区别</strong><br />
+<code>npm install packagename --save 或 -S</code><br />
+–save、-S参数意思是把模块的版本信息保存到dependencies（生产环境依赖）中，即你的package.json文件的dependencies字段中。<br />
+<code>npm install packagename --save-dev 或 -D</code><br />
+–save-dev 、 -D参数意思是吧模块版本信息保存到devDependencies（开发环境依赖）中，即你的package.json文件的devDependencies字段中。<br />
+<code>npm install packagename -g 或 --global</code><br />
+安装全局的模块（不加参数的时候默认安装本地模块），<br />
+<strong>使用npm安装插件的时候一定要加上–save添加依赖，否则容易出错</strong> ，更多关于npm详情，请点击<span class="exturl"><a class="exturl__link"   href="https://segmentfault.com/a/1190000012099112?utm_source=tag-newest"  target="_blank" rel="noopener">npm常用命令及参数详解</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
 
         <h3 id="hexo命令"   >
           <a href="#hexo命令" class="heading-link"><i class="fas fa-link"></i></a>hexo命令</h3>
-      <p><code>hexo init</code><br>初始化站点，生成一个简单网站所需的各种文件。</p>
-<p><code>hexo clean == hexo c</code><br>清除缓存 网页正常情况下可以忽略此条命令</p>
-<p><code>hexo generate == hexo g</code><br>生效新增、修改、更新的文件</p>
-<p><code>hexo server == hexo s</code><br>启动本地网站，可在本地观察网站效果</p>
-<p><code>hexo s --debug</code><br>以调试模式启动本地网站，在此模式下，对文件的更改无需停止网站只需刷新即可看到效果，调试非常方便</p>
-<p><code>hexo clean &amp;&amp; hexo s</code><br>一次执行两个命令</p>
-<p><code>hexo deploy == hexo d</code><br>hexo的一键部署功能，执行此命令即可将网站发布到配置中的仓库地址，执行此命令前需要配置站点配置文件_config.yml</p>
+      
+<p><code>hexo init</code><br />
+初始化站点，生成一个简单网站所需的各种文件。</p>
+<p><code>hexo clean == hexo c</code><br />
+清除缓存 网页正常情况下可以忽略此条命令</p>
+<p><code>hexo generate == hexo g</code><br />
+生效新增、修改、更新的文件</p>
+<p><code>hexo server == hexo s</code><br />
+启动本地网站，可在本地观察网站效果</p>
+<p><code>hexo s --debug</code><br />
+以调试模式启动本地网站，在此模式下，对文件的更改无需停止网站只需刷新即可看到效果，调试非常方便</p>
+<p><code>hexo clean &amp;&amp; hexo s</code><br />
+一次执行两个命令</p>
+<p><code>hexo deploy == hexo d</code><br />
+hexo的一键部署功能，执行此命令即可将网站发布到配置中的仓库地址，执行此命令前需要配置站点配置文件_config.yml</p>
 </div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.github.io">wxl</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.github.io/2020/06/01/hexoCreateAndConfig/">https://wxler.github.io/2020/06/01/hexoCreateAndConfig/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.github.io/tags/hexo/">hexo</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2020/06/17/gitUseMethod/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">git基本使用方法</span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="lv-container" data-id="city" data-uid="MTAyMC81MDMwMi8yNjc5Mg=="></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装git"><span class="toc-number">1.</span> <span class="toc-text">
           安装git</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#git下载"><span class="toc-number">1.1.</span> <span class="toc-text">
           git下载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#git配置"><span class="toc-number">1.2.</span> <span class="toc-text">
@@ -176,11 +238,11 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
           安装nodejs</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装hexo"><span class="toc-number">3.</span> <span class="toc-text">
           安装hexo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hexo搭桥github"><span class="toc-number">4.</span> <span class="toc-text">
           hexo搭桥github</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#hexo-admin使用"><span class="toc-number">5.</span> <span class="toc-text">
-          hexo-admin使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#npm-amp-hexo常用命令"><span class="toc-number">6.</span> <span class="toc-text">
-          npm&amp;hexo常用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#npm-amp-cnpm介绍"><span class="toc-number">6.1.</span> <span class="toc-text">
+          hexo-admin使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#npmhexo常用命令"><span class="toc-number">6.</span> <span class="toc-text">
+          npm&amp;hexo常用命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#npmcnpm介绍"><span class="toc-number">6.1.</span> <span class="toc-text">
           npm&amp;cnpm介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#npm命令"><span class="toc-number">6.2.</span> <span class="toc-text">
           npm命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#hexo命令"><span class="toc-number">6.3.</span> <span class="toc-text">
-          hexo命令</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">A lifetime of AI</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">2</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">2</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">2</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section><div class="sidebar-reading"><div class="sidebar-reading-info"><span class="sidebar-reading-info__text">你已阅读了 </span><span class="sidebar-reading-info__num">0</span></div><div class="sidebar-reading-line"></div></div></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+          hexo命令</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">A lifetime of AI</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">3</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">3</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">3</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
   var isXML = true;
   var search_path = 'search.json';
 
@@ -486,7 +548,7 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     }
   }, false);
-}, false);</script><div id="pjax-reload"></div><script data-pjax="">function loadLivere () {
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script data-pjax="">function loadLivere () {
   var d = document, s = d.createElement('script');
 
   if (!d.getElementById('lv-container')) {
