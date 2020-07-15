@@ -1,12 +1,12 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="博客，分享，开源，心得">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Lei&#39;s Blog">
-<meta property="og:url" content="https://wxler.github.io/categories/hexo%E5%8D%9A%E5%AE%A2%E5%B9%B3%E5%8F%B0%E6%90%AD%E5%BB%BA/index.html">
+<meta property="og:url" content="https://wxler.gitee.io/categories/hexo%E5%8D%9A%E5%AE%A2%E5%B9%B3%E5%8F%B0%E6%90%AD%E5%BB%BA/index.html">
 <meta property="og:site_name" content="Lei&#39;s Blog">
 <meta property="og:description" content="博客，分享，开源，心得">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:author" content="wxl">
-<meta name="twitter:card" content="summary"><meta name="keywords" content="wxl, Lei's Blog"><meta name="description" content="博客，分享，开源，心得"><title>分类: hexo博客平台搭建 | Lei's Blog</title><link ref="canonical" href="https://wxler.github.io/categories/hexo%E5%8D%9A%E5%AE%A2%E5%B9%B3%E5%8F%B0%E6%90%AD%E5%BB%BA/index.html"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+<meta name="twitter:card" content="summary"><meta name="keywords" content="wxl, Lei's Blog"><meta name="description" content="博客，分享，开源，心得"><title>分类: hexo博客平台搭建 | Lei's Blog</title><link ref="canonical" href="https://wxler.gitee.io/categories/hexo%E5%8D%9A%E5%AE%A2%E5%B9%B3%E5%8F%B0%E6%90%AD%E5%BB%BA/index.html"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement('script');
   hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
@@ -346,24 +346,32 @@ window.addEventListener('DOMContentLoaded', function () {
       }
     }
   }, false);
-}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script data-pjax="">function loadLivere () {
-  var d = document, s = d.createElement('script');
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
 
-  if (!d.getElementById('lv-container')) {
-    return;
-  }
-  if (typeof LivereTower === 'function') {
-    return;
-  }
-  s.src = 'https://cdn-city.livere.com/js/embed.dist.js';
-  if (true) {
-    s.setAttribute('data-pjax-rm', '');
-  }
-  (d.head || d.body).appendChild(s);
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
 }
 
 if (true) {
-  loadLivere();
+  loadValine();
 } else {
-  window.addEventListener('DOMContentLoaded', loadLivere, false);
+  window.addEventListener('DOMContentLoaded', loadValine, false);
 }</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
