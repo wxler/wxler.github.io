@@ -1,0 +1,573 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="一、anaconda简介         进入官网https:&#x2F;&#x2F;www.anaconda.com 点解download进入下载页面 按步骤安装(默认，下一步) 启动jupyterlab应用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Anaconda与jupyter安装、操作及插件安装">
+<meta property="og:url" content="https://wxler.gitee.io/2020/11/24/215911/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="一、anaconda简介         进入官网https:&#x2F;&#x2F;www.anaconda.com 点解download进入下载页面 按步骤安装(默认，下一步) 启动jupyterlab应用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200727212201931.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2020-11-24T13:59:11.000Z">
+<meta property="article:modified_time" content="2020-11-24T14:01:19.353Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="jupyter">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200727212201931.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Anaconda与jupyter安装、操作及插件安装 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2020/11/24/215911/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Anaconda与jupyter安装、操作及插件安装</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">695</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">5分</span></span></div></header><div class="post-body">
+        <h1 id="一-anaconda简介"   >
+          <a href="#一-anaconda简介" class="heading-link"><i class="fas fa-link"></i></a>一、anaconda简介</h1>
+      
+<ol>
+<li>进入官网https://www.anaconda.com</li>
+<li>点解download进入下载页面</li>
+<li>按步骤安装(默认，下一步)</li>
+<li>启动jupyterlab应用</li>
+</ol>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200727212201931.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-pELNUSl3-1595855913557)(attachment:launch.jpg)]" />
+      </p>
+<a id="more"></a>
+
+        <h1 id="二-jupyter-lab-基本操作"   >
+          <a href="#二-jupyter-lab-基本操作" class="heading-link"><i class="fas fa-link"></i></a>二、jupyter lab 基本操作</h1>
+      
+
+        <h2 id="1-jupyter-lab-简介"   >
+          <a href="#1-jupyter-lab-简介" class="heading-link"><i class="fas fa-link"></i></a>1. jupyter lab 简介</h2>
+      
+<ul>
+<li>JupyterLab包含了Jupyter Notebook所有功能。</li>
+<li>JupyterLab作为一种基于web的集成开发环境，你可以使用它编写notebook、操作终端、编辑markdown文本、打开交互模式、查看csv文件及图片等功能</li>
+</ul>
+
+        <h2 id="2-jupyter-lab-基本操作"   >
+          <a href="#2-jupyter-lab-基本操作" class="heading-link"><i class="fas fa-link"></i></a>2. jupyter lab 基本操作</h2>
+      
+
+        <h3 id="21-操作模式"   >
+          <a href="#21-操作模式" class="heading-link"><i class="fas fa-link"></i></a>2.1 操作模式</h3>
+      
+<p>两种操作模式 <code>command mode</code>  和  <code>edit mode</code></p>
+<p>在一个<code>cell</code>中按下<code>enter</code>就进入edit  mode，按下<code>Esc</code>进入command  mode</p>
+
+        <h3 id="22-cell转换类型"   >
+          <a href="#22-cell转换类型" class="heading-link"><i class="fas fa-link"></i></a>2.2 cell转换类型</h3>
+      
+<ul>
+<li>code:代码环境</li>
+<li>markdown: 带有latex公式输入的增强markdown</li>
+<li>raw：纯文本</li>
+</ul>
+<p><strong>cell类型转换方式</strong></p>
+<ul>
+<li>鼠标操作</li>
+<li>快捷键</li>
+</ul>
+<p>command模式下：m:markdown r:raw text y:code</p>
+
+        <h3 id="23-运行cell"   >
+          <a href="#23-运行cell" class="heading-link"><i class="fas fa-link"></i></a>2.3 运行cell</h3>
+      
+<ul>
+<li>shift+enter:运行并跳转到下一个cell</li>
+<li>control+enter：运行并停留在当前cell</li>
+</ul>
+
+        <h3 id="24-增加删除cell"   >
+          <a href="#24-增加删除cell" class="heading-link"><i class="fas fa-link"></i></a>2.4 增加/删除cell</h3>
+      
+<ul>
+<li>鼠标操作：两种模式均可</li>
+<li>快捷键：a/d command模式</li>
+</ul>
+<ol>
+<li>A 在当前cell的上面添加cell</li>
+<li>B 在当前cell的下面添加cell</li>
+<li>双击D  快速删除当前cell</li>
+</ol>
+
+        <h3 id="25-代码提示功能"   >
+          <a href="#25-代码提示功能" class="heading-link"><i class="fas fa-link"></i></a>2.5 代码提示功能</h3>
+      
+<ul>
+<li>tab 代码补全或缩进</li>
+<li>Shift-Tab 提示</li>
+<li>更多快捷键参照 <span class="exturl"><a class="exturl__link"   href="https://mp.weixin.qq.com/s?__biz=MzU5MjI3NzIxMw==&amp;mid=2247488276&amp;idx=2&amp;sn=696900f0744474486eece7dee706e31e&amp;chksm=fe2368a6c954e1b01e7e5943b697c1aec840aba995446230d9c6dc385f8471750002539a5921&amp;mpshare=1&amp;scene=24&amp;srcid=&amp;sharer_sharetime=1591664539198&amp;sharer_shareid=18383980e942ee6dfd94ea4b7b61fcbe&amp;ascene=14&amp;devicetype=android-29&amp;version=27000f3d&amp;nettype=WIFI&amp;abtest_cookie=AAACAA%3D%3D&amp;lang=zh_CN&amp;exportkey=AX%2BZM%2BDxUN6bs5k3X3SQbQY%3D&amp;pass_ticket=njbcV9rUgIhNR7K4XdDWqfGsAPAcyPs1nE8Eoab4vyjmTWneMPO%2FDwraZRwPmQxP&amp;wx_header=1"  target="_blank" rel="noopener">Jupyter Notebook骚操作</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+</ul>
+
+        <h3 id="26-注释多行代码"   >
+          <a href="#26-注释多行代码" class="heading-link"><i class="fas fa-link"></i></a>2.6 注释多行代码</h3>
+      
+<ul>
+<li>ctrl / 注释多行代码</li>
+</ul>
+
+        <h3 id="26-运行py文件"   >
+          <a href="#26-运行py文件" class="heading-link"><i class="fas fa-link"></i></a>2.6 运行py文件</h3>
+      
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">% run path/filename</span><br></pre></td></tr></table></div></figure>
+<p>例如：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">%run C:\Users\wang1\Desktop\go.py</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="27-markdown标题级别"   >
+          <a href="#27-markdown标题级别" class="heading-link"><i class="fas fa-link"></i></a>2.7 Markdown标题级别</h3>
+      
+<ul>
+<li>命令行模式下，1 2 3 4 5 6分别是1-6级标题</li>
+</ul>
+
+        <h3 id="28-cell加行号"   >
+          <a href="#28-cell加行号" class="heading-link"><i class="fas fa-link"></i></a>2.8 cell加行号</h3>
+      
+<ul>
+<li>命令行模式下，shilt+L为所有cell加上行号，L不持支给单个cell加行号</li>
+<li>鼠标点击view显示行号</li>
+</ul>
+
+        <h3 id="29-cell合并分割"   >
+          <a href="#29-cell合并分割" class="heading-link"><i class="fas fa-link"></i></a>2.9 cell合并分割</h3>
+      
+<ul>
+<li>编辑模式，<code>crtl shift - 在光标处分割cell</code></li>
+<li>命令行模式 <code>shift 鼠标 选中多个cell</code><br />
+<code>shift m 合并选中给的cell</code></li>
+</ul>
+
+        <h1 id="三-插件安装"   >
+          <a href="#三-插件安装" class="heading-link"><i class="fas fa-link"></i></a>三、插件安装</h1>
+      
+<ul>
+<li>更新插件：<code>jupyter labextensio update 插件名</code></li>
+<li>更新所有插件：<code>jupyter labextension update --all</code></li>
+<li>卸载插件：<code>jupyter labextensio uninstall 插件名</code></li>
+<li>安装插件：<code>jupyter labextensio install 插件名</code></li>
+<li>远程仓库安装插件：<code>jupyter labextension install 参考地址</code></li>
+<li>安装制定版本插件：<code>jupyter labextensio install 插件名=版本号</code></li>
+<li>查看已安装插件：<code>jupyter labextension list</code></li>
+</ul>
+<p>安装目录插件，可以执行如下命令：</p>
+<figure class="highlight powershell"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">jupyter labextension install @jupyterlab/toc</span><br><span class="line">或者</span><br><span class="line">jupyter labextension install https://github.com/jupyterlab/jupyterlab<span class="literal">-toc</span>.git</span><br></pre></td></tr></table></div></figure>
+<p>收藏了几个很实用的jupyter插件网站，如下：</p>
+
+        <h2 id="1jupyter-notebook目录插件"   >
+          <a href="#1jupyter-notebook目录插件" class="heading-link"><i class="fas fa-link"></i></a>1.Jupyter Notebook目录插件</h2>
+      
+<p><span class="exturl"><a class="exturl__link"   href="https://www.jianshu.com/p/f314e9868cae"  target="_blank" rel="noopener">https://www.jianshu.com/p/f314e9868cae</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h2 id="2jupyter-lab目录插件"   >
+          <a href="#2jupyter-lab目录插件" class="heading-link"><i class="fas fa-link"></i></a>2.Jupyter lab目录插件</h2>
+      
+<p><span class="exturl"><a class="exturl__link"   href="https://www.pinggu.com/post/details/5eccf61a7fba3d625f75771d"  target="_blank" rel="noopener">https://www.pinggu.com/post/details/5eccf61a7fba3d625f75771d</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h2 id="3jupyterlab_code_formatter代码pep8"   >
+          <a href="#3jupyterlab_code_formatter代码pep8" class="heading-link"><i class="fas fa-link"></i></a>3.jupyterlab_code_formatter–代码pep8</h2>
+      
+<p><span class="exturl"><a class="exturl__link"   href="https://www.brothereye.cn/python/362/"  target="_blank" rel="noopener">https://www.brothereye.cn/python/362/</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p><strong>jupyterlab_code_formatter官网</strong></p>
+<ul>
+<li><span class="exturl"><a class="exturl__link"   href="https://github.com/ryantam626/jupyterlab_code_formatter"  target="_blank" rel="noopener">https://github.com/ryantam626/jupyterlab_code_formatter</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+</ul>
+
+        <h2 id="415个好用到爆炸的jupyter-lab插件"   >
+          <a href="#415个好用到爆炸的jupyter-lab插件" class="heading-link"><i class="fas fa-link"></i></a>4.15个好用到爆炸的Jupyter Lab插件</h2>
+      
+<p><span class="exturl"><a class="exturl__link"   href="https://zhuanlan.zhihu.com/p/101070029"  target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/101070029</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h2 id="5工具篇-jupyter-lab效率提升插件"   >
+          <a href="#5工具篇-jupyter-lab效率提升插件" class="heading-link"><i class="fas fa-link"></i></a>5.工具篇-Jupyter Lab效率提升插件</h2>
+      
+<p><span class="exturl"><a class="exturl__link"   href="https://zhuanlan.zhihu.com/p/73374773"  target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/73374773</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h2 id="6解决build失败问题"   >
+          <a href="#6解决build失败问题" class="heading-link"><i class="fas fa-link"></i></a>6.解决build失败问题</h2>
+      
+<p>终止JupyterLab后，在命令行下输入<code>jupyter-lab build</code></p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2020/11/24/215911/">https://wxler.gitee.io/2020/11/24/215911/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/jupyter/">jupyter</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2020/11/24/220157/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Python函数参数之*与**用法详解</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2020/11/24/215647/"><span class="paginator-prev__text">万字详解决策树之ID3、CART、C4.5【原理+实例+代码实现】</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#一-anaconda简介"><span class="toc-number">1.</span> <span class="toc-text">
+          一、anaconda简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#二-jupyter-lab-基本操作"><span class="toc-number">2.</span> <span class="toc-text">
+          二、jupyter lab 基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-jupyter-lab-简介"><span class="toc-number">2.1.</span> <span class="toc-text">
+          1. jupyter lab 简介</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-jupyter-lab-基本操作"><span class="toc-number">2.2.</span> <span class="toc-text">
+          2. jupyter lab 基本操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-操作模式"><span class="toc-number">2.2.1.</span> <span class="toc-text">
+          2.1 操作模式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-cell转换类型"><span class="toc-number">2.2.2.</span> <span class="toc-text">
+          2.2 cell转换类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-运行cell"><span class="toc-number">2.2.3.</span> <span class="toc-text">
+          2.3 运行cell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-增加删除cell"><span class="toc-number">2.2.4.</span> <span class="toc-text">
+          2.4 增加&#x2F;删除cell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-代码提示功能"><span class="toc-number">2.2.5.</span> <span class="toc-text">
+          2.5 代码提示功能</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-注释多行代码"><span class="toc-number">2.2.6.</span> <span class="toc-text">
+          2.6 注释多行代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-运行py文件"><span class="toc-number">2.2.7.</span> <span class="toc-text">
+          2.6 运行py文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-markdown标题级别"><span class="toc-number">2.2.8.</span> <span class="toc-text">
+          2.7 Markdown标题级别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-cell加行号"><span class="toc-number">2.2.9.</span> <span class="toc-text">
+          2.8 cell加行号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#29-cell合并分割"><span class="toc-number">2.2.10.</span> <span class="toc-text">
+          2.9 cell合并分割</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#三-插件安装"><span class="toc-number">3.</span> <span class="toc-text">
+          三、插件安装</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1jupyter-notebook目录插件"><span class="toc-number">3.1.</span> <span class="toc-text">
+          1.Jupyter Notebook目录插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2jupyter-lab目录插件"><span class="toc-number">3.2.</span> <span class="toc-text">
+          2.Jupyter lab目录插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3jupyterlab_code_formatter代码pep8"><span class="toc-number">3.3.</span> <span class="toc-text">
+          3.jupyterlab_code_formatter–代码pep8</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#415个好用到爆炸的jupyter-lab插件"><span class="toc-number">3.4.</span> <span class="toc-text">
+          4.15个好用到爆炸的Jupyter Lab插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5工具篇-jupyter-lab效率提升插件"><span class="toc-number">3.5.</span> <span class="toc-text">
+          5.工具篇-Jupyter Lab效率提升插件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6解决build失败问题"><span class="toc-number">3.6.</span> <span class="toc-text">
+          6.解决build失败问题</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">53</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">12</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">27</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

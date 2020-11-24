@@ -1,0 +1,677 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="Python 中没有像 C++ 表示的字符类型（char），所有的字符或串都被统一为 str 对象。如单个字符 c 的类型也为 str，因此在python中字符也就是字符串 str 类型会被经常使用，一些高频用法如下">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python中字符串与正则表达式的25个常用操作">
+<meta property="og:url" content="https://wxler.gitee.io/2020/11/24/221218/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="Python 中没有像 C++ 表示的字符类型（char），所有的字符或串都被统一为 str 对象。如单个字符 c 的类型也为 str，因此在python中字符也就是字符串 str 类型会被经常使用，一些高频用法如下">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200731172504960.jpg">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200731172652929.jpg">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020073117291416.jpg">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200731173222954.jpg">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200731173331745.jpg">
+<meta property="article:published_time" content="2020-11-24T14:12:18.000Z">
+<meta property="article:modified_time" content="2020-11-24T14:13:55.019Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200731172504960.jpg"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Python中字符串与正则表达式的25个常用操作 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2020/11/24/221218/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Python中字符串与正则表达式的25个常用操作</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">3k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">22分</span></span></div></header><div class="post-body"><p>Python 中没有像 C++ 表示的字符类型（char），所有的字符或串都被统一为 <code>str</code> 对象。如单个字符 <code>c</code> 的类型也为 <code>str</code>，因此在python中<strong>字符也就是字符串</strong></p>
+<p>str 类型会被经常使用，一些高频用法如下</p>
+<a id="more"></a>
+
+        <h1 id="字符串去空格"   >
+          <a href="#字符串去空格" class="heading-link"><i class="fas fa-link"></i></a>字符串去空格</h1>
+      
+<ul>
+<li>使用字符串的strip方法去除字符串<strong>开头的结尾</strong>的空格，也可以用字符串的replace方法替换掉所有的空格</li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">57</span>]: <span class="string">'  I love python  '</span>.strip()</span><br><span class="line">Out[<span class="number">57</span>]: <span class="string">'I love python'</span></span><br><span class="line">In [<span class="number">58</span>]: <span class="string">'  I love python  '</span>.replace(<span class="string">' '</span>,<span class="string">''</span>)</span><br><span class="line">Out[<span class="number">58</span>]: <span class="string">'Ilovepython'</span></span><br></pre></td></tr></table></div></figure>
+
+        <h1 id="字符串替换"   >
+          <a href="#字符串替换" class="heading-link"><i class="fas fa-link"></i></a>字符串替换</h1>
+      
+<ul>
+<li>使用字符串的replce进行字符替换</li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 替换所有的字符</span></span><br><span class="line">In [<span class="number">59</span>]: <span class="string">'i love python'</span>.replace(<span class="string">' '</span>,<span class="string">'_'</span>)</span><br><span class="line">Out[<span class="number">59</span>]: <span class="string">'i_love_python'</span></span><br></pre></td></tr></table></div></figure>
+
+        <h1 id="字符串串联"   >
+          <a href="#字符串串联" class="heading-link"><i class="fas fa-link"></i></a>字符串串联</h1>
+      
+<ul>
+<li>使用字符串的join方法将<strong>一个容器型中的字符串</strong>联为一个字符串</li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">60</span>]: <span class="string">'_'</span>.join([<span class="string">'book'</span>, <span class="string">'store'</span>,<span class="string">'count'</span>])</span><br><span class="line">Out[<span class="number">60</span>]: <span class="string">'book_store_count'</span></span><br><span class="line">In [<span class="number">66</span>]: <span class="string">'_'</span>.join((<span class="string">'1'</span>,<span class="string">'2'</span>,<span class="string">'3'</span>))</span><br><span class="line">Out[<span class="number">66</span>]: <span class="string">'1_2_3'</span></span><br></pre></td></tr></table></div></figure>
+
+        <h1 id="查找子串位置"   >
+          <a href="#查找子串位置" class="heading-link"><i class="fas fa-link"></i></a>查找子串位置</h1>
+      
+<ul>
+<li>使用字符串的find方法返回匹配字符串的<strong>起始位置索引</strong></li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">96</span>]: <span class="string">'i love python'</span>.find(<span class="string">'python'</span>)</span><br><span class="line">Out[<span class="number">96</span>]: <span class="number">7</span></span><br></pre></td></tr></table></div></figure>
+
+        <h1 id="反转字符串"   >
+          <a href="#反转字符串" class="heading-link"><i class="fas fa-link"></i></a>反转字符串</h1>
+      
+<ul>
+<li>方法1，使用字符串的join方法和python内置函数将字符串反转</li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">In [<span class="number">99</span>]: s = <span class="string">"python"</span></span><br><span class="line">In [<span class="number">100</span>]: rs = <span class="string">''</span>.join(reversed(s))</span><br><span class="line">In [<span class="number">101</span>]: rs</span><br><span class="line">Out[<span class="number">101</span>]: <span class="string">'nohtyp'</span></span><br></pre></td></tr></table></div></figure>
+<ul>
+<li>方法2，利用字符串的切片，只要列表可以使用的切片功能，字符串都可以用</li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">104</span>]: s = <span class="string">"python"</span></span><br><span class="line">In [<span class="number">105</span>]: s[::<span class="number">-1</span>]</span><br><span class="line">Out[<span class="number">105</span>]: <span class="string">'nohtyp'</span></span><br></pre></td></tr></table></div></figure>
+
+        <h1 id="字符串切片"   >
+          <a href="#字符串切片" class="heading-link"><i class="fas fa-link"></i></a>字符串切片</h1>
+      
+<ul>
+<li>只要列表可以使用的切片功能，字符串都能用</li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">110</span>]: s = <span class="string">'123456'</span></span><br><span class="line">In [<span class="number">111</span>]: s[<span class="number">1</span>:<span class="number">5</span>]</span><br><span class="line">Out[<span class="number">111</span>]: <span class="string">'2345'</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">112</span>]: s[<span class="number">1</span>:<span class="number">5</span>:<span class="number">2</span>]</span><br><span class="line">Out[<span class="number">112</span>]: <span class="string">'24'</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">113</span>]: s[::<span class="number">-2</span>]</span><br><span class="line">Out[<span class="number">113</span>]: <span class="string">'642'</span></span><br></pre></td></tr></table></div></figure>
+
+        <h1 id="分割字符串"   >
+          <a href="#分割字符串" class="heading-link"><i class="fas fa-link"></i></a>分割字符串</h1>
+      
+<p>根据指定字符或字符串，分割一个字符串时，使用方法 split。</p>
+<p><strong>join是字符串串联， 和可以把join和split 可看做一对互逆操作</strong></p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">114</span>]: <span class="string">'I_love_python'</span>.split(<span class="string">'_'</span>)</span><br><span class="line">Out[<span class="number">114</span>]: [<span class="string">'I'</span>, <span class="string">'love'</span>, <span class="string">'python'</span>]</span><br></pre></td></tr></table></div></figure>
+
+        <h1 id="子串判断"   >
+          <a href="#子串判断" class="heading-link"><i class="fas fa-link"></i></a>子串判断</h1>
+      
+<p>判断 a 串是否为 b 串的子串。</p>
+<ul>
+<li>方法1，使用成员运算符<code>in</code></li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">115</span>]: a = <span class="string">'abc'</span></span><br><span class="line">In [<span class="number">116</span>]: b = <span class="string">'mnabcdf'</span></span><br><span class="line">In [<span class="number">117</span>]: a <span class="keyword">in</span> b</span><br><span class="line">Out[<span class="number">117</span>]: <span class="literal">True</span></span><br></pre></td></tr></table></div></figure>
+<ul>
+<li>
+<p>方法2，使用方法 find，返回字符串 b 中匹配子串 a 的最小索引</p>
+<p>注意：str的find方法与list的index方法用途一样</p>
+</li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">118</span>]: b.find(a)</span><br><span class="line">Out[<span class="number">118</span>]: <span class="number">2</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="去除重复元素"   >
+          <a href="#去除重复元素" class="heading-link"><i class="fas fa-link"></i></a>去除重复元素</h2>
+      
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">257</span>]: s = <span class="string">'abcadcba'</span></span><br><span class="line">In [<span class="number">258</span>]: s = set(s)</span><br><span class="line">In [<span class="number">259</span>]: s</span><br><span class="line">Out[<span class="number">259</span>]: &#123;<span class="string">'a'</span>, <span class="string">'b'</span>, <span class="string">'c'</span>, <span class="string">'d'</span>&#125;</span><br><span class="line"></span><br><span class="line">In [<span class="number">260</span>]: <span class="string">''</span>.join(s)</span><br><span class="line">Out[<span class="number">260</span>]: <span class="string">'bdac'</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>得到的结果是乱序的，如果要求和原来的循序一样，勿用此方法</strong></p>
+
+        <h1 id="正则表达式"   >
+          <a href="#正则表达式" class="heading-link"><i class="fas fa-link"></i></a>正则表达式</h1>
+      
+<p>字符串封装的方法，处理一般的字符串操作，还能应付。但是，稍微复杂点的字符串处理任务，需要靠正则表达式，简洁且强大。</p>
+<p>首先，导入所需要的模块 re</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br></pre></td></tr></table></div></figure>
+<p>认识常用的<strong>元字符</strong>：</p>
+<ul>
+<li><code>.</code> 匹配除 “\n” 和 “\r” 之外的任何单个字符。</li>
+<li><code>^</code> 匹配字符串开始位置</li>
+<li><code>$</code> 匹配字符串中结束的位置</li>
+<li><code>*</code> 前面的原子重复 0 次、1 次、多次</li>
+<li><code>?</code> 前面的原子重复 0 次或者 1 次</li>
+<li><code>+</code> 前面的原子重复 1 次或多次</li>
+<li><code>{n}</code> 前面的原子出现了 n 次</li>
+<li><code>{n,}</code> 前面的原子至少出现 n 次</li>
+<li><code>{n,m}</code> 前面的原子出现次数介于 n-m 之间</li>
+<li><code>( )</code> 分组，输出需要的部分</li>
+</ul>
+<p>再认识常用的<strong>通用字符</strong>：</p>
+<ul>
+<li><code>\s</code> 匹配空白字符</li>
+<li><code>\w</code> 匹配任意字母/数字/下划线</li>
+<li><code>\W</code> 和小写 w 相反，匹配任意字母/数字/下划线以外的字符</li>
+<li><code>\d</code> 匹配十进制数字</li>
+<li><code>\D</code> 匹配除了十进制数以外的值</li>
+<li><code>[0-9]</code> 匹配一个 0~9 之间的数字</li>
+<li><code>[a-z]</code> 匹配小写英文字母</li>
+<li><code>[A-Z]</code> 匹配大写英文字母</li>
+</ul>
+<p>正则表达式，常会涉及到以上这些元字符或通用字符，下面是一些使用方式和小技巧</p>
+
+        <h2 id="search-第一个匹配串"   >
+          <a href="#search-第一个匹配串" class="heading-link"><i class="fas fa-link"></i></a>search 第一个匹配串</h2>
+      
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">s = <span class="string">'I am a good student'</span></span><br><span class="line">pat = <span class="string">'good'</span></span><br><span class="line">r = re.search(pat,s)</span><br><span class="line"><span class="comment"># 返回子串的起始位置和终止位置</span></span><br><span class="line">r.span()</span><br><span class="line"><span class="comment"># 输出  (7, 11)</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="match匹配开始位置"   >
+          <a href="#match匹配开始位置" class="heading-link"><i class="fas fa-link"></i></a>match匹配开始位置</h2>
+      
+<p>正则模块中，match、search 方法匹配字符串不同</p>
+<ul>
+<li>match 在原字符串的开始位置匹配</li>
+<li>search 在字符串的任意位置匹配</li>
+</ul>
+<p>使用match方法的时候，如果子串不是在开始位置则报错</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> re</span><br><span class="line">s = <span class="string">'helloworld'</span></span><br><span class="line">pat = <span class="string">'wor'</span></span><br><span class="line">r = re.match(pat,s)</span><br><span class="line">r.span()</span><br><span class="line"><span class="comment"># 报错  AttributeError: 'NoneType' object has no attribute 'span'</span></span><br></pre></td></tr></table></div></figure>
+<p>把子串<code>wor</code>放在最前面，再使用match匹配就不会报错了</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'world'</span></span><br><span class="line">pat = <span class="string">'wor'</span></span><br><span class="line">r = re.match(pat,s)</span><br><span class="line">r.span()</span><br><span class="line"><span class="comment"># 输出(0, 3)</span></span><br></pre></td></tr></table></div></figure>
+<p>match场景用的不多，如果只是匹配一个子串的位置，大多数情况下，使用search匹配</p>
+
+        <h2 id="finditer匹配迭代器"   >
+          <a href="#finditer匹配迭代器" class="heading-link"><i class="fas fa-link"></i></a>finditer匹配迭代器</h2>
+      
+<p>使用正则模块，finditer 方法，<strong>返回所有子串匹配位置的迭代器</strong></p>
+<p>通过返回的对象 <code>re.Match</code>，使用它的方法 span 找出匹配位置</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">119</span>]: s = <span class="string">'I am a good student'</span></span><br><span class="line">In [<span class="number">120</span>]: pat = <span class="string">'a'</span></span><br><span class="line">In [<span class="number">121</span>]: r = re.finditer(pat,s)</span><br><span class="line">In [<span class="number">124</span>]: <span class="keyword">for</span> i <span class="keyword">in</span> r:</span><br><span class="line">     ...:     print(i)</span><br><span class="line">     ...: </span><br><span class="line">&lt;re.Match object; span=(<span class="number">2</span>, <span class="number">3</span>), match=<span class="string">'a'</span>&gt;</span><br><span class="line">&lt;re.Match object; span=(<span class="number">5</span>, <span class="number">6</span>), match=<span class="string">'a'</span>&gt;</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="findall-所有匹配"   >
+          <a href="#findall-所有匹配" class="heading-link"><i class="fas fa-link"></i></a>findall 所有匹配</h2>
+      
+<p><code>findall</code> 方法能查找出子串的所有匹配。</p>
+<p>注意：</p>
+<ul>
+<li><code>findall</code>是返回所有的匹配</li>
+<li><code>finditer</code>是返回所有匹配的位置</li>
+</ul>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'呼叫战狼,我是8371,请您在9.56秒后回到3号机场'</span></span><br></pre></td></tr></table></div></figure>
+<p>目标查找出所有所有数字：通用字符 <code>\d</code> 匹配一位数字 [0-9]，<code>+</code> 表示匹配数字前面的一个字符 1 次或多次。</p>
+<p>不带元字符<code>+</code>情况下，输出的是匹配到的一个个数字，这肯定不符合要求</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">125</span>]: s = <span class="string">'呼叫战狼,我是8371,请您在9.56秒后回到3号机场'</span></span><br><span class="line">In [<span class="number">126</span>]: pat = <span class="string">r'\d'</span></span><br><span class="line">In [<span class="number">127</span>]: r = re.findall(pat,s)</span><br><span class="line">In [<span class="number">128</span>]: print(r)</span><br><span class="line">[<span class="string">'8'</span>, <span class="string">'3'</span>, <span class="string">'7'</span>, <span class="string">'1'</span>, <span class="string">'9'</span>, <span class="string">'5'</span>, <span class="string">'6'</span>, <span class="string">'3'</span>]</span><br></pre></td></tr></table></div></figure>
+<p>带上元字符<code>+</code></p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">125</span>]: s = <span class="string">'呼叫战狼,我是8371,请您在9.56秒后回到3号机场'</span></span><br><span class="line">In [<span class="number">129</span>]: pat = <span class="string">r'\d+'</span></span><br><span class="line">In [<span class="number">130</span>]: r = re.findall(pat,s)</span><br><span class="line">In [<span class="number">131</span>]: print(r)</span><br><span class="line">[<span class="string">'8371'</span>, <span class="string">'9'</span>, <span class="string">'56'</span>, <span class="string">'3'</span>]</span><br></pre></td></tr></table></div></figure>
+<p><code>re.findall</code>返回一个列表，里面包含四个数字，可以看到里面没有小数点，如果我们要找到<code>9.56</code>，应该怎么做呢？</p>
+
+        <h2 id="匹配浮点数和整数"   >
+          <a href="#匹配浮点数和整数" class="heading-link"><i class="fas fa-link"></i></a>匹配浮点数和整数</h2>
+      
+<ul>
+<li>元字符<code>?</code> 表示前一个字符匹配 0 或 1 次</li>
+<li>元字符<code>.?</code> 表示匹配小数点（<code>.</code>）0 次或 1 次。</li>
+</ul>
+<p>匹配浮点数和整数，我们先来看正则表达式：<code>r'\d+\.?\d+'</code>，该正则表达式可以理解为：先匹配1个或多个数字，再匹配小数点（<code>.</code>）0 次或 1 次，最后匹配1个或多个数字，分解演示如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200731172504960.jpg"  alt="在这里插入图片描述" />
+      </p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'呼叫战狼,我是8371,请您在9.56秒后回到3号机场'</span></span><br><span class="line">In [<span class="number">132</span>]: s = <span class="string">'呼叫战狼,我是8371,请您在9.56秒后回到3号机场'</span></span><br><span class="line">In [<span class="number">133</span>]: pat = <span class="string">r'\d+\.?\d+'</span></span><br><span class="line">In [<span class="number">134</span>]: r = re.findall(pat,s)</span><br><span class="line">In [<span class="number">135</span>]: r</span><br><span class="line">Out[<span class="number">135</span>]: [<span class="string">'8371'</span>, <span class="string">'9.56'</span>]</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，<strong>没有匹配到3</strong>，哪里出错了呢？</p>
+<p>出现问题原因：<code>r'\d+\.?\d+'</code>， 前面的<code>\d+</code> 表示至少有一位数字，后面的<code>\d+</code>也表示至少有一位数字，因此，整个表达式至少会匹配两位数。</p>
+<p>现在将最后的 <code>+</code> 后修改为 <code>*</code>，表示匹配前面字符 0 次、1 次或多次。如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200731172652929.jpg"  alt="在这里插入图片描述" />
+      </p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">132</span>]: s = <span class="string">'呼叫战狼,我是8371,请您在9.56秒后回到3号机场'</span></span><br><span class="line">In [<span class="number">136</span>]: pat = <span class="string">r'\d+\.?\d*'</span></span><br><span class="line">In [<span class="number">137</span>]: r = re.findall(pat,s)</span><br><span class="line">In [<span class="number">138</span>]: r</span><br><span class="line">Out[<span class="number">138</span>]: [<span class="string">'8371'</span>, <span class="string">'9.56'</span>, <span class="string">'3'</span>]</span><br></pre></td></tr></table></div></figure>
+<p>到这里就大功完成了，到这里我们再思考一下，如果把<code>.?</code>前面的<code>\</code>去掉以后会怎么样？如下：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">132</span>]: s = <span class="string">'呼叫战狼,我是8371,请您在9.56秒后回到3号机场'</span></span><br><span class="line">In [<span class="number">139</span>]: pat = <span class="string">r'\d+.?\d*'</span></span><br><span class="line">In [<span class="number">140</span>]: r = re.findall(pat,s)</span><br><span class="line">In [<span class="number">141</span>]: r</span><br><span class="line">Out[<span class="number">141</span>]: [<span class="string">'8371,'</span>, <span class="string">'9.56'</span>, <span class="string">'3号'</span>]</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，匹配到了一个汉字，为什么会出现这种情况呢？因为这里<code>.?</code>的含义就变了，之前是把<code>\.?</code>作为一个整体，现在<code>.?</code>的含义是附加到<code>\d.?</code>上。</p>
+<p><code>\d+.?\d</code>中<code>.?</code>含义如下：</p>
+<ul>
+<li><code>.</code> 匹配除 <code>\n</code> 和 <code>\r</code> 之外的任何单个字符。</li>
+<li>那<code>.?</code>就表示匹配<code>\n</code> 和 <code>\r</code> 之外的任何单个字符0 次或 1 次。</li>
+</ul>
+<p>我们看下演示图就知道了，<code>\d+.?\d</code>的演示图如下</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/2020073117291416.jpg"  alt="在这里插入图片描述" />
+      </p>
+
+        <h2 id="匹配正整数"   >
+          <a href="#匹配正整数" class="heading-link"><i class="fas fa-link"></i></a>匹配正整数</h2>
+      
+<p>案例：<strong>写出匹配所有正整数的正则表达式</strong></p>
+<p>我们先来看几个正则表达式即它们的含义</p>
+<p>前面讲过</p>
+<ul>
+<li><code>\d+</code> 表示数字出现1次或多次</li>
+<li><code>\d*</code> 表示数字出现0次或多次</li>
+</ul>
+<ol>
+<li><code>\d*</code> 表示数字出现0次或多次，也就是会匹配所有的字符</li>
+</ol>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">142</span>]: s = [<span class="number">2</span>,<span class="string">'我是1'</span>,<span class="string">'1是我'</span>,<span class="string">'123'</span>,<span class="number">0</span>, <span class="number">3</span>,<span class="string">'已经9.56秒了'</span>,<span class="number">10</span>,<span class="number">-1</span>]</span><br><span class="line">In [<span class="number">143</span>]: pat = <span class="string">r'\d*'</span></span><br><span class="line">In [<span class="number">144</span>]: [i <span class="keyword">for</span> i <span class="keyword">in</span> s <span class="keyword">if</span> re.match(pat,str(i))]</span><br><span class="line">Out[<span class="number">144</span>]: [<span class="number">2</span>, <span class="string">'我是1'</span>, <span class="string">'1是我'</span>, <span class="string">'123'</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="string">'已经9.56秒了'</span>, <span class="number">10</span>, <span class="number">-1</span>]</span><br></pre></td></tr></table></div></figure>
+<ol start="2">
+<li><code>^\d*$</code>,在数字出现0次或多次前加上了开始位置，再后加上了结束位置。即必须是以数字的开头，以数字结尾，才能匹配到</li>
+</ol>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200731173222954.jpg"  alt="在这里插入图片描述" />
+      </p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">142</span>]: s = [<span class="number">2</span>,<span class="string">'我是1'</span>,<span class="string">'1是我'</span>,<span class="string">'123'</span>,<span class="number">0</span>, <span class="number">3</span>,<span class="string">'已经9.56秒了'</span>,<span class="number">10</span>,<span class="number">-1</span>]</span><br><span class="line">In [<span class="number">145</span>]: pat =<span class="string">r'^\d*$'</span></span><br><span class="line">In [<span class="number">146</span>]: [i <span class="keyword">for</span> i <span class="keyword">in</span> s <span class="keyword">if</span> re.match(pat,str(i))]</span><br><span class="line">Out[<span class="number">146</span>]: [<span class="number">2</span>, <span class="string">'123'</span>, <span class="number">0</span>, <span class="number">3</span>, <span class="number">10</span>]</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，匹配到了0，我们的目的是匹配所有正整数，所以不正确</p>
+<ol start="3">
+<li><code>^[1-9]*$</code> 表示匹配一个 0~9 之间的数字</li>
+</ol>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">147</span>]: s = [<span class="number">2</span>,<span class="string">'我是1'</span>,<span class="string">'1是我'</span>,<span class="string">'123'</span>,<span class="number">0</span>, <span class="number">3</span>,<span class="string">'已经9.56秒了'</span>,<span class="number">10</span>,<span class="number">-1</span>]</span><br><span class="line">In [<span class="number">148</span>]: pat =<span class="string">r'^[1-9]*$'</span></span><br><span class="line">In [<span class="number">149</span>]: [i <span class="keyword">for</span> i <span class="keyword">in</span> s <span class="keyword">if</span> re.match(pat,str(i))]</span><br><span class="line">Out[<span class="number">149</span>]: [<span class="number">2</span>, <span class="string">'123'</span>, <span class="number">3</span>]</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，不能匹配10，因此这个也不正确</p>
+<ol start="4">
+<li><code>^[1-9]\d*$</code> 表示匹配一个 0~9 之间的数字并且匹配的数字出现0次或多次</li>
+</ol>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200731173331745.jpg"  alt="在这里插入图片描述" />
+      </p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">150</span>]: s = [<span class="number">2</span>,<span class="string">'我是1'</span>,<span class="string">'1是我'</span>,<span class="string">'123'</span>,<span class="number">0</span>, <span class="number">3</span>,<span class="string">'已经9.56秒了'</span>,<span class="number">10</span>,<span class="number">-1</span>]</span><br><span class="line">In [<span class="number">151</span>]: pat =<span class="string">r'^[1-9]\d*$'</span></span><br><span class="line">In [<span class="number">152</span>]: [i <span class="keyword">for</span> i <span class="keyword">in</span> s <span class="keyword">if</span> re.match(pat,str(i))]</span><br><span class="line">Out[<span class="number">152</span>]: [<span class="number">2</span>, <span class="string">'123'</span>, <span class="number">3</span>, <span class="number">10</span>]</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="rei-忽略大小写"   >
+          <a href="#rei-忽略大小写" class="heading-link"><i class="fas fa-link"></i></a>re.I 忽略大小写</h2>
+      
+<p>找出字符串中所有字符 t 或 T 的位置，不区分大小写。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'HELLO，World'</span></span><br><span class="line">pat = <span class="string">'L'</span></span><br><span class="line">r = re.finditer(pat,s,re.I)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> r:</span><br><span class="line">    print(i.span())</span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string">输出：</span></span><br><span class="line"><span class="string">    (2, 3)</span></span><br><span class="line"><span class="string">    (3, 4)</span></span><br><span class="line"><span class="string">    (9, 10)</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></div></figure>
+<p>​</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'HELLO，World'</span></span><br><span class="line">pat = <span class="string">'L'</span></span><br><span class="line">r = re.findall(pat,s,re.I)</span><br><span class="line">r</span><br><span class="line"><span class="comment"># 输出 ['L', 'L', 'l']</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="resplit分割单词"   >
+          <a href="#resplit分割单词" class="heading-link"><i class="fas fa-link"></i></a>re.split分割单词</h2>
+      
+<p><strong>正则模块中 split 函数强大，能够处理复杂的字符串分割任务</strong></p>
+<p>对于简单的分割，直接用分隔符</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">153</span>]: s = <span class="string">'I-am-a-good-student'</span></span><br><span class="line">In [<span class="number">154</span>]: s.split(<span class="string">'-'</span>)</span><br><span class="line">Out[<span class="number">154</span>]: [<span class="string">'I'</span>, <span class="string">'am'</span>, <span class="string">'a'</span>, <span class="string">'good'</span>, <span class="string">'student'</span>]</span><br></pre></td></tr></table></div></figure>
+<p>但是，对于分隔符复杂的字符串，split 函数就无能为力</p>
+<p>如下字符串，可能的分隔符有<code>, ; - . |</code>和空格</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">155</span>]: s = <span class="string">'I,,,am |  ;a - good.. student'</span></span><br><span class="line">In [<span class="number">156</span>]: s.split(<span class="string">'[,;\-.|]'</span>)</span><br><span class="line">Out[<span class="number">156</span>]: [<span class="string">'I,,,am |  ;a - good.. student'</span>]</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，直接使用是区分不开的，所有可以用<strong>正则模块中的split</strong></p>
+<p><code>\s</code> 匹配空白字符</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">157</span>]: s = <span class="string">'I,,,am |  ;a - good.. student'</span></span><br><span class="line">In [<span class="number">158</span>]: w = re.split(<span class="string">r'[,.\s;\-|]+'</span>,s)</span><br><span class="line">In [<span class="number">159</span>]: w</span><br><span class="line">Out[<span class="number">159</span>]: [<span class="string">'I'</span>, <span class="string">'am'</span>, <span class="string">'a'</span>, <span class="string">'good'</span>, <span class="string">'student'</span>]</span><br></pre></td></tr></table></div></figure>
+<p>注意：<strong>re.split默认匹配所有的候选字符</strong>，因此不需要元字符<code>+</code>了</p>
+<p>但是，如果在字符串前面和后面加多个空格，<code>\s</code>就区分不开了，如下：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">163</span>]: In [<span class="number">157</span>]: s = <span class="string">'  I,,,am |  ;a -     good.. student    '</span></span><br><span class="line">In [<span class="number">164</span>]: w = re.split(<span class="string">r'[,.\s;\-|]+'</span>,s)</span><br><span class="line">In [<span class="number">165</span>]: w</span><br><span class="line">Out[<span class="number">165</span>]: [<span class="string">''</span>, <span class="string">'I'</span>, <span class="string">'am'</span>, <span class="string">'a'</span>, <span class="string">'good'</span>, <span class="string">'student'</span>, <span class="string">''</span>]</span><br></pre></td></tr></table></div></figure>
+<p>这是，可以用字符串strip方法去除字符串的前后空格</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">163</span>]: In [<span class="number">157</span>]: s = <span class="string">'  I,,,am |  ;a -     good.. student    '</span></span><br><span class="line">In [<span class="number">172</span>]: s=s.strip()</span><br><span class="line">In [<span class="number">173</span>]: w = re.split(<span class="string">r'[,.\s+;\-|]+'</span>,s)</span><br><span class="line">In [<span class="number">174</span>]: w</span><br><span class="line">Out[<span class="number">174</span>]: [<span class="string">'I'</span>, <span class="string">'am'</span>, <span class="string">'a'</span>, <span class="string">'good'</span>, <span class="string">'student'</span>]</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="sub-替换匹配串"   >
+          <a href="#sub-替换匹配串" class="heading-link"><i class="fas fa-link"></i></a>sub 替换匹配串</h2>
+      
+<p>正则模块，sub 方法，替换匹配到的子串</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">s = <span class="string">'你好，我是12306'</span></span><br><span class="line">pat = <span class="string">r'\d+'</span></span><br><span class="line">w = re.sub(pat,<span class="string">'hello'</span>,s)</span><br><span class="line">w</span><br><span class="line"><span class="comment"># 输出 '你好，我是hello'</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="compile-预编译"   >
+          <a href="#compile-预编译" class="heading-link"><i class="fas fa-link"></i></a>compile 预编译</h2>
+      
+<p>如果要用同一匹配模式，做很多次匹配，可以使用 compile 预先编译串</p>
+<p>如果我们要：从一系列字符串中，挑选出所有正浮点数</p>
+<p>正则表达式为：<code>^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$</code>，字符 <code>a|b</code>表示 <code>a</code> 串匹配失败后，才执行 <code>b</code> 串</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">s = [<span class="number">-1</span>,<span class="number">10</span>,<span class="number">0</span>,<span class="number">7.21</span>,<span class="number">0.5</span>,<span class="string">'123'</span>,<span class="string">'你好'</span>,<span class="string">'3.25'</span>,<span class="number">11.0</span>,<span class="number">9.</span>]</span><br><span class="line">rec = re.compile(<span class="string">r'^[1-9]\d*\.\d*|0\.\d*[1-9]\d*$'</span>)</span><br><span class="line">[ i <span class="keyword">for</span> i <span class="keyword">in</span> s <span class="keyword">if</span> rec.match(str(i))]</span><br><span class="line"><span class="comment"># 输出 [7.21, 0.5, '3.25', 11.0, 9.0]</span></span><br></pre></td></tr></table></div></figure>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2020/11/24/221218/">https://wxler.gitee.io/2020/11/24/221218/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/python/">python</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2020/11/24/221418/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Python 中 （&amp;，|）和（and，or）之间的区别</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2020/11/24/221035/"><span class="paginator-prev__text">python中list和tuple的22种操作方法</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#字符串去空格"><span class="toc-number">1.</span> <span class="toc-text">
+          字符串去空格</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字符串替换"><span class="toc-number">2.</span> <span class="toc-text">
+          字符串替换</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字符串串联"><span class="toc-number">3.</span> <span class="toc-text">
+          字符串串联</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#查找子串位置"><span class="toc-number">4.</span> <span class="toc-text">
+          查找子串位置</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#反转字符串"><span class="toc-number">5.</span> <span class="toc-text">
+          反转字符串</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#字符串切片"><span class="toc-number">6.</span> <span class="toc-text">
+          字符串切片</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#分割字符串"><span class="toc-number">7.</span> <span class="toc-text">
+          分割字符串</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#子串判断"><span class="toc-number">8.</span> <span class="toc-text">
+          子串判断</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#去除重复元素"><span class="toc-number">8.1.</span> <span class="toc-text">
+          去除重复元素</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#正则表达式"><span class="toc-number">9.</span> <span class="toc-text">
+          正则表达式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#search-第一个匹配串"><span class="toc-number">9.1.</span> <span class="toc-text">
+          search 第一个匹配串</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#match匹配开始位置"><span class="toc-number">9.2.</span> <span class="toc-text">
+          match匹配开始位置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#finditer匹配迭代器"><span class="toc-number">9.3.</span> <span class="toc-text">
+          finditer匹配迭代器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#findall-所有匹配"><span class="toc-number">9.4.</span> <span class="toc-text">
+          findall 所有匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#匹配浮点数和整数"><span class="toc-number">9.5.</span> <span class="toc-text">
+          匹配浮点数和整数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#匹配正整数"><span class="toc-number">9.6.</span> <span class="toc-text">
+          匹配正整数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rei-忽略大小写"><span class="toc-number">9.7.</span> <span class="toc-text">
+          re.I 忽略大小写</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#resplit分割单词"><span class="toc-number">9.8.</span> <span class="toc-text">
+          re.split分割单词</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#sub-替换匹配串"><span class="toc-number">9.9.</span> <span class="toc-text">
+          sub 替换匹配串</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#compile-预编译"><span class="toc-number">9.10.</span> <span class="toc-text">
+          compile 预编译</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">53</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">12</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">27</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

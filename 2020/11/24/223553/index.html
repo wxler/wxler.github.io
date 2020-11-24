@@ -1,0 +1,691 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="本文通过分析深度网络模型的缺点引出ResNet残差网络，并介绍了几种变体，最后用代码实现ResNet18。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ResNet残差网络及变体详解（符代码实现）">
+<meta property="og:url" content="https://wxler.gitee.io/2020/11/24/223553/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="本文通过分析深度网络模型的缺点引出ResNet残差网络，并介绍了几种变体，最后用代码实现ResNet18。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvMTYwMzkyMC8yMDE5MDMvMTYwMzkyMC0yMDE5MDMyMjA5MTgwNjc4Ny02NDg1NTk0NDUuanBn?x-oss-process=image/format,png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200827170000864.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200827170620973.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200827172706533.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828200641837.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828203656416.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvMTYwMzkyMC8yMDE5MDMvMTYwMzkyMC0yMDE5MDMyMjExNTY1MjA2Ni0xMTE1OTA2MzA0LnBuZw?x-oss-process=image/format,png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200827205445989.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20181217193440759.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzYyNDUzOA==,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828155213685.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828155347392.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828162419741.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828164655354.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20181217193732589.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzYyNDUzOA==,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828170839561.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20181217193750658.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzYyNDUzOA==,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdn.net/20180613075024302?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTM4NDExOTY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828173646805.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828174215491.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828175612572.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828191338471.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828191427486.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020082818095390.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828191955481.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200828192913658.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2020-11-24T14:35:53.000Z">
+<meta property="article:modified_time" content="2020-11-24T14:38:09.123Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="ResNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvMTYwMzkyMC8yMDE5MDMvMTYwMzkyMC0yMDE5MDMyMjA5MTgwNjc4Ny02NDg1NTk0NDUuanBn?x-oss-process=image/format,png#pic_center"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>ResNet残差网络及变体详解（符代码实现） | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2020/11/24/223553/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">ResNet残差网络及变体详解（符代码实现）</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">7.1k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">42分</span></span></div></header><div class="post-body"><p>本文通过分析深度网络模型的缺点引出ResNet残差网络，并介绍了几种变体，最后用代码实现ResNet18。</p>
+<a id="more"></a>
+
+        <h2 id="前言"   >
+          <a href="#前言" class="heading-link"><i class="fas fa-link"></i></a>前言</h2>
+      
+<p>ResNet（Residual Network， ResNet）是微软团队开发的网络，它的特征在于具有比以前的网络更深的结构，在2015年的ILSVRC大赛中获得分类任务的第1名。</p>
+<p>网络的深度对于学习表达能力更强的特征至关重要的。网络的层数越多，意味着能够提取的特征越丰富，表示能力就越强。（越深的网络提取的特征越抽象，越具有语义信息，特征的表示能力就越强）。</p>
+<p>但是，随着网络深度的增加，所带来的的问题也是显而易见的，主要有以下几个方面：</p>
+<ol>
+<li>增加深度带来的首个问题就是<strong>梯度爆炸/消散</strong>的问题，这是由于随着层数的增多，在网络中反向传播的梯度会随着连乘变得不稳定，变得特别大或者特别小。这其中经常出现的是梯度消散的问题。</li>
+<li>为了克服梯度消散也想出了许多的解决办法，如使用BatchNorm，将激活函数换为ReLu等，但是改善问题的能力有限。</li>
+<li>增加深度的另一个问题就是网络的<strong>degradation</strong>（退化）问题，即随着深度的增加，网络的性能会越来越差。如下所示：
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvMTYwMzkyMC8yMDE5MDMvMTYwMzkyMC0yMDE5MDMyMjA5MTgwNjc4Ny02NDg1NTk0NDUuanBn?x-oss-process=image/format,png#pic_center"  style=""  alt="在这里插入图片描述" />
+      </li>
+</ol>
+<p>为了让更深的网络也能训练出好的效果，何凯明大神提出了一个新的网络结构——ResNet（Residual Network，残差网络）。通过使用残差网络结构，深层次的卷积神经网络模型不仅避免了出现模型性能退化的问题，并取得了更好的性能。</p>
+<p>需要注意的是，<strong>Residual Network不是为了解决过拟合的问题，因为过拟合只是在测试集上错误率很高，而在训练集上错误率很低</strong>，通过上图可以出，随着深度的加深而引起的 <strong>model degradation</strong>（模型退化）不仅在训练集上错误率高，在测试集上错误率也很高。所以说 Residual Network 主要是为了解决因网络加深而导致的模型退化问题（也有效避免了梯度消散问题，下面会讲）。</p>
+
+        <h2 id="模型退化"   >
+          <a href="#模型退化" class="heading-link"><i class="fas fa-link"></i></a>模型退化</h2>
+      
+<p>通常，当我们堆叠一个模型时，会认为效果会越堆越好。因为，网络的层数越多，意味着能够提取到的特征越丰富，特征的表示能力就越强，假设一个比较浅的网络已经可以达到不错的效果，那么再进行叠加的网络如果什么也不做，效果不会变差。</p>
+<p>事实上，这是问题所在，<strong>因为“什么都不做”是之前神经网络最难做到的事情之一</strong>。这时因为由于非线性激活函数（Relu）的存在，每次输入到输出的过程都几乎是不可逆的（信息损失），所以很难从输出反推回完整的输入。所以随着深度的加深而引起的 <strong>model degradation</strong>（模型退化）仅通过普通网络模型是无法避免的。</p>
+<p>Residual Learning（残差学习）设计的本质，是让<strong>模型的内部结构具有恒等映射的能力，至少让深度网络实现和浅层网络一样的性能，即让深度网络后面的层至少实现恒等映射的作用，这样在堆叠网络的过程中，不会因为继续堆叠而产生退化。</strong></p>
+<p>在mobileNetV2论文中，作者说明了使用ReLU的问题，即当使用ReLU等激活函数时，会导致信息丢失，如下所示：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200827170000864.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>低维（2维）的信息嵌入到n维的空间中（即Input的特征经过高维空间进行变换），并通过随机矩阵<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>T</mi></mrow><annotation encoding="application/x-tex">T</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">T</span></span></span></span>对特征进行变换，之后再加上ReLU激活函数，之后在通过 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>T</mi><mrow><mi mathvariant="normal">−</mi><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">T^{−1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span> （T的逆矩阵）进行反变换。当n=2，3时，会导致比较严重的信息丢失，部分特征重叠到一起了；当n=15到30时，信息丢失程度降低。</p>
+
+        <h2 id="残差结构"   >
+          <a href="#残差结构" class="heading-link"><i class="fas fa-link"></i></a>残差结构</h2>
+      
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200827170620973.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>在上图中，我们可以使用一个非线性变化函数来描述一个网络的输入输出，即深层的输入为X（X也为浅层的输出），深层的输出为F(x)+x，F通常包括了卷积，激活等操作。</p>
+<p>这里需要注意附加的恒等映射关系具有两种不同的使用情况：残差结构的输入数据若和输出结果的维度一致，则直接相加；若维度不一致，必须对x进行升维操作，让它俩的维度相同时才能计算。升维的方法有两种：</p>
+<ul>
+<li>直接通过zero padding 来增加维度（channel）；</li>
+<li>用1x1卷积实现，直接改变1x1卷积的filters数目，这种会增加参数。</li>
+</ul>
+<p>令H(x)=F(x)+x，即H(x)为深层的输出，则 F(x)=H(x)−x。此时残差结构如下图所示，虚线框中的部分就是F(x)，即H(x)−x。<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200827172706533.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>当浅层的x代表的特征已经足够成熟（即浅层网络输出的特征x已经达到了最优），再经过任何深层的变换改变特征x都会让loss变大的话，<strong>F(x)会自动趋向于学习成为0</strong>，x则从恒等映射的路径继续传递。这样就在不增加计算成本的情况下实现了目的：<strong>在前向过程中，当浅层的输出已经足够成熟，让深层网络后面的层能够实现恒等映射的作用（即让后面的层从恒等映射的路径继续传递）</strong>，这样就解决了由于网络过深而导致的模型退化的问题。</p>
+<p>从另一方面讲，<strong>残差结构可以让网络反向传播时信号可以更好的地传递</strong>，以一个例子来解释。</p>
+<p>假设非残差网络输出为G(x)，残差网络输出为H(x)，其中H=F(x)+x，输入的样本特征 <strong>x=1</strong>。（注意：这里G和H中的F是一样的，为了区分，用不同的符号）</p>
+<p>（1）在某一时刻：</p>
+<p>非残差网络G(1)=1.1， 把G简化为线性运算<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>G</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>W</mi><mi>g</mi></msub><mo>∗</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">G(x)=W_g*x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault">G</span><span class="mopen">(</span><span class="mord mathdefault">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span>，可以明显看出<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mi>g</mi></msub><mo>=</mo><mn>1.1</mn></mrow><annotation encoding="application/x-tex">W_g=1.1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">.</span><span class="mord">1</span></span></span></span>。<br />
+残差网络H(1)=1.1， H(1)=F(1)+1, F(1)=0.1，把F简化为线性运算<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>F</mi><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>=</mo><msub><mi>W</mi><mi>f</mi></msub><mo>∗</mo><mi>x</mi></mrow><annotation encoding="application/x-tex">F(x)=W_f*x</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="mopen">(</span><span class="mord mathdefault">x</span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10764em;">f</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">∗</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault">x</span></span></span></span>，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mi>f</mi></msub><mo>=</mo><mn>0.1</mn></mrow><annotation encoding="application/x-tex">W_f=0.1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10764em;">f</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">1</span></span></span></span>。</p>
+<p>（2）经过一次反向传播并更新G和F中的<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mi>g</mi></msub></mrow><annotation encoding="application/x-tex">W_g</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>与<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mi>f</mi></msub></mrow><annotation encoding="application/x-tex">W_f</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10764em;">f</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>后（输入的样本特征x不变，仍为1）：</p>
+<p>非残差网络G’(1)=1.2， 此时<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mi>g</mi></msub><mo>=</mo><mn>1.2</mn></mrow><annotation encoding="application/x-tex">W_g=1.2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord">.</span><span class="mord">2</span></span></span></span><br />
+残差网络H’(1)=1.2, H’(1)=F’(1)+1, F’(1)=0.2，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mi>f</mi></msub><mo>=</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">W_f=0.2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10764em;">f</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">0</span><span class="mord">.</span><span class="mord">2</span></span></span></span></p>
+<p>可以明显的看出，F的参数<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mi>f</mi></msub></mrow><annotation encoding="application/x-tex">W_f</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.10764em;">f</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>就从0.1更新到0.2，而G的参数<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mi>g</mi></msub></mrow><annotation encoding="application/x-tex">W_g</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>就从1.1更新到1.2，这一点变化对F的影响远远大于G，<strong>说明引入残差后的映射对输出的变化更敏感，对权重的调整作用更大，所以效果更好</strong>。</p>
+<p>从另外一方面来说，对于残差网络H=F(x)+x，每一个导数就加上了一个恒等项1，dh/dx=d(f+x)/dx=1+df/dx，此时就算原来的导数df/dx很小，这时候误差仍然能够有效的反向传播，有效避免了非残差网络链式求导连乘而引发的<strong>梯度消散</strong>。</p>
+<blockquote>
+<p>这里可能要有人问，反向传播不应该是对权重求偏导吗，这里怎么是对x求偏导？<br />
+反向传播的目的是为了更新权重，但是反向传播的过程是用链式法则实现，在这个过程中，网络中间层的x和w都会参与回传。乘法的反向传播会将上游的值乘以正向传播时的输入信号的“翻转值”后传递给下游，加法节点的反向传播将上游的值原封不动地输出到下游。</p>
+</blockquote>
+<p>因此，从上面的分析可以看出，残差模块最重要的作用就是改变了前向和后向信息传递的方式从而很大程度上促进了网络的优化。</p>
+<ul>
+<li>前向：当浅层的输出已经足够成熟，让深层网络后面的层能够实现恒等映射的作用（即让后面的层从恒等映射的路径继续传递），解决了由于网络过深而导致的模型退化的问题。</li>
+<li>后向：引入残差后的映射对输出的变化更敏感，对权重的调整作用更大，效果更好。</li>
+</ul>
+<p>至于为何 shortcut（即附加的恒等映射关系）的输入时X，而不是X/2或是其他形式。kaiming大神的另一篇文章 Identity Mappings in Deep Residual Networks 中探讨了这个问题，对以下6种结构的残差结构进行实验比较，shortcut 是X/2的就是第二种，结果发现还是第一种效果好。<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828200641837.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>ResNet的研究者还提出了<strong>能够让网络结构更深的残差模块</strong>，如下图所示：</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828203656416.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>将原来的building block(残差结构)改为bottleneck（瓶颈结构），很好地减少了参数数量，即先用第一个1x1的卷积把256维channel降到64维，第三个1x1卷积又升到256维，总共用参数：1x1x256x64+3x3x64x64+1x1x64x256=69632，如果不使用 bottleneck，参数将是 3x3x256x256x2=1179648，差了16.94倍。</p>
+<p>总的来说，由于将原来的building block(残差结构)改为bottleneck（瓶颈结构）减少了模型训练的参数量，同时减少整个模型的计算量，并且网络深度得以增加，这使得拓展更深的模型结构成为可能，于是出现了拥有50层、101层、152层的ResNet模型，这不仅没有出现模型性能退化的问题，而且错误率和计算复杂度都保持在很低的程度。</p>
+<p>作者最后在Cifar-10上尝试了1202层的网络，结果在训练误差上与一个较浅的110层的相近，但是测试误差要比110层大1.5%。作者认为是采用了太深的网络，发生了过拟合。所以现在的残差结构最多到100多层，不能再深了，后面会讲到如何把残差网络扩展到1000层。</p>
+
+        <h2 id="resnet网络结构"   >
+          <a href="#resnet网络结构" class="heading-link"><i class="fas fa-link"></i></a>ResNet网络结构</h2>
+      
+<p>我们以VGG作对比介绍ResNet网络。看下图：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://imgconvert.csdnimg.cn/aHR0cHM6Ly9pbWcyMDE4LmNuYmxvZ3MuY29tL2Jsb2cvMTYwMzkyMC8yMDE5MDMvMTYwMzkyMC0yMDE5MDMyMjExNTY1MjA2Ni0xMTE1OTA2MzA0LnBuZw?x-oss-process=image/format,png#pic_center"  style=""  alt="在这里插入图片描述" />
+      <br />
+左边为基本的VGGNet，中间为基于VGG作出的扩增至34层的普通网络，右边为34层的残差网络，不同的是每隔两层就会有一个residual模块。对于残差网络（右图），维度匹配的shortcut连接为实线（输入和输出有相同的通道数），反之为虚线。维度不匹配时，同等映射有两种可选方案：全0填充和1x1卷积。</p>
+<p>常用的ResNet有5种常用深度：18，34，50，101，152层。网络分成5部分，分别是：conv1，conv2_x，conv3_x，conv4_x，conv5_x。如下图所示：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200827205445989.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>根据上图，ResNet101的层数为3 + 4 + 23 + 3 = 33个building block，每个block为3层，所以有33 x 3 = 99层，再加上第一层的卷积conv1，以及最后的fc层（用于分类），一共是99+1+1=101层。</p>
+<p>以往模型大多在ImageNet上作测试，所以这里只给出在ImageNet上的成绩，如下所示：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20181217193440759.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzYyNDUzOA==,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzYyNDUzOApx;"  alt="在这里插入图片描述" />
+      <br />
+可以看到，由于使用1×1的卷积层来减少模型训练的参数量，同时减少整个模型的计算量，增加了网络的深度，152层的ResNet相比于其他网络有提高了一些精度。</p>
+
+        <h2 id="pre-activation-resnet"   >
+          <a href="#pre-activation-resnet" class="heading-link"><i class="fas fa-link"></i></a>Pre Activation ResNet</h2>
+      
+<p>由于ResNet引入了残差模块，很好的解决了网络模型degradation的问题，从而提高了网络深度。由于将原来的building block（残差结构）改为bottleneck（瓶颈结构）减少了模型训练的参数量，同时减少整个模型的计算量，这使得拓展更深的模型结构成为可能，于是出现了拥有50层、101层、152层的ResNet模型，那么，<strong>我们还能不能加深一些呢？100层可以，1000层呢？</strong></p>
+<p>答案是不可以，至少目前的残差模型是不行的，<strong>因为目前的残差块在加和之后会经过一个relu，由于这个激活函数Relu的位置带来的影响</strong>，使得增加的操作虽然在100层中不会有很大的影响，但是在1000层的超深网络里面还是会阻碍整个网络的前向反向传播（具体原因接着往下看），我们需要接着改进。</p>
+<p>当前卷积神经网络的基本模块通常为卷积+归一化+激活函数（conv+bn+relu）的顺序，对于普通的按照这些模块进行顺序堆叠的网络来说，各个模块的顺序没有什么影响，但是对于残差网络来说却不一样。</p>
+<p>pre activation 和 post activation ，也就是<strong>激活函数Relu的位置，是放在卷积前还是卷积后</strong>。对于一般的网络来说，这是没什么区别的，因为网络是各个模块进行叠加，这个卷积块的激活函数的输出就是另一卷积块的激活函数的输入，总体来看无所谓先后。</p>
+<p>但是，残差网络不一样，它的残差分支包含着完整的卷积，归一化，激活函数层，而后这一分支要和原始信号分支进行相加，因此就有了多种方案，如下图所示：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828155213685.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>我们最常见的是图a的形式，即原始信号和残差信号相加之和再经过Relu输出到下一个block，但实际上还有b、c、d、e等形式，它们的性能如下：<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828155347392.png#pic_center"  alt="在这里插入图片描述" />
+      </p>
+<p>图b，将BN拿出来，放到加和函数之后，结果最差，分析原因可能是不应该把原始信号和残差信号一起加和后归一化，改变了原始信号的分布。</p>
+<p>图c，将ReLU提到残差分支，结果也不行，因为这样一来，残差分支的信号就是非负的，当然会影响表达能力，结果也就变得更差了。</p>
+<p>图a是原始的ResNet模块，我们可以看到原始信号和残差信号相加后需要进入Relu做一个非线性激活，这样一来，相加后的结果永远是非负的，这就约束了模型的表达能力（和图c原理类似），因此需要做一个调整。图d和图e都是讲ReLU提到了卷积之前，但是BN的顺序有所不同。图d在临近输出放了BN，然后再和原始信号相加，<strong>本来BN就是为了给数据一个固定的分布，一旦经过别的操作就会改变数据的分布，会削减BN的作用，在原版本的resnet中就是这么使用的BN，所以，图d效果与原始的ResNet（图a）性能大致相当</strong>。图e在临近输入放了BN，效果大大提升，这应该是来自于BN层的功劳，本来BN层就应该放置在卷积层之前提升网络泛化能力。</p>
+<p>我们来看下这两种结构在CIFAR-10和CIFAR-100上的效果吧：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828162419741.png#pic_center"  alt="在这里插入图片描述" />
+      <br />
+原始的ResNet结构增加到1000层错误率反而提高，但是用上Pre Activation unit后把网络增加到1000层，错误率显著降低，值的注意的是<strong>这里所有精度提升都是出自于深度的增加</strong>。</p>
+<p>1000层的残差网络和100层的网络之间的计算复杂度基本是线性的，因此从时间和算力的角度而言还是100层的网络更加实用，但是改进后的残差模块证明了1000层的网络的可实现性，实际上现在各大厂每次开会都要拿超深的网络出来吓人，原理就是这个模块。</p>
+<p><strong>那么，我们有没有什么其他不是靠深度的办法来增加特征的表征能力呢？如果有的话结合上ResNet的深度，会不会产生很好的效果呢？</strong></p>
+
+        <h2 id="其它的resnet变体"   >
+          <a href="#其它的resnet变体" class="heading-link"><i class="fas fa-link"></i></a>其它的ResNet变体</h2>
+      
+
+        <h3 id="wide-resnet"   >
+          <a href="#wide-resnet" class="heading-link"><i class="fas fa-link"></i></a>Wide ResNet</h3>
+      
+<p>Wide ResNet，就是比普通的残差网络更宽（也就是通道数量更大）的结构，那么它与ResNet有什么不同呢？</p>
+<p>首先，看一下几个不同的残差模块的对比，如下所示：</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828164655354.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>(a)是普通的残差结构，(b)是使用1*1卷积进行升维和降维的结构，© 是直接增加网络的宽度，图中方块的宽度就表示它的残差块的通道数更大。(d)是文章中提出，可以看到相比于基础模块在中间加上了dropout层，这是因为增加了宽度后参数的数量会显著增加，为了防止过拟合使用了卷积层中的dropout，并取得了相比于不用dropout更好的效果。</p>
+<p>作者们实验结果表明：16层的改进残差网络就达到了1000层残差网络的性能，而且计算代价更低。</p>
+<p>Wide ResNet网络结构如下所示：</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20181217193732589.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzYyNDUzOA==,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzYyNDUzOApx;"  alt="在这里插入图片描述" />
+      </p>
+<p>作者通过实验发现每个残差内部由两个3*3卷积层组成可以有最好的效果，上图是改进后模型的基本架构，与ResNet唯一不同的是多了一个k，代表了原始模块中卷积核数量的k倍（也就是通道数量更大），B(3,3) 代表每一个残差模块内由两个3*3的卷积层组成。</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828170839561.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+上图是164层原始残差网络和28层十倍宽度残差网络在CIFAR-10和CIFAR-100数据集上的比较，实线是在测试集上的错误率，虚线是在训练集上的错误率，可以看到，改进后的宽网络无论在测试集上还是在训练集上都有更低的错误率。</p>
+<p>下图是不同宽度的模型之间纵向比较，同深度下，随着宽度增加，准确率增加。深度为22层，宽度为原始8倍的模型比深度为40层的同宽的模型准确率还要高<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20181217193750658.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzYyNDUzOA==,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3dlaXhpbl80MzYyNDUzOApx;"  alt="在这里插入图片描述" />
+      <br />
+我们可以得到如下结论：</p>
+<ol>
+<li>在同深度情况下，增大宽度可以增加各种深度的残差模型的性能</li>
+<li>宽度和深度的增加就可以使性能提升。</li>
+<li>深度的增加对于模型的提升是有限的，在一定范围内，增加深度可以使模型性能提升，但是一定程度以后，在增加模型的深度，反而有更高的错误率</li>
+<li>从某种意义上来说，宽度比深度增加对于模型的提升更重要。</li>
+</ol>
+
+        <h3 id="inception-v4"   >
+          <a href="#inception-v4" class="heading-link"><i class="fas fa-link"></i></a>Inception v4</h3>
+      
+<p>这里推荐看一下我的博客<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_37555071/article/details/108214680"  target="_blank" rel="noopener">深入解读GoogLeNet网络结构</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，可以更好的理解Inception模块。作者在Inceptionv4论文中共提出了3个新的网络：Inceptionv4、Inception-ResNetv1、Inception-ResNetv2，并拿这三个网络加上Inceptionv3一起进行比较。</p>
+<p>作者认为，<strong>对于训练非常深的卷积模型，残差连接本质上是必需的</strong>。但似乎发现并<strong>不支持这种观点</strong>，至少对于图像识别来说是的。但是，它可能需要更多的测试数据和更深的模型<strong>来了解残差连接提供的有益方面的真实程度</strong>。在实验部分，作者证明了<strong>在不利用残差连接的情况下训练非常深的网络并不是很困难</strong>。然而，<strong>使用残差连接似乎大大提高了训练速度</strong>，这仅仅是它们使用的一个很好的论据。也就是说<strong>Residual connection并不是必要条件，只是使用了Residual connection会加快训练速度。</strong></p>
+<p>我们直接来看Inception-ResNet的网络结构吧（下图）。值得注意的是，Inception-ResNetv1计算代价跟Inception-v3大致相同，Inception-ResNetv2的计算代价跟Inception-v4网络基本相同。</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdn.net/20180613075024302?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTM4NDExOTY=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70#pic_center"  style="width: /font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMApx;"  alt="在这里插入图片描述" />
+      <br />
+这里其他模块不介绍了，现在只重点关注Inception的ResNet模块部分。</p>
+<p>Inception-ResNet-v1和Inception-ResNet-v2对应的Inception-resnet-A模块为：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828173646805.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+如上面的图片所示，改进主要有两点。1. 将residual模块加入inception，2. 将各分支的输出通过聚合后通过同一个1*1的卷积层来进行通道的扩增。</p>
+<p>Inceptionv4比Inceptionv3层次更深、结构更复杂，并且IncpetionV4对于Inception块的每个网格大小进行了统一。Inception-ResNet在Inception块上加了残差连接加快训练速度。Inception-ResNet-v2的整体框架和Inception-ResNet-v1是一致的，只不过v2的计算量更加expensive些（输出的channel数量更多）。它们训练精度如下：</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828174215491.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+从上图可以看出，加了Residual模块的模型训练速度明显比正常的Inception模型快一些，而且也有稍微高一些的准确率。最后，Inception-ResNet-v2的Top-5准确率达到了3.1%，如下图所示：</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828175612572.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>想要更详细的了解Inceptionv4，可以参考这两篇博客<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_38807688/article/details/84590291"  target="_blank" rel="noopener">Inceptionv4论文详解</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span> 和 <span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/u013841196/article/details/80673688"  target="_blank" rel="noopener">卷积神经网络的网络结构——Inception V4</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h3 id="resnext"   >
+          <a href="#resnext" class="heading-link"><i class="fas fa-link"></i></a>ResNext</h3>
+      
+<p>ResNeXt基于wide residual和inception，提出了将残差模块中的所有通道分组进行汇合操作会有更好的效果。同时也给inception提出了一个简化的表示方式。</p>
+<p>简化的inception如下所示：</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828191338471.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+与原始的Inception相比，简化的Inception将不同尺寸的卷积核和池化等归一化为3*3的卷积核，并且每个分支都用 1*1 的卷积核去扩展通道后相加就得到了上面的结构，再这个基础上加上shortcut就得到了ResNext模块：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828191427486.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>ResNext包含了32个分支的基模块，每个分支一模一样。每一个框中的参数分别表示输入维度，卷积核大小，输出维度，如256,1x1,64表示当前网络层的输入为256个通道，使用1x1的卷积，输出为64个通道。ResNext通过1x1的网络层，控制通道数先进行降维，再进行升维，然后保证和ResNet模块一样，输入输出的通道数都是256。因此，可以总结如下：</p>
+<ol>
+<li>相对于Inception-Resnet，ResNext的每个分支都是相同的结构，相对于Inception，网络架构更加简洁。</li>
+<li>Inception-Resnet中的先各分支输出并concat，然后用1 * 1卷积变换深度的方式被先变换通道数后单位加的形式替代。</li>
+<li>因为每个分支的相同结构，<strong>可以提出除了深度和宽度之外的第三维度cardinality，即分支的数量</strong>。</li>
+</ol>
+<p>ResNext结构对比普通的ResNet结构，如下所示：</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/2020082818095390.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>从另外一个角度，ResNext是也可以看做一个增加了分组的残差模块，对于上图的ResNet结构的第一个卷积模块，输入为256维，输出为64维。右侧包含了32个同样的支路，每一个支路的输入为256维，输出为4维。不过两者的参数量是相当的，如下所示：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828191955481.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p><strong>类比Wide Residual的配置图，二者一个是改变了卷积核的倍数，一个增加了分组，但都是在残差模块做工作。</strong> 不同深度、不同宽度、不同分组的网络对比如下：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200828192913658.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+可以看到，相对于100层的残差网络，用深度，宽度，和cardinality三种方式增大了两倍的复杂度，相同复杂度下，<strong>分组更多即C更大的模型性能更好，这说明cardinality是一个比深度和宽度更加有效的维度</strong>。而且，ResNext的计算速度更快，因为ResNext的结构本来就非常适合硬件并行处理。</p>
+
+        <h2 id="resnet18的实现"   >
+          <a href="#resnet18的实现" class="heading-link"><i class="fas fa-link"></i></a>ResNet18的实现</h2>
+      
+<p>残差块的实现如下。它可以设定输出通道数、是否使用额外的 1×1 卷积层来修改通道数以及卷积层的步幅。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">from</span> torch <span class="keyword">import</span> nn, optim</span><br><span class="line"><span class="keyword">import</span> torch.nn.functional <span class="keyword">as</span> F</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Residual</span><span class="params">(nn.Module)</span>:</span>  </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, in_channels, out_channels, use_1x1conv=False, stride=<span class="number">1</span>)</span>:</span></span><br><span class="line">        super(Residual, self).__init__()</span><br><span class="line">        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>, stride=stride)</span><br><span class="line">        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=<span class="number">3</span>, padding=<span class="number">1</span>)</span><br><span class="line">        <span class="comment"># 1x1conv来升维</span></span><br><span class="line">        <span class="keyword">if</span> use_1x1conv:</span><br><span class="line">            self.conv3 = nn.Conv2d(in_channels, out_channels, kernel_size=<span class="number">1</span>, stride=stride)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            self.conv3 = <span class="literal">None</span></span><br><span class="line">        self.bn1 = nn.BatchNorm2d(out_channels)</span><br><span class="line">        self.bn2 = nn.BatchNorm2d(out_channels)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, X)</span>:</span></span><br><span class="line">        Y = F.relu(self.bn1(self.conv1(X)))</span><br><span class="line">        Y = self.bn2(self.conv2(Y))</span><br><span class="line">        <span class="comment"># 1x1conv对浅层输入的X升维</span></span><br><span class="line">        <span class="keyword">if</span> self.conv3:</span><br><span class="line">            X = self.conv3(X)</span><br><span class="line">        <span class="keyword">return</span> F.relu(Y + X)</span><br></pre></td></tr></table></div></figure>
+<p>下面我们来查看输入和输出形状一致的情况：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">blk = Residual(<span class="number">3</span>, <span class="number">3</span>)</span><br><span class="line">X = torch.rand((<span class="number">4</span>, <span class="number">3</span>, <span class="number">6</span>, <span class="number">6</span>))</span><br><span class="line">blk(X).shape <span class="comment"># torch.Size([4, 3, 6, 6])</span></span><br></pre></td></tr></table></div></figure>
+<p>我们也可以在增加输出通道数的同时减半输出的高和宽。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">X = torch.rand((<span class="number">4</span>, <span class="number">3</span>, <span class="number">6</span>, <span class="number">6</span>))</span><br><span class="line">blk = Residual(<span class="number">3</span>, <span class="number">6</span>, use_1x1conv=<span class="literal">True</span>, stride=<span class="number">2</span>)</span><br><span class="line">blk(X).shape <span class="comment"># torch.Size([4, 6, 3, 3])</span></span><br></pre></td></tr></table></div></figure>
+<p>ResNet的<strong>前两层</strong>跟之前介绍的GoogLeNet中的一样：在输出通道数为64、步幅为2的7×7卷积层后接步幅为2的3×3的最大池化层。不同之处在于ResNet每个卷积层后增加的批量归一化层。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">resnet_18 = nn.Sequential(</span><br><span class="line">        nn.Conv2d(<span class="number">1</span>, <span class="number">64</span>, kernel_size=<span class="number">7</span>, stride=<span class="number">2</span>, padding=<span class="number">3</span>),</span><br><span class="line">        nn.BatchNorm2d(<span class="number">64</span>), </span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.MaxPool2d(kernel_size=<span class="number">3</span>, stride=<span class="number">2</span>, padding=<span class="number">1</span>))</span><br></pre></td></tr></table></div></figure>
+<p>GoogLeNet在后面接了4个由Inception块组成的模块。<strong>ResNet则使用4个由残差块组成的模块，每个模块使用若干个同样输出通道数的残差块。第一个模块的通道数同输入通道数一致</strong>。由于之前已经使用了步幅为2的最大池化层，所以无须减小高和宽。之后的每个模块在<strong>第一个残差块</strong>里将上一个模块的通道数翻倍，并将高和宽减半。</p>
+<p>下面我们来实现这个模块。注意，这里对第一个模块做了特别处理。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">resnet_block</span><span class="params">(in_channels, out_channels, num_residuals, first_block=False)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> first_block:</span><br><span class="line">        <span class="keyword">assert</span> in_channels == out_channels <span class="comment"># 第一个模块的通道数同输入通道数一致</span></span><br><span class="line">    blk = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(num_residuals):</span><br><span class="line">        <span class="keyword">if</span> i == <span class="number">0</span> <span class="keyword">and</span> <span class="keyword">not</span> first_block:</span><br><span class="line">            blk.append(Residual(in_channels, out_channels, use_1x1conv=<span class="literal">True</span>, stride=<span class="number">2</span>))</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            blk.append(Residual(out_channels, out_channels))</span><br><span class="line">    <span class="comment"># 解包迭代器，从而传入多个模块</span></span><br><span class="line">    <span class="keyword">return</span> nn.Sequential(*blk)</span><br></pre></td></tr></table></div></figure>
+<p>接着我们为ResNet加入所有残差块。这里每个模块使用两个残差块。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">resnet_18.add_module(<span class="string">"resnet_block1"</span>, resnet_block(<span class="number">64</span>, <span class="number">64</span>, <span class="number">2</span>, first_block=<span class="literal">True</span>))</span><br><span class="line">resnet_18.add_module(<span class="string">"resnet_block2"</span>, resnet_block(<span class="number">64</span>, <span class="number">128</span>, <span class="number">2</span>))</span><br><span class="line">resnet_18.add_module(<span class="string">"resnet_block3"</span>, resnet_block(<span class="number">128</span>, <span class="number">256</span>, <span class="number">2</span>))</span><br><span class="line">resnet_18.add_module(<span class="string">"resnet_block4"</span>, resnet_block(<span class="number">256</span>, <span class="number">512</span>, <span class="number">2</span>))</span><br></pre></td></tr></table></div></figure>
+<p>最后，与GoogLeNet一样，加入全局平均池化层后接上全连接层输出。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">GlobalAvgPool2d</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="comment"># 全局平均池化层可通过将池化窗口形状设置成输入的高和宽实现</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(GlobalAvgPool2d, self).__init__()</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> F.avg_pool2d(x, kernel_size=x.size()[<span class="number">2</span>:])</span><br><span class="line">    </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FlattenLayer</span><span class="params">(torch.nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(FlattenLayer, self).__init__()</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span> <span class="comment"># x shape: (batch, *, *, ...)</span></span><br><span class="line">        <span class="keyword">return</span> x.view(x.shape[<span class="number">0</span>], <span class="number">-1</span>)</span><br><span class="line">        </span><br><span class="line">resnet_18.add_module(<span class="string">"global_avg_pool"</span>, GlobalAvgPool2d()) <span class="comment"># GlobalAvgPool2d的输出: (Batch, 512, 1, 1)</span></span><br><span class="line">resnet_18.add_module(<span class="string">"fc"</span>, nn.Sequential(FlattenLayer(), nn.Linear(<span class="number">512</span>, <span class="number">10</span>)))</span><br></pre></td></tr></table></div></figure>
+<p>这里每个模块里有4个卷积层（不计算1×1卷积层），加上最开始的卷积层和最后的全连接层，共计18层。这个模型通常也被称为ResNet-18。通过配置不同的通道数和模块里的残差块数可以得到不同的ResNet模型，例如更深的含152层的ResNet-152。虽然ResNet的主体架构跟GoogLeNet的类似，但ResNet结构更简单，修改也更方便。这些因素都导致了ResNet迅速被广泛使用。</p>
+<p>我们来观察一下输入形状在ResNet不同模块之间的变化。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">X = torch.rand((<span class="number">1</span>, <span class="number">1</span>, <span class="number">224</span>, <span class="number">224</span>))</span><br><span class="line"><span class="keyword">for</span> name, layer <span class="keyword">in</span> resnet_18.named_children():</span><br><span class="line">    X = layer(X)</span><br><span class="line">    print(name, <span class="string">' output shape:\t'</span>, X.shape)</span><br><span class="line"><span class="string">"""</span></span><br><span class="line"><span class="string"># 前面四层是 7x7conv、BN、nn.ReLU、MaxPool2d</span></span><br><span class="line"><span class="string"># 输出</span></span><br><span class="line"><span class="string">0  output shape:	 torch.Size([1, 64, 112, 112])</span></span><br><span class="line"><span class="string">1  output shape:	 torch.Size([1, 64, 112, 112])</span></span><br><span class="line"><span class="string">2  output shape:	 torch.Size([1, 64, 112, 112])</span></span><br><span class="line"><span class="string">3  output shape:	 torch.Size([1, 64, 56, 56])</span></span><br><span class="line"><span class="string">resnet_block1  output shape:	 torch.Size([1, 64, 56, 56])</span></span><br><span class="line"><span class="string">resnet_block2  output shape:	 torch.Size([1, 128, 28, 28])</span></span><br><span class="line"><span class="string">resnet_block3  output shape:	 torch.Size([1, 256, 14, 14])</span></span><br><span class="line"><span class="string">resnet_block4  output shape:	 torch.Size([1, 512, 7, 7])</span></span><br><span class="line"><span class="string">global_avg_pool  output shape:	 torch.Size([1, 512, 1, 1])</span></span><br><span class="line"><span class="string">fc  output shape:	 torch.Size([1, 10])</span></span><br><span class="line"><span class="string">"""</span></span><br></pre></td></tr></table></div></figure>
+<p>另外，本文用到的论文我上传到百度云上了，有需要的请自提，链接：<span class="exturl"><a class="exturl__link"   href="https://pan.baidu.com/s/1cParM5EEOz3QOQgjAZt9jA"  target="_blank" rel="noopener">https://pan.baidu.com/s/1cParM5EEOz3QOQgjAZt9jA</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span> 提取码：ngvb 。包含如下三个论文：</p>
+<ul>
+<li>Identity Mappings in Deep Residual Networks</li>
+<li>Wide Residual Networks</li>
+<li>AggregatedResidualTransformationsforDeepNeuralNetworks</li>
+</ul>
+<p>【参考文档】<br />
+<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/weixin_43624538/article/details/85049699"  target="_blank" rel="noopener">深度学习网络篇——ResNet</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span><br />
+<span class="exturl"><a class="exturl__link"   href="https://mp.weixin.qq.com/s?__biz=MzA3NDIyMjM1NA==&amp;mid=2649029645&amp;idx=1&amp;sn=75b494ec181fee3e8756bb0fa119e7ce&amp;chksm=87134270b064cb66aea66e73b4a6dc283d5750cfa9d331015424f075ba117e38f857d2f25d07&amp;mpshare=1&amp;scene=1&amp;srcid=0826sj1X99iidGol2vOYXoyL&amp;sharer_sharetime=1598412745177&amp;sharer_shareid=18383980e942ee6dfd94ea4b7b61fcbe&amp;key=92bd8fadcb6a4858933403615d2b1a972f5118c4a09c232aef7f191fe77f564ecd8fcee532326e67d272b0451ccad5d44c0586df1184bd3170c632e98c86f33bc664bca4603775cab14cca0fe4739d5170a3f0b4fa71418da0597ca52322b9008de5cda1b2746ea23f0d96b8a0720c48fc50cf26ae7c16982bfd6f2aad9addf8&amp;ascene=1&amp;uin=MjA2Nzc1NzU0Mg==&amp;devicetype=Windows%2010%20x64&amp;version=6209007b&amp;lang=zh_CN&amp;exportkey=AS/my8QJbD1iVlhaLq6mPl4=&amp;pass_ticket=YcCsKQUoka0nj/P%2b0pwrfYVeXAi9wdtnOBln8h11m8ftsr1WLiJ5a6KMsypN6fsD"  target="_blank" rel="noopener">resnet中的残差连接，你确定真的看懂了？</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span><br />
+<span class="exturl"><a class="exturl__link"   href="https://tangshusen.me/Dive-into-DL-PyTorch/#/chapter05_CNN/5.11_resnet"  target="_blank" rel="noopener">残差网络（ResNet）</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span><br />
+<span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/alanma/p/6877166.html"  target="_blank" rel="noopener">残差网络ResNet笔记</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span><br />
+<span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/yanshw/p/10576354.html"  target="_blank" rel="noopener">CNN 经典网络之-ResNet</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span><br />
+深度学习之Pytorch实战计算机视觉-唐进民著</p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2020/11/24/223553/">https://wxler.gitee.io/2020/11/24/223553/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/ResNet/">ResNet</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2020/11/24/223828/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">RuntimeError CUDA out of memory（已解决）</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2020/11/24/223407/"><span class="paginator-prev__text">深入解读GoogLeNet网络结构（附代码实现）</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">
+          前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#模型退化"><span class="toc-number">2.</span> <span class="toc-text">
+          模型退化</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#残差结构"><span class="toc-number">3.</span> <span class="toc-text">
+          残差结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#resnet网络结构"><span class="toc-number">4.</span> <span class="toc-text">
+          ResNet网络结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#pre-activation-resnet"><span class="toc-number">5.</span> <span class="toc-text">
+          Pre Activation ResNet</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#其它的resnet变体"><span class="toc-number">6.</span> <span class="toc-text">
+          其它的ResNet变体</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#wide-resnet"><span class="toc-number">6.1.</span> <span class="toc-text">
+          Wide ResNet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#inception-v4"><span class="toc-number">6.2.</span> <span class="toc-text">
+          Inception v4</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#resnext"><span class="toc-number">6.3.</span> <span class="toc-text">
+          ResNext</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#resnet18的实现"><span class="toc-number">7.</span> <span class="toc-text">
+          ResNet18的实现</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">53</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">12</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">27</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

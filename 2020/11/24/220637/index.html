@@ -1,0 +1,438 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="Python 中，对象相等性比较相关关键字包括is、in，比较运算符有 &#x3D;&#x3D;  is判断两个对象的标识符是否相等 in用于成员检测 &#x3D;&#x3D;用于判断值或内容是否相等，默认是基于两个对象的标识号比较  也就是说，如果 a is b 为 True 且如果按照默认行为，意味着 a&#x3D;&#x3D;b 也为 True">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python中is、in、&#x3D;&#x3D;之间的区别">
+<meta property="og:url" content="https://wxler.gitee.io/2020/11/24/220637/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="Python 中，对象相等性比较相关关键字包括is、in，比较运算符有 &#x3D;&#x3D;  is判断两个对象的标识符是否相等 in用于成员检测 &#x3D;&#x3D;用于判断值或内容是否相等，默认是基于两个对象的标识号比较  也就是说，如果 a is b 为 True 且如果按照默认行为，意味着 a&#x3D;&#x3D;b 也为 True">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-11-24T14:06:37.000Z">
+<meta property="article:modified_time" content="2020-11-24T14:07:43.691Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Python中is、in、==之间的区别 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2020/11/24/220637/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Python中is、in、==之间的区别</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">1.3k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">10分</span></span></div></header><div class="post-body"><p>Python 中，对象相等性比较相关关键字包括<code>is、in</code>，比较运算符有 <code>==</code></p>
+<ul>
+<li><code>is</code>判断两个对象的标识符是否相等</li>
+<li><code>in</code>用于成员检测</li>
+<li><code>==</code>用于判断值或内容是否相等，默认是基于两个对象的标识号比较</li>
+</ul>
+<p>也就是说，如果 <code>a is b</code> 为 True 且如果按照默认行为，意味着 <code>a==b</code> 也为 True</p>
+<a id="more"></a>
+<p>Python 中，对象相等性比较相关关键字包括<code>is、in</code>，比较运算符有 <code>==</code></p>
+<ul>
+<li><code>is</code>判断两个对象的标识符是否相等</li>
+<li><code>in</code>用于成员检测</li>
+<li><code>==</code>用于判断值或内容是否相等，默认是基于两个对象的标识号比较</li>
+</ul>
+<p>也就是说，如果 <code>a is b</code> 为 True 且如果按照默认行为，意味着 <code>a==b</code> 也为 True</p>
+
+        <h2 id="is-判断标识号是否相等"   >
+          <a href="#is-判断标识号是否相等" class="heading-link"><i class="fas fa-link"></i></a>is 判断标识号是否相等</h2>
+      
+<p><code>is</code>是Python身份运算符，用于判断两个对象的标识符是否相等(python中万物皆对象)，实质是<strong>用于比较两个对象是否指向同一存储单元</strong>，以下有几点<code>is</code>的使用方法：</p>
+<p>(1) Python 中使用 <code>id()</code> 函数获取对象的标识号，可以理解为内存地址</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">49</span>]: a = <span class="number">1</span></span><br><span class="line">In [<span class="number">50</span>]: b = <span class="number">1</span></span><br><span class="line">In [<span class="number">51</span>]: id(a)</span><br><span class="line">Out[<span class="number">51</span>]: <span class="number">140708412432784</span></span><br><span class="line">In [<span class="number">52</span>]: id(b)</span><br><span class="line">Out[<span class="number">52</span>]: <span class="number">140708412432784</span></span><br><span class="line">In [<span class="number">53</span>]: a <span class="keyword">is</span> b</span><br><span class="line">Out[<span class="number">53</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">54</span>]: s1 = <span class="string">'abc'</span></span><br><span class="line">In [<span class="number">55</span>]: s2 = <span class="string">'abc'</span></span><br><span class="line">In [<span class="number">56</span>]: id(s1)</span><br><span class="line">Out[<span class="number">56</span>]: <span class="number">1554773534064</span></span><br><span class="line">In [<span class="number">57</span>]: id(s2)</span><br><span class="line">Out[<span class="number">57</span>]: <span class="number">1554773534064</span></span><br><span class="line">In [<span class="number">58</span>]: s1 <span class="keyword">is</span> s2</span><br><span class="line">Out[<span class="number">58</span>]: <span class="literal">True</span></span><br></pre></td></tr></table></div></figure>
+<p>(2) 由于创建的两个列表实例位于不同的内存地址，所以它们的标识号不等，即便对于两个空列表实例也一样</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">77</span>]: a = [<span class="number">1</span>,<span class="number">2</span>]</span><br><span class="line">In [<span class="number">78</span>]: b = [<span class="number">1</span>,<span class="number">2</span>]</span><br><span class="line">In [<span class="number">79</span>]: id(a)</span><br><span class="line">Out[<span class="number">79</span>]: <span class="number">1552668915144</span></span><br><span class="line">In [<span class="number">80</span>]: id(b)</span><br><span class="line">Out[<span class="number">80</span>]: <span class="number">1552668915208</span></span><br><span class="line">In [<span class="number">81</span>]: a <span class="keyword">is</span> b</span><br><span class="line">Out[<span class="number">81</span>]: <span class="literal">False</span></span><br><span class="line">In [<span class="number">83</span>]: a <span class="keyword">is</span> <span class="keyword">not</span> b</span><br><span class="line">Out[<span class="number">83</span>]: <span class="literal">True</span></span><br><span class="line">In [<span class="number">84</span>]: <span class="keyword">not</span>  a <span class="keyword">is</span> b</span><br><span class="line">Out[<span class="number">84</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">85</span>]: a = []</span><br><span class="line">In [<span class="number">86</span>]: b = []</span><br><span class="line">In [<span class="number">87</span>]: id(a)</span><br><span class="line">Out[<span class="number">87</span>]: <span class="number">1552668699208</span></span><br><span class="line">In [<span class="number">88</span>]: id(b)</span><br><span class="line">Out[<span class="number">88</span>]: <span class="number">1552669048456</span></span><br><span class="line">In [<span class="number">89</span>]: a <span class="keyword">is</span> b</span><br><span class="line">Out[<span class="number">89</span>]: <span class="literal">False</span></span><br></pre></td></tr></table></div></figure>
+<p>(3) 对于序列型、字典型、集合型对象，一个对象实例指向另一个对象实例，is 比较才返回真值。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">95</span>]: a = [<span class="number">1</span>,<span class="number">2</span>]</span><br><span class="line">In [<span class="number">96</span>]: b = a</span><br><span class="line">In [<span class="number">97</span>]: a <span class="keyword">is</span> b</span><br><span class="line">Out[<span class="number">97</span>]: <span class="literal">True</span></span><br></pre></td></tr></table></div></figure>
+<p>(4) 需要注意的是，Python 解释器，对位于区间 <code>[-5,256]</code> 内的小整数，会进行缓存，不在该范围内的不会缓存，因此会出现如下现象：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">90</span>]: a = <span class="number">12345</span></span><br><span class="line">In [<span class="number">91</span>]: b = <span class="number">12345</span></span><br><span class="line">In [<span class="number">92</span>]: id(a)</span><br><span class="line">Out[<span class="number">92</span>]: <span class="number">1552668913040</span></span><br><span class="line">In [<span class="number">93</span>]: id(b)</span><br><span class="line">Out[<span class="number">93</span>]: <span class="number">1552668911312</span></span><br><span class="line">In [<span class="number">94</span>]: a <span class="keyword">is</span> b</span><br><span class="line">Out[<span class="number">94</span>]: <span class="literal">False</span></span><br></pre></td></tr></table></div></figure>
+<p>(5) Python 中 None 对象是一个单例类的实例，具有唯一的标识号，在判断某个对象是否为 None 时，最便捷的做法：<code>variable is None</code>，如下：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">98</span>]: id(<span class="literal">None</span>)</span><br><span class="line">Out[<span class="number">98</span>]: <span class="number">140708411956448</span></span><br><span class="line">In [<span class="number">99</span>]: a = <span class="literal">None</span></span><br><span class="line">In [<span class="number">100</span>]: a <span class="keyword">is</span> <span class="literal">None</span></span><br><span class="line">Out[<span class="number">100</span>]: <span class="literal">True</span></span><br><span class="line">In [<span class="number">101</span>]: id(a)</span><br><span class="line">Out[<span class="number">101</span>]: <span class="number">140708411956448</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="in-用于成员检测"   >
+          <a href="#in-用于成员检测" class="heading-link"><i class="fas fa-link"></i></a>in 用于成员检测</h2>
+      
+<ul>
+<li>如果元素 i 是 s 的成员，则 <code>i in s</code> 为 True；</li>
+<li>若不是 s 的成员，则返回 False，也就是<code>i not in s</code> 为 True</li>
+</ul>
+<p>in 是判断成员是否属于某个序列，in 后即可以跟字符串，也可以跟列表,实际上各种集合类型都可以。</p>
+<p>（1） 对于字符串类型，<code>i in s</code> 为 True，意味着 i 是 s 的子串。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">104</span>]: <span class="string">'234'</span> <span class="keyword">in</span> <span class="string">'12345'</span></span><br><span class="line">Out[<span class="number">104</span>]: <span class="literal">True</span></span><br><span class="line"><span class="comment"># 当然。也可以用字符串的find()方法判断</span></span><br><span class="line">In [<span class="number">105</span>]: <span class="string">'12345'</span>.find(<span class="string">'234'</span>)</span><br><span class="line">Out[<span class="number">105</span>]: <span class="number">1</span></span><br></pre></td></tr></table></div></figure>
+<p>（2）列表中任何数据类型的元素都可以用in判断，同理，元祖和集合也可以这样做</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">106</span>]: [<span class="number">1</span>,<span class="number">2</span>] <span class="keyword">in</span> [[<span class="number">1</span>,<span class="number">2</span>],<span class="number">3</span>,<span class="string">'abc'</span>]</span><br><span class="line">Out[<span class="number">106</span>]: <span class="literal">True</span></span><br><span class="line">In [<span class="number">107</span>]: lst = [[<span class="number">1</span>,<span class="number">2</span>],<span class="number">3</span>,<span class="string">'abc'</span>]</span><br><span class="line">In [<span class="number">109</span>]: [<span class="number">1</span>,<span class="number">2</span>] <span class="keyword">in</span> lst</span><br><span class="line">Out[<span class="number">109</span>]: <span class="literal">True</span></span><br><span class="line">In [<span class="number">110</span>]: <span class="string">'abc'</span> <span class="keyword">in</span> lst</span><br><span class="line">Out[<span class="number">110</span>]: <span class="literal">True</span></span><br></pre></td></tr></table></div></figure>
+<p>（3）对于字典类型，in 操作判断 i 是否是字典的键，但不能直接判断值，如果要判断一个值是否在字典中，可以用字典的values()方法</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">111</span>]: dct = &#123;<span class="string">'a'</span>:<span class="number">12</span>,<span class="string">'b'</span>:<span class="number">35</span>,<span class="string">'key'</span>:<span class="string">'abc'</span>&#125;</span><br><span class="line">In [<span class="number">112</span>]: <span class="string">'a'</span> <span class="keyword">in</span> dct</span><br><span class="line">Out[<span class="number">112</span>]: <span class="literal">True</span></span><br><span class="line">In [<span class="number">113</span>]: <span class="string">'key'</span> <span class="keyword">in</span> dct</span><br><span class="line">Out[<span class="number">113</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">114</span>]: <span class="number">12</span> <span class="keyword">in</span> dct</span><br><span class="line">Out[<span class="number">114</span>]: <span class="literal">False</span></span><br><span class="line">In [<span class="number">115</span>]: <span class="number">12</span> <span class="keyword">in</span> dct.values()</span><br><span class="line">Out[<span class="number">115</span>]: <span class="literal">True</span></span><br><span class="line">In [<span class="number">116</span>]: <span class="string">'abc'</span> <span class="keyword">in</span> dct.values()</span><br><span class="line">Out[<span class="number">116</span>]: <span class="literal">True</span></span><br></pre></td></tr></table></div></figure>
+<p>（4）对于自定义类型，判断是否位于序列类型中，需要重写序列类型的 魔法方法 <strong>contains</strong>。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,value)</span>:</span></span><br><span class="line">        self.value = value</span><br><span class="line">        </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Nodes</span><span class="params">(list)</span>:</span></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">__contains__</span><span class="params">(self,node)</span>:</span></span><br><span class="line">            <span class="keyword">for</span> s <span class="keyword">in</span> self:</span><br><span class="line">                <span class="keyword">if</span> s.value == node.value:</span><br><span class="line">                    <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line">            <span class="keyword">return</span> <span class="literal">False</span>    </span><br><span class="line"></span><br><span class="line">n1 = Node(<span class="string">'linear'</span>)</span><br><span class="line">n2 = Node(<span class="string">'sigmoid'</span>)</span><br><span class="line">a = Nodes()</span><br><span class="line">a.extend([n1,n2])</span><br><span class="line">n3 = Node(<span class="string">'linear'</span>)</span><br><span class="line">print(n3 <span class="keyword">in</span> a) <span class="comment"># True</span></span><br><span class="line">n4 = Node(<span class="string">'tanh'</span>)</span><br><span class="line">print(n4 <span class="keyword">in</span> a) <span class="comment"># False</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="判断值是否相等"   >
+          <a href="#判断值是否相等" class="heading-link"><i class="fas fa-link"></i></a>== 判断值是否相等</h2>
+      
+<p>（1） <strong>对于数值型、字符串、列表、字典、集合，默认只要元素值相等，== 比较结果是 True</strong></p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">117</span>]: str1 = <span class="string">'abc'</span></span><br><span class="line">In [<span class="number">118</span>]: str2 = <span class="string">'abc'</span></span><br><span class="line">In [<span class="number">119</span>]: str1 == str2</span><br><span class="line">Out[<span class="number">119</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">120</span>]: a = [<span class="number">1</span>,<span class="number">2</span>]</span><br><span class="line">In [<span class="number">123</span>]: b = [<span class="number">1</span>,<span class="number">2</span>]</span><br><span class="line">In [<span class="number">124</span>]: a == b</span><br><span class="line">Out[<span class="number">124</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">125</span>]: a = [[<span class="number">1</span>,<span class="number">2</span>],<span class="number">3</span>]</span><br><span class="line">In [<span class="number">126</span>]: b = [[<span class="number">1</span>,<span class="number">2</span>],<span class="number">3</span>]</span><br><span class="line">In [<span class="number">127</span>]: a == b</span><br><span class="line">Out[<span class="number">127</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">128</span>]: a = &#123;<span class="string">'a'</span>:<span class="number">1</span>,<span class="string">'b'</span>:<span class="number">2</span>&#125;</span><br><span class="line">In [<span class="number">129</span>]: b = &#123;<span class="string">'a'</span>:<span class="number">1</span>,<span class="string">'b'</span>:<span class="number">2</span>&#125;</span><br><span class="line">In [<span class="number">130</span>]: a == b</span><br><span class="line">Out[<span class="number">130</span>]: <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">131</span>]: a = &#123;<span class="number">1</span>,<span class="number">2</span>&#125;</span><br><span class="line">In [<span class="number">132</span>]: b = &#123;<span class="number">1</span>,<span class="number">2</span>&#125;</span><br><span class="line">In [<span class="number">133</span>]: a == b</span><br><span class="line">Out[<span class="number">133</span>]: <span class="literal">True</span></span><br></pre></td></tr></table></div></figure>
+<p>（2）对于自定义类型，当所有属性取值完全相同的两个实例，判断 == 时，返回 False。如果需要用<code>==</code>判断两个对象是否相等，需要重写方法 <code>__eq__</code>，使用<code>__dict__</code>获取实例的所有属性。</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Node</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self,value)</span>:</span></span><br><span class="line">        self.value = value</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__eq__</span><span class="params">(self,node)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.__dict__ == node.__dict__</span><br><span class="line">    </span><br><span class="line">n1 = Node(<span class="string">'linear'</span>)</span><br><span class="line">n2 = Node(<span class="string">'sigmoid'</span>)</span><br><span class="line">n3 = Node(<span class="string">'linear'</span>)</span><br><span class="line"></span><br><span class="line">print(n1.__dict__) <span class="comment"># &#123;'value': 'linear'&#125;</span></span><br><span class="line">print(n1 == n2) <span class="comment"># False</span></span><br><span class="line">print(n1 == n3) <span class="comment"># True</span></span><br></pre></td></tr></table></div></figure>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2020/11/24/220637/">https://wxler.gitee.io/2020/11/24/220637/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/python/">python</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2020/11/24/220821/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Python入门之运算符与基本数据类型详解</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2020/11/24/220508/"><span class="paginator-prev__text">python中print函数的所有输出形式</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#is-判断标识号是否相等"><span class="toc-number">1.</span> <span class="toc-text">
+          is 判断标识号是否相等</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#in-用于成员检测"><span class="toc-number">2.</span> <span class="toc-text">
+          in 用于成员检测</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#判断值是否相等"><span class="toc-number">3.</span> <span class="toc-text">
+          &#x3D;&#x3D; 判断值是否相等</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">53</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">12</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">27</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

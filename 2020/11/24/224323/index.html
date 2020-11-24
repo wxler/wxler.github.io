@@ -1,0 +1,592 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="本文是转载文章，转载自深入剖析：为什么MobileNet及其变体（如ShuffleNet）会变快？，删除了文中冗余的部分，加入许多自己的理解，有些部分也通过pytorch进行了实现，并通过引入具体的计算更清晰的反映出轻量级神经网络的本质。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="为什么MobileNet及其变体（如ShuffleNet）会变快？">
+<meta property="og:url" content="https://wxler.gitee.io/2020/11/24/224323/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="本文是转载文章，转载自深入剖析：为什么MobileNet及其变体（如ShuffleNet）会变快？，删除了文中冗余的部分，加入许多自己的理解，有些部分也通过pytorch进行了实现，并通过引入具体的计算更清晰的反映出轻量级神经网络的本质。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200903215104929.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200903215447602.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200904092416818.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200731150746946.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200903220728682.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200903221031750.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200903222640830.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020090322265421.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200903222726588.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200904093441110.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200904111231327.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200904111255450.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200904095643782.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200904095826862.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020090410015854.png#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200904102338403.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200904112511274.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200904112551109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20200905112522639.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center">
+<meta property="article:published_time" content="2020-11-24T14:43:23.000Z">
+<meta property="article:modified_time" content="2020-11-24T14:44:22.582Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="MobileNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20200903215104929.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>为什么MobileNet及其变体（如ShuffleNet）会变快？ | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2020/11/24/224323/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">为什么MobileNet及其变体（如ShuffleNet）会变快？</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2020-11-24</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">2.9k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">17分</span></span></div></header><div class="post-body"><blockquote>
+<p>本文是转载文章，转载自<span class="exturl"><a class="exturl__link"   href="https://mp.weixin.qq.com/s?__biz=MzI5MDUyMDIxNA==&amp;mid=2247506133&amp;idx=2&amp;sn=1082d154907cedb3ebea028df3787d8e&amp;chksm=ec1c352cdb6bbc3af142fe776b2c9ac73d831d946eda8cc45c6abf9cdd6c4abaef82eeb0c250&amp;mpshare=1&amp;scene=1&amp;srcid=0828Av9UvPz9AbUBnyi3wnAc&amp;sharer_sharetime=1599125590114&amp;sharer_shareid=18383980e942ee6dfd94ea4b7b61fcbe&amp;key=c45d238be947117fcf9d09c202668aad75e244db66c43fc3a6c9ec8bcc9fc50c2cea193203b229ce4e107aea09fe33bfdf0d8528a563618300689838ca76ab39f9ee3393d565a0a091b9713ef47b7273dd8c99b377abc7d00d8cbc662ebffd68d8fafa2b606af324cd1df8fed9a07a6d523be8a08c4323a195123680a9aa8a75&amp;ascene=1&amp;uin=MjA2Nzc1NzU0Mg==&amp;devicetype=Windows%2010%20x64&amp;version=6209007b&amp;lang=zh_CN&amp;exportkey=AcmLpoaSOHY8/ugr1Vi8OdE=&amp;pass_ticket=3cYbF3kWoNM5K54gjR4tlKnJ8nzIvZSHzY/x9JiBuxWbw3Pu9NJ1BcsIB%2byab7wA&amp;wx_header=0"  target="_blank" rel="noopener">深入剖析：为什么MobileNet及其变体（如ShuffleNet）会变快？</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，<strong>删除了文中冗余的部分，加入许多自己的理解，有些部分也通过pytorch进行了实现，并通过引入具体的计算更清晰的反映出轻量级神经网络的本质</strong>。</p>
+</blockquote>
+<a id="more"></a>
+
+        <h2 id="前言"   >
+          <a href="#前言" class="heading-link"><i class="fas fa-link"></i></a>前言</h2>
+      
+<p>从MobileNet等CNN模型的组成部分出发，概述了<strong>高效CNN模型</strong>（如MobileNet及其变体）中<strong>使用的组成部分</strong>（building blocks），并解释了<strong>它们如此高效的原因</strong>。特别地，我提供了关于如何在<strong>空间和通道域</strong>进行卷积的直观说明。</p>
+
+        <h2 id="高效cnn模型的组成部分"   >
+          <a href="#高效cnn模型的组成部分" class="heading-link"><i class="fas fa-link"></i></a>高效CNN模型的组成部分</h2>
+      
+<p>在解释具体的高效CNN模型之前，我们先检查一下高效CNN模型中使用的组成部分的计算量，看看卷积在空间和通道域中是如何进行的。<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200903215104929.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+假设 H x W 为输出feature map的空间大小，N为输入通道数，K x K为卷积核的大小，M为输出通道数，则标准卷积的计算量为 H*W*N*K*K*M 。这里重要的一点是，<strong>标准卷积的计算量与(1)输出特征图H x W的空间大小，(2)卷积核K x K的大小，(3)输入输出通道的数量N x M成正比</strong>。当在空间域和通道域进行卷积时，需要上述计算量。通过分解这个卷积，可以加速 CNNs，如上图所示。</p>
+
+        <h2 id="卷积"   >
+          <a href="#卷积" class="heading-link"><i class="fas fa-link"></i></a>卷积</h2>
+      
+<p>首先，我提供了一个直观的解释，关于空间和通道域的卷积是如何对进行标准卷积的，它的计算量是H*W*N*K*K*M。</p>
+<p>这里连接输入和输出之间的线，以可视化输入和输出之间的依赖关系。直线数量大致表示空间（spatial）和通道（channel）域中卷积的计算量。<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200903215447602.png#pic_center"  alt="在这里插入图片描述" />
+      <br />
+例如，最常用的卷积——conv3x3，可以如上图所示。我们可以看到，输入和输出在<strong>空间域是局部连接的，而在通道域是全连接的</strong>。你可能看的不太明白，那我们换张图试试，下面是空间域中输入和输出的关系，可以看出空间域确实是局部连接的。<strong>空间域可以想象为，把特征图输入和输出的神经元拉平，然后进行连接，事实上，在计算机内部就是这么做的。</strong><br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200904092416818.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>下面是通道域中输入和输出的关系（隐藏红线框部分），下图输入通道是3，输出通道是1，输入的3个通道都连接在了输出的1个通道上，这也证明了通道域是全连接的。如果输出通道有多个，也能想象出来吧。<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200731150746946.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>接下来，如上所示用于改变通道数的conv1x1，或pointwise convolution。由于kernel的大小是1x1，所以这个卷积的计算量是 H*W*N*M，（H x W 为输出feature map的空间大小，N为输入通道数，M为输出通道数），计算量比conv3x3降低了1/9。<strong>这种卷积被用来“混合”通道之间的信息</strong>。<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200903220728682.png#pic_center"  alt="在这里插入图片描述" />
+      </p>
+
+        <h2 id="分组卷积grouped-convolution"   >
+          <a href="#分组卷积grouped-convolution" class="heading-link"><i class="fas fa-link"></i></a>分组卷积（Grouped Convolution）</h2>
+      
+<p>分组卷积是卷积的一种变体，将输入的feature map的<strong>通道分组</strong>，对每个分组的通道独立地进行卷积。</p>
+<p>假设 G 表示组数，分组卷积的计算量为 H*W*N*K*K*M/G，计算量变成标准卷积的1/G。<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200903221031750.png#pic_center"  alt="在这里插入图片描述" />
+      <br />
+举个例子，假如，卷积核大小为3x3，输入通道数为10，输出通道数为20，输出特征图大小为15x15，对于不分组情况下，计算量是<code>15*15*10*3*3*20=405000</code>，如果把输入的feature map的通道分为2组，即输入通道数为10分为2组，每组的输入通道数为5，每组输出通道数为10，输出的总通道数为20，则计算量为<code>15*15*5*3*3*10*2=202500</code>，可以看到计算量变成标准卷积的1/2。</p>
+<p>在conv3x3 而且 G=2的情况。我们可以看到，通道域中的连接数比标准卷积要小，说明计算量更小。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200903222640830.png#pic_center"  alt="在这里插入图片描述" />
+      <br />
+在 conv3x3，G=3的情况下，<strong>连接变得更加稀疏</strong>。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/2020090322265421.png#pic_center"  alt="在这里插入图片描述" />
+      <br />
+在 conv1x1，G=2的情况下，conv1x1也可以被分组。<strong>这种类型的卷积被用于ShuffleNet中</strong>。<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200903222726588.png#pic_center"  alt="在这里插入图片描述" />
+      </p>
+
+        <h2 id="深度卷积depthwise-convolution"   >
+          <a href="#深度卷积depthwise-convolution" class="heading-link"><i class="fas fa-link"></i></a>深度卷积（Depthwise Convolution）</h2>
+      
+<p>在<strong>深度卷积</strong>中，对每个输入通道分别进行卷积。<strong>它也可以定义为分组卷积的一种特殊情况，其中输入和输出通道数相同，G等于通道数</strong>。不得不提的是，<strong>Depthwise Convolution在通道域上把计算量降低到了极致</strong><br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200904093441110.png#pic_center"  alt="在这里插入图片描述" />
+      <br />
+如上所示，depthwise convolution 通过省略通道域中的卷积，大大降低了计算量。</p>
+
+        <h2 id="channel-shuffle"   >
+          <a href="#channel-shuffle" class="heading-link"><i class="fas fa-link"></i></a>Channel Shuffle</h2>
+      
+<p>Channel shuffle是一种操作(层)，它改变 ShuffleNet 中<strong>使用的通道的顺序</strong>。这个操作是通过张量reshape和 transpose 来实现的。</p>
+<p>假设G表示分组卷积的组数，N表示输入通道的数量，首先将输入通道的维数reshape 为(G, N ')，即G*N '=N，然后将(G, N ')转置为(N '， G)，最后将其view成与输入相同的形状。pytorch实现如下：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">channel_shuffle</span><span class="params">(x, groups)</span>:</span></span><br><span class="line">    batchsize, num_channels, height, width = x.data.size()</span><br><span class="line"> </span><br><span class="line">    channels_per_group = num_channels // groups</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># reshape</span></span><br><span class="line">    x = x.view(batchsize, groups,</span><br><span class="line">               channels_per_group, height, width)</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># transpose</span></span><br><span class="line">    <span class="comment"># - contiguous() required if transpose() is used before view().</span></span><br><span class="line">    <span class="comment">#   See https://github.com/pytorch/pytorch/issues/764</span></span><br><span class="line">    x = torch.transpose(x, <span class="number">1</span>, <span class="number">2</span>).contiguous()</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># flatten</span></span><br><span class="line">    x = x.view(batchsize, <span class="number">-1</span>, height, width)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> x</span><br><span class="line"></span><br><span class="line">x = torch.randn(<span class="number">1</span>,<span class="number">10</span>,<span class="number">224</span>,<span class="number">224</span>)</span><br><span class="line">x = channel_shuffle(x,<span class="number">2</span>)</span><br><span class="line">x.size()</span><br><span class="line"><span class="comment"># 输出：torch.Size([1, 10, 224, 224])</span></span><br></pre></td></tr></table></div></figure>
+<p>虽然Channel Shuffle的操作不能像计算卷积那样来定义计算量，但应该有一些开销。</p>
+<p>G=2时的channel shuffle 情况如下，这里无卷积操作，只是改变了通道的顺序。<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200904111231327.png#pic_center"  alt="在这里插入图片描述" />
+      <br />
+打乱的通道数 G=3，情况如下<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200904111255450.png#pic_center"  alt="在这里插入图片描述" />
+      </p>
+
+        <h2 id="高效的cnn模型"   >
+          <a href="#高效的cnn模型" class="heading-link"><i class="fas fa-link"></i></a>高效的CNN模型</h2>
+      
+<p>下面，对于高效的CNN模型，我将直观地说明为什么它们是高效的，以及如何在空间和通道域进行卷积。</p>
+
+        <h3 id="resnet-bottleneck-version"   >
+          <a href="#resnet-bottleneck-version" class="heading-link"><i class="fas fa-link"></i></a>ResNet (Bottleneck Version)</h3>
+      
+<p>ResNet 中使用的<strong>带有bottleneck 架构的残差单元</strong>是与其他模型进行进一步比较的良好起点。<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200904095643782.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+如上所示，具有bottleneck架构的残差单元由conv1x1、conv3x3、conv1x1组成。第一个conv1x1减小了输入通道的维数，降低了随后的conv3x3的计算量。最后的conv1x1恢复输出通道的维数。</p>
+
+        <h3 id="resnext"   >
+          <a href="#resnext" class="heading-link"><i class="fas fa-link"></i></a>ResNeXt</h3>
+      
+<p>ResNeXt是一个高效的CNN模型，可以看作是ResNet的一个特例，将conv3x3替换为<strong>成组</strong>的conv3x3。<strong>通过使用有效的分组conv</strong>，与ResNet相比，conv1x1的通道减少率变得适中（可以让conv1x1不用降维那么多，因为用分组conv已经降低了很多计算量了），从而在相同的计算代价下获得更好的精度。<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200904095826862.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+
+        <h3 id="mobilenet-depthwise-separable-conv"   >
+          <a href="#mobilenet-depthwise-separable-conv" class="heading-link"><i class="fas fa-link"></i></a>MobileNet (Depthwise Separable Conv)</h3>
+      
+<p>MobileNet是一个<strong>深度可分离卷积</strong>模块的堆叠，由depthwise conv和conv1x1 (pointwise conv)组成。<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/2020090410015854.png#pic_center"  alt="在这里插入图片描述" />
+      <br />
+<strong>深度可分离卷积分别在空间域和通道域独立执行卷积</strong>。这种卷积分解显著降低了计算量，从<strong>H*W*N*K*K*M</strong> 降低到 <strong>H*W*N*K*K</strong>(depthwise) + <strong>H*W*N*M</strong>(conv1x1)=<strong>HWN(K² + M)</strong>。一般情况下，输出通道M远远大于卷积核大小K(如K=3和M≥32)，减小率约为1/8-1/9。</p>
+<p>这里你可能对于上述计算比较懵，那我们分解一下吧。</p>
+<ul>
+<li>假设 H x W 为输出feature map的空间大小，N为输入通道数，K x K为卷积核的大小，M为输出通道数，则标准卷积的计算量为 H*W*N*K*K*M。</li>
+<li>depthwise conv可以看做分组卷积的一种特殊情况，其中输入和输出通道数相同，分组数G等于通道数，其计算量为H*W*N*K*K*N/N=H*W*N*K*K。</li>
+<li>conv1x1的输入通道数是N，输出通道数是M，计算量为H*W*N*M。</li>
+</ul>
+
+        <h3 id="shufflenet"   >
+          <a href="#shufflenet" class="heading-link"><i class="fas fa-link"></i></a>ShuffleNet</h3>
+      
+<p>ShuffleNet的动机是如上所述，<strong>conv1x1是在空间域上已经把计算量降低到了极致</strong>，所以在空间域上已经没有改进的空间，而<strong>分组conv1x1可以在通道域上再次降低计算量</strong>。<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200904102338403.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+上图说明了用于ShuffleNet的模块。这里重要的使用的组成部分（building blocks）是channel shuffle层，它在分组卷积中对通多在组间的顺序进行“shuffles”。<strong>如果没有channel shuffle，分组卷积的输出在组之间就不会被利用，导致精度下降</strong>。</p>
+
+        <h3 id="mobilenet-v2"   >
+          <a href="#mobilenet-v2" class="heading-link"><i class="fas fa-link"></i></a>MobileNet-v2</h3>
+      
+<p>MobileNet-v2采用类似ResNet中带有bottleneck架构残差单元的模块架构；并用深度卷积（depthwise convolution）代替conv3x3，是残差单元的改进版本。<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200904112511274.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+从上面可以看到，与标准的 bottleneck 架构相反，第一个conv1x1增加了通道维度，然后执行depthwise conv，最后一个conv1x1减少了通道维度。</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200904112551109.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+通过如上所述对组成部分（building blocks） 进行重新排序，将其与MobileNet-v1(Depthwise Separable Conv)进行比较，我们可以看到这个体系结构（MobileNet-v2）是如何工作的 (这种重新排序不会改变整个模型体系结构，因为MobileNet-v2是这个模块的<strong>堆叠</strong>，所以不会有影响的)。</p>
+<p>也就是说，上述模块可以看作是深度可分离卷积的一个改进版本，其中可分离卷积中的单个conv1x1被分解为两个conv1x1。让T表示通道维数的<strong>扩展因子</strong>，两个 conv1x1 的计算量为 2*H*W*N*N/T ，而深度可分离卷积下的conv1x1的计算量为 HWN²。如果T = 6，将 conv1x1 的计算成本降低了3倍(一般为T/2)。</p>
+<p>这里可能有人看的不太理解，我们来详细算一下吧（以上图为例子）。</p>
+<p>上图中第一个depthwise conv，第二个和第三个为conv1x1，假设第二个Conv1x1的输入通道为N，则第二个Conv1x1输出通道就为N/T，因为第二个Conv1x1是<strong>经过扩展因子扩大了T倍</strong>，则第三个Conv1x1的输入通道是N/T，则第三个Conv1x1的输出通道是N。</p>
+<p>这样就可以算出，第二个Conv1x1的计算量为<code>H*W*N*N/T</code>，第三个Conv1x1的计算量为<code>H*W*(N/T)*N</code>，两个Conv的总计算量为<strong>2*H*W*N*N/T</strong>，而深度可分离卷积下的conv1x1的计算量为 HWN²，如果T = 6，成本计算成本就是降低了3蓓。</p>
+<p>可能有人要问，PW升维不是增加参数量了么，你这么一算咋减小了？是的，用PW<strong>升维</strong>是增加了一部分参数量，不过正因为是1x1Conv，所以增加的参数量并不多。上面，我们对组成部分（building blocks） 进行重新排序并进行了计算，在<strong>高维度下</strong>两个conv1x1比<strong>低维度下</strong>深度可分离卷积下的conv1x1参数可降低了不少呢！</p>
+
+        <h3 id="fd-mobilenet"   >
+          <a href="#fd-mobilenet" class="heading-link"><i class="fas fa-link"></i></a>FD-MobileNet</h3>
+      
+<p>最后，介绍 Fast-Downsampling MobileNet (FD-MobileNet)。在这个模型中，与MobileNet相比，下采样在较早的层中执行。这个简单的技巧可以降低总的计算成本。</p>
+<p>从VGGNet开始，许多模型采用相同的下采样策略：<strong>执行向下采样，然后将后续层的通道数增加一倍</strong>。对于标准卷积，下采样后计算量不变，因为根据定义得 H*W*N*K*K*M 。而对于深度可分离卷积，下采样后其计算量减小：由 <strong>HWN(K² + M)</strong> 降为 <strong>(H/2)*(W/2)* (2N)*(K² + 2M)</strong> = HWN(K²/2 + M)。当M不是很大时(即较早的层)，这是相对占优势的。注意：这里的2N和2M是因为执行向下采样后，后续层的通道数了增加一倍。</p>
+<p><strong>下面是对全文的总结：</strong></p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20200905112522639.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70#pic_center"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2020/11/24/224323/">https://wxler.gitee.io/2020/11/24/224323/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/MobileNet/">MobileNet</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2020/11/24/224504/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Google Colab的一些常用命令</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2020/11/24/224154/"><span class="paginator-prev__text">DenseNet密集卷积网络详解（附代码实现）</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#前言"><span class="toc-number">1.</span> <span class="toc-text">
+          前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#高效cnn模型的组成部分"><span class="toc-number">2.</span> <span class="toc-text">
+          高效CNN模型的组成部分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#卷积"><span class="toc-number">3.</span> <span class="toc-text">
+          卷积</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#分组卷积grouped-convolution"><span class="toc-number">4.</span> <span class="toc-text">
+          分组卷积（Grouped Convolution）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#深度卷积depthwise-convolution"><span class="toc-number">5.</span> <span class="toc-text">
+          深度卷积（Depthwise Convolution）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#channel-shuffle"><span class="toc-number">6.</span> <span class="toc-text">
+          Channel Shuffle</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#高效的cnn模型"><span class="toc-number">7.</span> <span class="toc-text">
+          高效的CNN模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#resnet-bottleneck-version"><span class="toc-number">7.1.</span> <span class="toc-text">
+          ResNet (Bottleneck Version)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#resnext"><span class="toc-number">7.2.</span> <span class="toc-text">
+          ResNeXt</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mobilenet-depthwise-separable-conv"><span class="toc-number">7.3.</span> <span class="toc-text">
+          MobileNet (Depthwise Separable Conv)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#shufflenet"><span class="toc-number">7.4.</span> <span class="toc-text">
+          ShuffleNet</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#mobilenet-v2"><span class="toc-number">7.5.</span> <span class="toc-text">
+          MobileNet-v2</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fd-mobilenet"><span class="toc-number">7.6.</span> <span class="toc-text">
+          FD-MobileNet</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">53</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">12</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">27</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
