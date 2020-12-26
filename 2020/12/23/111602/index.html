@@ -1,0 +1,779 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="这是我第一篇精读的IEEE2020论文，我认为这一篇论文非常有意义，因为它是目前为止最先进显著性预测模型，在理解论文过程中，我查阅了许多相关资料，其中一些放在文章最后的补充概念部分，这对理解SalBiNet360的原理非常重要。另外，如果翻译过程中有什么不妥之处，欢迎在评论区留言指正。  英文名称：SalBiNet360: Saliency Prediction on 360° Images w">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SalBiNet360-Saliency Prediction on 360° Images with Local-Global Bifurcated Deep Network">
+<meta property="og:url" content="https://wxler.gitee.io/2020/12/23/111602/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="这是我第一篇精读的IEEE2020论文，我认为这一篇论文非常有意义，因为它是目前为止最先进显著性预测模型，在理解论文过程中，我查阅了许多相关资料，其中一些放在文章最后的补充概念部分，这对理解SalBiNet360的原理非常重要。另外，如果翻译过程中有什么不妥之处，欢迎在评论区留言指正。  英文名称：SalBiNet360: Saliency Prediction on 360° Images w">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223124655.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223134214.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223135821.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223141413.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223142528.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223142732.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223143234.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223143752.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223145815.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223154812.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223150711.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223151427.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223154513.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223154733.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155102.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155431.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155530.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155754.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155853.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223160455.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223160542.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223160909.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223161046.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223123107.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223124401.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223125906.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223130328.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223144925.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223152740.png">
+<meta property="article:published_time" content="2020-12-23T03:16:02.000Z">
+<meta property="article:modified_time" content="2020-12-26T11:12:57.511Z">
+<meta property="article:author" content="wxler">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223124655.gif"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>SalBiNet360-Saliency Prediction on 360° Images with Local-Global Bifurcated Deep Network | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2020/12/23/111602/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">SalBiNet360-Saliency Prediction on 360° Images with Local-Global Bifurcated Deep Network</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-12-23</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2020-12-26</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">10.1k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">56分</span></span></div></header><div class="post-body"><blockquote>
+<p>这是我第一篇精读的IEEE2020论文，<strong>我认为这一篇论文非常有意义，因为它是目前为止最先进显著性预测模型</strong>，在理解论文过程中，我查阅了许多相关资料，其中一些放在文章最后的补充概念部分，这对理解SalBiNet360的原理非常重要。另外，如果翻译过程中有什么不妥之处，欢迎在评论区留言指正。</p>
+</blockquote>
+<p>英文名称：SalBiNet360: Saliency Prediction on 360° Images with Local-Global Bifurcated Deep Network</p>
+<p>中文名称：基于局部-全局二叉式深度网络的360°全景图显著性预测</p>
+<p>论文会议：2020 IEEE Conference on Virtual Reality and 3D User Interfaces (VR)</p>
+<p>论文地址：<span class="exturl"><a class="exturl__link"   href="https://ieeexplore.ieee.org/abstract/document/9089519"  target="_blank" rel="noopener">https://ieeexplore.ieee.org/abstract/document/9089519</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<a id="more"></a>
+
+        <h1 id="摘要"   >
+          <a href="#摘要" class="heading-link"><i class="fas fa-link"></i></a>摘要</h1>
+      
+<p>随着虚拟现实应用的发展，在360°全景图上预测人类的<strong>视觉注意</strong>对理解用户的行为至关重要。基于360°全景图全局和局部视觉显著性的特点，论文提出了一个用于360°全景图显著性检测的框架(<strong>SalBiNet360</strong>)。在全局深度子网络中，利用多个多尺度的上下文模块和一个多级解码器来整合网络中层和深层的特征。在局部深层子网络中，只利用一个多尺度上下文模块和一个单级解码器来减少局部显著性特征的冗余。最后利用线性组合方法，结合全局和局部显著图的特点，生成最终的融合显著图。在两个公开数据集上进行的定性和定量实验表明，<strong>SalBiNet360的性能优于当前最先进的方法，特别是能够更好地预测低显著性区域和图像左右边界附近的区域</strong>。</p>
+<p>关键词： 360°度全景图，SalBiNet360，虚拟现实 (VR)</p>
+<blockquote>
+<p>关于视觉注意及视觉显著性检测见本文最后的补充概念</p>
+</blockquote>
+
+        <h1 id="1-引言"   >
+          <a href="#1-引言" class="heading-link"><i class="fas fa-link"></i></a>1 引言</h1>
+      
+<p>360°全景图在VR技术中扮演着至关重要的角色。与2D图像不同，360°全景图允许观察者从各个方向观察场景，因此其特性吸引了研究者更多的兴趣。此外，预测观察者在360°图像上的视觉注意力，可以帮助研究人员了解观察者佩戴VR设备时的行为，它还可以应用在计算机视觉的各个方面，如图像压缩和图像裁剪。</p>
+<p><strong>显著性模型是在人类没有明确意图的情况下，观察图像所注意的物体或区域</strong>。随着神经网络的兴起和发展，对传统二维图像上的显著性预测模型进行了深入的研究。许多优秀的模型已经出现，并建立了大量的数据集，如MIT Saliency Benchmark（一个显著性预测框架）。然而，到目前为止，关于360°全景图的显著性预测的研究还比较少，尤其是以神经网络为框架的研究。一般情况下，我们通常会通过<strong>ERP投影</strong>的方式将360°全景图投射到一个平面上，但这种投影方式会使360°全景图对应球面的两个极点被转换为上界和下界，从而导致图像过度变形。</p>
+<blockquote>
+<p>关于ERP投影见本文最后的补充概念</p>
+</blockquote>
+<p>如果将传统二维图像上的显著性预测模型直接应用于ERP图像上，效果将不理想。图1©显示了在传统二维图像上，由显著性模型预测的全局ERP显著图。与ground truth（图1（b））相比，全局显著图大致预测了显著性区域（赤道区域）。但是对于其它低显著性的区域（观察者不太关注的区域），传统模型无法预测它们。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223124655.gif"  alt="" />
+      </p>
+<p><em>图1：(a)ERP图像，(b)ground truth显著图，©(d)分别是全局和局部的显著图，(e)-(j)通过立方体投影的直线显著图。</em></p>
+<p>为了解决这个问题，利用<strong>立方体投影</strong>将360°全景图投射到立方体的六个面，每个面的视场角（FOV）为90°，显示六个方向的景物，而且比ERP图像失真小，这些立方体图被命名为rectilinear  images，我将其译为<strong>直线图像</strong>。图1(e)-(j)说明了这六张直线显著图，而图1(d)则说明了由这些直线显著图重新投影出来的局部显著图。与全局显著图相比，局部显著图可以精细地预测显著性区域，即使是一些显著性较低的区域也可以预测。（这里全局和局部特征我理解为：如果从整张ERP图片提取特征就是全局特征，如果从立方体投影的六个面分别提取特征，再重新投影到一张图上，那么得到的就是局部特征）</p>
+<blockquote>
+<p>关于立方体投影及视场角（FOV）见本文最后的补充概念</p>
+</blockquote>
+<p>然而，在预测缺乏全局性的直线显著图时，模型增强了低显著性区域，<strong>甚至一些不被人类关注的区域也被错误地预测出来</strong>。在图1(i)和图1(j)中，除了云层和坑洞，几乎没有什么物体，它们显然是突出的。所以在局部显著性图（图 1(d)）中，这两类物体很容易被预测出来。但是预测整幅图像时，在其它物体的存在下，云层和坑洞就显得不那么突出了。因此，模型对云层和坑洞的敏感度较低，所以，在缺乏全局性的直线图像中，模型对低显著性的区域是很敏感的。</p>
+<p>为了解决上述问题，作者提出了一种基于360全景图的全局和局部显著性预测的新框架（SalBiNet360）。这是一个包含全局和局部显著性预测子网络的（二叉式）深度网络框架。在全局深度子网络中，我们利用多个多尺度的上下文模块从网络的中层和深层提取上下文特征，然后，这些特征由一个多级解码器整合，预测全局显著性图。对于局部深层子网络，为了降低网络对一些低显著性区域的敏感性，只利用一个多尺度上下文模块，然后利用单级解码器来还原图像的分辨率，生成直线显著图。最后，将多张直线显著图重新投影成局部显著图（如图1（d）），利用线性组合策略将全局显著图与局部显著图融合。综上所述，我们做出了以下贡献：</p>
+<ul>
+<li>本文提出了一种全新的二叉式深度网络，该网络有两个子网络，分别预测360°全景图的全局和局部显著性特征，通过线性组合将全局显著图和局部显著图融合生成最终的显著图。</li>
+<li>提出了一种新的多尺度上下文模块，以提取360°全景图多尺度的上下文特征。</li>
+<li>采用全局子网络中的多级解码器，以减小不同层网络的判别特征之间的差距。</li>
+<li>在两个公开可用的数据集上进行的广泛实验说明，所提出的SalBiNet360优于经过测试的最先进的方法。</li>
+</ul>
+
+        <h1 id="2-相关工作"   >
+          <a href="#2-相关工作" class="heading-link"><i class="fas fa-link"></i></a>2 相关工作</h1>
+      
+<p>到目前为止，大多数360°全景图的显著性预测模型都是在传统二维图像模型基础上改进的（所谓的传统二维图像模型是指用二维图形训练和测试的模型），主要有三个研究方向，分别是赤道偏移、凝视位置的数据映射和投影变换。</p>
+<p>赤道偏移。当观察者观看VR全景图像时，他们往往会更多地关注赤道附近的内容，这被命名为赤道偏移。Battisti等人利用这一特性，将360°全景图划分为多个区域，每个区域赋予它们不同的显著性权重，区域越靠近图像的赤道，权重越大。Ding等人从图像层面细化到像素层面，利用高斯分布模型来模拟赤道偏差，从而提高了精度。但他们都只是基于360°全景图的全局属性设计模型，并没有考虑到局部的显著性。</p>
+<p>凝视位置的数据映射。一些显著性预测方法，是基于凝视位置的数据映射，就是利用观察者的凝视位置数据来建立显著图。这类方法将观察者有限的注视位置扩展为一般的显著图。Upenik等人利用头部运动轨迹来预测显著性，根据头部角度速度来确定观察者观察图像某些区域时所花费的时间。Abreu等人根据观察者的固定时间来区分观察者的视觉注意（即根据观察者看某一部分区域的大概时间来区分显著性区域）。</p>
+<p>对于投影变换，最常用的方法是ERP投影。为了解决ERP图像的边界失真问题，Lebreton等人将几个不同经度边界的ERP投影的显著图均匀地整合在一起，从而得到最终的显著图。但是，他们没有解决图像上下边界附近发生严重失真的问题。Startsev等人将360°全景图投射到ERP图像和反ERP图像上，然后对这两幅图像进行预测，并将其融合，解决了等ERP图像左右边界不连续的问题。此外，他们还单独预测了图像上下边界附近的显著性。但是他们直接使用了预训练的显著性模型，而不是通过360°全景图来训练它们，所以这些模型无法提取360°全景图的具体特征。而球面投影则是将360°全景图投射到球面上，使图像具有连续性，图像上的景物不易失真，可以提高模型的精度。但是，应用这些模型预测立体空间中的图像是复杂的。Bogdanova等人提出了一个基于球面投影的显著模型，构建球形金字塔模块，从而输出球面显著图。</p>
+<p>除以上几种投影变换方法外，还有立方体、八面体、正金字塔投影等。立方体投影是比较常用的，Maugey等人提出了双立方体投影法，以解决立方体投影中的边界畸变和不连续问题。该方法将360°全景图投影到两个水平和垂直相差45°的立方体上，然后通过旋转将两个显著图融合。虽然它可以精细地预测局部的显著图，但由于直线图像缺乏全局性，导致一些低显著性的区域被错误地预测。Chao等人提出的SalGAN360在上述方法基础上扩展到多立方投影，也分别预测了全局和局部的显著图。但是，它始终利用SalGAN预测全局和局部的显著性特征，而没有考虑到360°全景图的全局和局部属性，以提高网络。</p>
+<p>本文根据360°全景图的全局和局部属性，将提出的网络分为两个不同的深度子网络，分别预测全局和局部的显著性特征，通过融合得到最终的显著图。</p>
+
+        <h1 id="3-方法"   >
+          <a href="#3-方法" class="heading-link"><i class="fas fa-link"></i></a>3 方法</h1>
+      
+<p>在本节中，构建了包含全局和局部深度子网络的二叉式网络（SalBiNet360）。在全局深度子网络中，生成了一个全局的显著图，可以检测所有方向的视觉注意力。在局部深度子网络中，生成了一个以精细方式检测视觉注意力的局部显著图。最后，通过与全局和局部显著图的线性组合，生成融合的显著图。</p>
+
+        <h2 id="31-salbinet360机制"   >
+          <a href="#31-salbinet360机制" class="heading-link"><i class="fas fa-link"></i></a>3.1 SalBiNet360机制</h2>
+      
+
+        <h3 id="311-framework"   >
+          <a href="#311-framework" class="heading-link"><i class="fas fa-link"></i></a>3.1.1 Framework</h3>
+      
+<p>所提出的模型框架如图2所示，它利用ResNet50作为骨架。ResNet50有四个卷积块（输入层还有一个卷积）。对于一个输入图像，在第四个卷积块中，分辨率降低了32倍。这里从网络中第二个卷积块的最后一层开始，我们将网络分成两个深度子网络，其中一个子网络预测全局的显著性，而另一个子网络预测局部的显著性。这两个子网络都有ResNet50最后两个卷积块。图2蓝色的方块就是ResNet50的convBlock块，一个convBlock包含多个卷积操作，若想对ResNet50有更深的理解，<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_37555071/article/details/108258862?ops_request_misc=%25257B%252522request%25255Fid%252522%25253A%252522160870193316780308367044%252522%25252C%252522scm%252522%25253A%25252220140713.130102334.pc%25255Fblog.%252522%25257D&amp;request_id=160870193316780308367044&amp;biz_id=0&amp;utm_medium=distribute.pc_search_result.none-task-blog-2~blog~first_rank_v1~rank_blog_v1-1-108258862.pc_v1_rank_blog_v1&amp;utm_term=resnet"  target="_blank" rel="noopener">ResNet残差网络及变体详解</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，相信会让你有所收获。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223134214.gif"  alt="" />
+      </p>
+<p><em>图2：SalBiNet360的框架。该网络分为全局和局部深度子网络，分别用来预测360°图像的全局和局部显著性特征。</em></p>
+<p>在全局显著性预测中，将整个ERP图像纳入全局子网络，输出全局显著性图。一般来说，神经网络的第一个卷积块会提取一些低级特征，如形状、纹理、轮廓等，但这些特征对显著性预测的贡献较小。此外，不同尺度的卷积层可以保留精细的上下文信息，尤其是中间*的特征图的尺度相对较大，这使得更多的全局信息得以保留。因此，将最后三个卷积块的特征被提取出来，分别输入到三个相同的多尺度上下文模块(MCM)中，然后生成三个不同层次的特征图。之后，采用多级解码器对三个特征图进行整合，生成全局显著图。</p>
+<p>在局部显著性预测中，首先通过立方体投影将360°全景图投射到立方体的六个面上，每个面的FOV为90°，可以得到多个直线图像。然后，把这些直线图像输入到局部子网络，局部子网络输出相应的直线显著图。最后，ResNet50的后三个卷积块的特征也在局部子网络中被提取出来。如果在局部子网络中加入多个多尺度的上下文模块（就像全局子网络的架构一样），会增加局部显著图的冗余度。在图3中，沟渠和灯具是ground truths中显著性较低的对象，与只有一个多尺度上下文模块的局部子网络相比，有多个多尺度上下文模块的局部子网络会错误地将这些显著性较低的对象预测为高显著性的对象。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223135821.gif"  alt="" />
+      </p>
+<p><em>图3：具有一个和多个多尺度上下文模块的地面真相和局部显著图的视觉比较。(&quot;MCM&quot;表示多尺度上下文模块)</em></p>
+<p>因此，与全局子网络中的操作不同，局部子网络的最后三个卷积块中的特征图是连在一起的，只是输入到一个多尺度的上下文模块中。之后，采用卷积-上采样操作的单级解码器，将多尺度上下文模块输出的结果恢复到与输入的分辨率一样的大小。然后，利用重投影法将这些直线显著图重新投影成多个ERP显著图，通过使用平均法将所有的ERP显著图重叠，得到局部显著图。</p>
+<p>最后，将全局和局部的显著图进行线性组合融合，得到融合的显著图。多尺度上下文模块和多级解码器的具体内容将在3.2节和3.3节中介绍。</p>
+
+        <h3 id="312-预训练"   >
+          <a href="#312-预训练" class="heading-link"><i class="fas fa-link"></i></a>3.1.2 预训练</h3>
+      
+<p>在没有360°全景图的大型数据集的情况下，SalBiNet360必须由SALICON进行预训练(SALICON是一个显著性检测数据集)。该数据集包含20 000张二维图像以及相应的显著图，其中10,000张用于训练，5,000张用于验证，5 000张用于测试。将二维图像放入模型中，相应地同时生成两张预测的二维显著图，一个是来自全局子网络，另一个是来自局部子网络。然后利用 ground truth的显著图，根据<strong>二元交叉熵损</strong>失来监督这两个子网络的训练。</p>
+
+        <h3 id="313-微调"   >
+          <a href="#313-微调" class="heading-link"><i class="fas fa-link"></i></a>3.1.3 微调</h3>
+      
+<p>在使用SALICON预训练模型后，将全局和局部深度子网络进行联合微调。做法是将训练的直线图像分别放入模型中，相应地同时生成两个预测的直线显著图，一个是来自全局子网络，另一个是来自局部子网络。在360°全景图显著性预测模型中，经常使用皮尔逊相关系数（Pearson’s Correlation Coefficient，简称CC） 和归一化扫描路径显著性（Normalized Scanpath Saliency，简称NSS）这两个指标来衡量模型的有效性。因此，在二元交叉熵中加入这两个指标来优化模型训练的过程。对于全局子网络，损失可以定义如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223141413.png"  alt="" />
+      </p>
+<p>其中，ܵ<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mi>g</mi></msub></mrow><annotation encoding="application/x-tex">S_g</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mrow><mi>s</mi><mi>a</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex">S_{sal}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">s</span><span class="mord mathdefault mtight">a</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mrow><mi>f</mi><mi>i</mi><mi>x</mi></mrow></msub></mrow><annotation encoding="application/x-tex">S_{fix}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.10764em;">f</span><span class="mord mathdefault mtight">i</span><span class="mord mathdefault mtight">x</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span> 分别是全局子网络预测的直线显著图、ground truth的直线显著图和二元直线定点图，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>μ</mi><mrow><mi>B</mi><mi>C</mi><mi>E</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\mu_{BCE}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault">μ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05017em;">B</span><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">E</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>和<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>σ</mi><mrow><mi>B</mi><mi>C</mi><mi>E</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\sigma_{BCE}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05017em;">B</span><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">E</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示SalBiNet360对预测的二维图像计算出的<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>L</mi><mrow><mi>B</mi><mi>C</mi><mi>E</mi></mrow></msub></mrow><annotation encoding="application/x-tex">L_{BCE}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05017em;">B</span><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">E</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>的平均值和标准差，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>L</mi><mrow><mi>B</mi><mi>C</mi><mi>E</mi></mrow></msub></mrow><annotation encoding="application/x-tex">L_{BCE}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05017em;">B</span><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">E</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示二元交叉熵损失，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>L</mi><mrow><mi>n</mi><mi>o</mi><mi>r</mi><mi>m</mi><mi>a</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex">L_{normal}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span><span class="mord mathdefault mtight">o</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mord mathdefault mtight">m</span><span class="mord mathdefault mtight">a</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>是CC和NSS的归一化函数。</p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>L</mi><mrow><mi>B</mi><mi>C</mi><mi>E</mi></mrow></msub></mrow><annotation encoding="application/x-tex">L_{BCE}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05017em;">B</span><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">E</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>定义如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223142528.png"  alt="" />
+      </p>
+<p>其中<em>N</em>为像素数，<em>j</em>为像素坐标。</p>
+<p><span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>L</mi><mrow><mi>n</mi><mi>o</mi><mi>r</mi><mi>m</mi><mi>a</mi><mi>l</mi></mrow></msub></mrow><annotation encoding="application/x-tex">L_{normal}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span><span class="mord mathdefault mtight">o</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mord mathdefault mtight">m</span><span class="mord mathdefault mtight">a</span><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>定义如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223142732.png"  alt="" />
+      </p>
+<p>其中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>L</mi><mrow><mi>m</mi><mi>e</mi><mi>t</mi><mi>r</mi><mi>i</mi><mi>c</mi></mrow><mrow><mi>C</mi><mi>C</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">L^{CC}_{metric}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0999949999999998em;vertical-align:-0.258664em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-2.441336em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">m</span><span class="mord mathdefault mtight">e</span><span class="mord mathdefault mtight">t</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mord mathdefault mtight">i</span><span class="mord mathdefault mtight">c</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.258664em;"><span></span></span></span></span></span></span></span></span></span>是CC的评价指标，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>L</mi><mrow><mi>m</mi><mi>e</mi><mi>t</mi><mi>r</mi><mi>i</mi><mi>c</mi></mrow><mrow><mi>N</mi><mi>S</mi><mi>S</mi></mrow></msubsup></mrow><annotation encoding="application/x-tex">L^{NSS}_{metric}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0999949999999998em;vertical-align:-0.258664em;"></span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-2.441336em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">m</span><span class="mord mathdefault mtight">e</span><span class="mord mathdefault mtight">t</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">r</span><span class="mord mathdefault mtight">i</span><span class="mord mathdefault mtight">c</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">S</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">S</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.258664em;"><span></span></span></span></span></span></span></span></span></span>是NSS的评价指标。<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>μ</mi><mrow><mi>C</mi><mi>C</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\mu_{CC}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault">μ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>σ</mi><mrow><mi>C</mi><mi>C</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\sigma_{CC}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>μ</mi><mrow><mi>N</mi><mi>S</mi><mi>S</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\mu_{NSS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault">μ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">S</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">S</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>σ</mi><mrow><mi>N</mi><mi>S</mi><mi>S</mi></mrow></msub></mrow><annotation encoding="application/x-tex">\sigma_{NSS}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.58056em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">S</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">S</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>表示SalBiNet360对预测的二维图像计算的这两个指标（即CC和NSS）的平均值和标准差。</p>
+<p>对于局部子网络来说，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>l</mi><mi>o</mi><mi>s</mi><mi>s</mi><msub><mi>L</mi><mi>L</mi></msub></mrow><annotation encoding="application/x-tex">lossL_L</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord mathdefault" style="margin-right:0.01968em;">l</span><span class="mord mathdefault">o</span><span class="mord mathdefault">s</span><span class="mord mathdefault">s</span><span class="mord"><span class="mord mathdefault">L</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">L</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>与全局子网络中的损失相同，只是用局部子网络预测的直线显著图<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mi>l</mi></msub></mrow><annotation encoding="application/x-tex">S_l</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.33610799999999996em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.01968em;">l</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>代替了<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>S</mi><mi>g</mi></msub></mrow><annotation encoding="application/x-tex">S_g</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.15139200000000003em;"><span style="top:-2.5500000000000003em;margin-left:-0.05764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.03588em;">g</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span>。因此，SalBiNet360的总损失定义为：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223143234.png"  alt="" />
+      </p>
+<p>在微调步骤中，我们首先固定Resnet50网络的权重。然后，我们对SalBiNet360中其他部分的权重进行微调。最后，随机初始化两个解码器的最后两个卷积层的权重（我认为这两个卷积层的权重占比很小，虽然进行随机初始化了，也影响不了整个模型的性能，也提高了模型的鲁棒性）。这样在微调的过程中就可以充分提取360°全景图的特征。</p>
+
+        <h3 id="314-测试"   >
+          <a href="#314-测试" class="heading-link"><i class="fas fa-link"></i></a>3.1.4 测试</h3>
+      
+<p>在测试步骤中，预测局部显著性时，首先将直线图像放入模型中，在局部子网络中生成直线显著图（忽略全局子网络中的输出）。然后，将直线显著图重新投影为ERP格式，得到局部显著图图。</p>
+<p>在预测全局显著性特征时，将ERP图像放入模型中，模型直接在全局子网络中生成全局显著图（忽略局部子网络中的输出）。虽然网络是由失真较小的直线图像进行微调，但在预测全局显著性时，由于赤道附近的区域失真较小，所以模型在等ERP图像的赤道附近区域可以很好地预测。另外，<strong>利用Fused Saliency Method（FSM，融合显著性方法）作为后处理方法，解决了360°全景图左右边界不连续的问题，在这个方法中四个全局显著图分别赋予0.25的权重</strong>。</p>
+<p>最后，将全局和局部显著图进行线性组合融合，得到融合后的显著图。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223143752.png"  alt="" />
+      </p>
+<p>其中，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi></mrow><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span></span></span></span>和<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span></span>分别是全局和局部显著图的权重，且<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi></mrow><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span></span></span></span>+<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span></span>=1</p>
+<blockquote>
+<p>我第一次看到FSM方法，非常疑惑，作者文中并没有过多的解释，我查阅了其引用的论文，才理解了具体用到的方法，见本文最后的补充概念。</p>
+</blockquote>
+
+        <h2 id="32-多尺度上下文模块"   >
+          <a href="#32-多尺度上下文模块" class="heading-link"><i class="fas fa-link"></i></a>3.2 多尺度上下文模块</h2>
+      
+<p>当360°全景图通过ERP投影到一个平面上时，图像上不同尺度的上下文信息是不同的。如图 4 所示，<strong>360°全景图比传统的二维图像尺寸大得多，可以捕捉到更多的场景信息</strong>，在此基础上，设计了多尺度的上下文模块，有效地提取不同尺度的上下文特征。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223145815.gif"  alt="" />
+      </p>
+<p><em>图4：多尺度上下文模块的架构。</em></p>
+<p>如图4所示，所提出的多尺度上下文模块共包含四个分支{<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>b</mi><mi>n</mi></msub></mrow><annotation encoding="application/x-tex">b_n</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.84444em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault">b</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，n=1,2,3,4}。每个分支都有不同大小的卷积核，可以在不同尺度的360°全景图上进一步提取更多的上下文特征。最初，在每个分支中利用1X1卷积层来减少特征图的通道数。对于݊n&gt;1的分支，我们分别增加一个卷积层，其内核大小为（2n-1)x(2n-1)，然后，在四个分支中分别增加一个3x3卷积层，再将每个分支的特征图Concatenate，再做一次3x3卷积操作。最后，将提取的判别特征与原始特征通过shortcut与Relu激活函数结合，从而得到不同尺度的判别特征。</p>
+
+        <h2 id="33-多层解码器"   >
+          <a href="#33-多层解码器" class="heading-link"><i class="fas fa-link"></i></a>3.3 多层解码器</h2>
+      
+<p>在全局子网络中，利用多尺度的上下文模块，得到三个判别性特征图{<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>f</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">f_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>，i=2,3,4}。<strong>为了缩小这些特征之间的差距，采用多级解码器</strong>。如图5所示，在这个解码器中有四层（c=1,2,3,4)，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mi>i</mi><mi>c</mi></msubsup></mrow><annotation encoding="application/x-tex">f_i^c</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.953104em;vertical-align:-0.258664em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-2.441336em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">c</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.258664em;"><span></span></span></span></span></span></span></span></span></span>示 c 层中的第 i 个特征图，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>f</mi><mi>i</mi></msub></mrow><annotation encoding="application/x-tex">f_i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.31166399999999994em;"><span style="top:-2.5500000000000003em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>在第二层中更新了以下内容公式：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223154812.png"  alt="" />
+      </p>
+<p>其中Up是对特征图进行因子为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>k</mi><mo>−</mo><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{k-2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8491079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8491079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">−</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span>的上采样操作，Conv是3X3卷积层。 圈表示元素化的乘积（点积）。</p>
+<blockquote>
+<p>我认为这里每一层的特征图从2开始是应该方便些公式，如上面的<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>k</mi><mo>−</mo><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{k-2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8491079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8491079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span><span class="mbin mtight">−</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span>，k从2开始，第一幅特征图上采样因子就是2</p>
+</blockquote>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223150711.gif"  alt="" />
+      </p>
+<p><em>图5：多级解码器的架构。图中顶部的&quot;c&quot;表示第c层。</em></p>
+<p>对于<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mn>4</mn><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">f_4^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>，作者设置<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mn>4</mn><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">f_4^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span> = <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mn>4</mn><mn>1</mn></msubsup></mrow><annotation encoding="application/x-tex">f_4^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>，对于<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mn>2</mn><mn>3</mn></msubsup></mrow><annotation encoding="application/x-tex">f_2^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>，作者设置<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mn>2</mn><mn>3</mn></msubsup></mrow><annotation encoding="application/x-tex">f_2^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mn>2</mn><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">f_2^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>（即这些位置的特征图采用一样的上采样和卷积操作）。至于<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mn>3</mn><mn>3</mn></msubsup></mrow><annotation encoding="application/x-tex">f_3^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mn>2</mn><mn>4</mn></msubsup></mrow><annotation encoding="application/x-tex">f_2^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>，作者采用upsampling-convolution-concatenation策略来整合多个特征，公式如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223151427.png"  alt="" />
+      </p>
+<p>其中，Up为上采样因子为2的操作，Conv是3x3卷积层，Concat是两个特征图的通道连接。最终，通过对 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>f</mi><mn>2</mn><mn>4</mn></msubsup></mrow><annotation encoding="application/x-tex">f_2^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10764em;">f</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.10764em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>使用upsampling-convolution策略，解码器生成与输入的ERP图像大小相同的全局显著图。</p>
+<p>至于单层解码器，主要由5个3×3卷积层和1个填充层以及5个系数为2的双线性上采样层组成（就是图2的那五个橙色方块）。</p>
+
+        <h1 id="4-实验"   >
+          <a href="#4-实验" class="heading-link"><i class="fas fa-link"></i></a>4 实验</h1>
+      
+
+        <h2 id="41-实验配置"   >
+          <a href="#41-实验配置" class="heading-link"><i class="fas fa-link"></i></a>4.1 实验配置</h2>
+      
+
+        <h3 id="411评估数据集"   >
+          <a href="#411评估数据集" class="heading-link"><i class="fas fa-link"></i></a>4.1.1评估数据集</h3>
+      
+<p>SalBiNet360是在两个公开的数据集上进行评估的：Salient360! 和Grand Challenge</p>
+<p>Salient360! 是国际会议ICME2017的360°全景图显著性预测挑战赛数据集，由65张360°全景图组成，观察者的头部和眼部运动被记录下来，其中40张图像用于训练，25张用于测试。</p>
+<p>VR Saliency是虚拟现实全景图显著性预测数据集，由22张图像组成，观察者的头部动作被记录下来。</p>
+<p>两个数据集中的图像都由室内和室外场景内容组成。</p>
+
+        <h3 id="412-评价指标"   >
+          <a href="#412-评价指标" class="heading-link"><i class="fas fa-link"></i></a>4.1.2 评价指标</h3>
+      
+<p>SalBiNet360的性能是通过四个常用的指标来评估的：KL、CC、NSS、AUC。KL和CC评价的是两个显著图之间的<strong>显著性密度分布</strong>（主要是面向局部信息的），NSS和AUC评价的是显著图和二元定点图之间的眼动位置分布（主要是面向全局信息的）。</p>
+<blockquote>
+<p>关于KL、CC、NSS、AUC四个指标，作者并没有详细介绍，我查阅了许多资料，大致知道其具体的衡量标准，见见本文最后的补充概念部分。</p>
+</blockquote>
+<p>Salient360! 数据集的性能是在KL、CC、NSS和AUC上评估的，而对于VR Saliency数据集，只采用CC来评估性能，如下所述。在下面的小节中，每个实验的最佳结果以红色粗体显示。</p>
+
+        <h3 id="413-实施细节"   >
+          <a href="#413-实施细节" class="heading-link"><i class="fas fa-link"></i></a>4.1.3 实施细节</h3>
+      
+<p><strong>网络结构</strong> 。在全局子网络中，对于多尺度上下文模块，每个分支的特征图通道减少到32个。在局部子网中，经过多尺度上下文模块的处理，特征图的通道减少到256个。</p>
+<p><strong>微调与测试</strong>。Salient360!数据集中40幅训练图像分为30幅用于微调，10幅用于验证。在立方体投影中，立方体在水平和垂直方向上每45°旋转一次，可以得到2×2=4种旋转方式。因此，每幅360°全景图有4×6=24幅直线图像，完全可以生成30×24=720幅直线图像用于微调，10×24=240幅用于验证。在测试SalBiNet360模型时，为了使重新投影后的局部显著图更加平滑，每隔10度旋转一个立方体，因此会产生9×9×6×25=12150张整线图像（每次转10度，即水平方向9次，垂直方向9次，一次360°全景图有6张直线图像，Salient360!共25张360全景测试图）。当预测全局显著性时，预测25个ERP图像得到全局显著图。当预测局部显著性时，预测12150张直线图像，并重新投影为25张局部显著性图。最后，通过融合这些全局和局部的显著图，可以得到25个融合的显著图。</p>
+<p>对于VR Saliency，根据其实验设置，用SALICON数据集预训练模型后直接测试22张360°全景图。同样，立方体也是每10°旋转一次，就会产生9x9x6x22=10692个直线图像。预测全局和局部的显著图和Salient360!中的一样。</p>
+<p>在预训练和微调步骤中，所提出的模型均采用Adam优化器进行训练，初始学习率为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><msup><mn>0</mn><mrow><mo>−</mo><mn>4</mn></mrow></msup></mrow><annotation encoding="application/x-tex">10^{-4}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord">1</span><span class="mord"><span class="mord">0</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">−</span><span class="mord mtight">4</span></span></span></span></span></span></span></span></span></span></span></span>，batch size为10。此外，当损失下降到一定程度时，学习率会下降10%。SalBiNet360基于PyTorch框架，部署在GeForce GTX1080Ti GPU上。源代码可在https://github.com/githubcbob/SalBiNet360（访问404，可能是作者删了，哈哈）</p>
+
+        <h2 id="42-salbinet360的分析"   >
+          <a href="#42-salbinet360的分析" class="heading-link"><i class="fas fa-link"></i></a>4.2 SalBiNet360的分析</h2>
+      
+
+        <h3 id="421-融合策略中权重的选择"   >
+          <a href="#421-融合策略中权重的选择" class="heading-link"><i class="fas fa-link"></i></a>4.2.1 融合策略中权重的选择</h3>
+      
+<p>在融合全局与局部显著图时，我们做了多组全局和局部权重选择的实验。表1说明了在测试步骤中，两个数据集上不同权重的融合结果。可以看出，随着<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi></mrow><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span></span></span></span>的增加( <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span></span>减少)，SalBiNet360的指标得分在两个数据集上都出现了先增加后减少的现象。当全局权重 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi></mrow><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span></span></span></span>设置为0.55时Salient360!表现最佳，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi></mrow><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span></span></span></span>在上设置为0.50时VR Saliency表现最佳。因此，在下面的实验中，我们在Salient360!上的融合策略中设置 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi></mrow><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span></span></span></span>=0.55(<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span></span>=0.45)，在VR Saliency上设置 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi></mrow><annotation encoding="application/x-tex">\alpha</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.43056em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span></span></span></span>=0.50(<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>β</mi></mrow><annotation encoding="application/x-tex">\beta</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span></span></span></span>=0.50)。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223154513.png"  alt="" />
+      </p>
+<p><em>表1：两个数据集上不同权重选择的比较。</em></p>
+
+        <h3 id="422-多尺度上下文模块的有效性"   >
+          <a href="#422-多尺度上下文模块的有效性" class="heading-link"><i class="fas fa-link"></i></a>4.2.2 多尺度上下文模块的有效性</h3>
+      
+<p>在下面的实验中，<strong>将SalBiNet360的两个子网络中的多尺度上下文模块全部去掉</strong>，以测试多尺度上下文模块对显著性预测的影响。表2显示了SalBiNet360在有上下文模块和无上下文模块的两个数据集上测试的量化结果。显然，带有多尺度上下文模块的SalBiNet360的性能优于不带有多尺度上下文模块的SalBiNet360，这说明带有多尺度上下文模块的SalBiNet360能够有效地预测360°图像上的显著性。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223154733.png"  alt="" />
+      </p>
+<p><em>表2：SalBiNet360在两个数据集上有无上下文多尺度模块（&quot;MCM&quot;表示多尺度上下文模块）的比较。</em></p>
+
+        <h3 id="423-全局-局部和融合显著性预测的表现"   >
+          <a href="#423-全局-局部和融合显著性预测的表现" class="heading-link"><i class="fas fa-link"></i></a>4.2.3 全局、局部和融合显著性预测的表现</h3>
+      
+<p>为了研究全局、局部和融合的显著性预测对SalBiNet360整体性能的影响，我们分别在两个数据集上做了两个子网络和融合策略的显著性预测实验。从表3中可以看出，全局显著性在NSS和AUC上的表现都优于局部显著性，而局部显著性在KL和CC上的表现都优于全局显著性。这说明全局显著图对图像凝视点（gaze points）的识别能力优于局部显著图，而局部显著图在减少显著性信息的丢失上效果更好。此外，融合后的显著图在NSS和AUC上都优于全局图和局部图，而在其他两个指标上略逊于局部图。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155102.png"  alt="" />
+      </p>
+<p><em>表3：全局、局部和融合的显著性在两个数据集上的比较。</em></p>
+<p>图6和图7通过箱形图说明了全局、局部和融合显著性在两个数据集上的得分分布。很明显，在Salient360!数据集上，融合显著性在KL和CC上的得分分布与局部显著性相似，NSS和AUC的得分分布与全局显著性相似。但在VR Saliency上，融合显著性的得分分布普遍大于全局和局部显著性的得分分布。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155431.gif"  alt="" />
+      </p>
+<p><em>图6：全局、局部和融合显著性在Salient 360上的得分分布对比</em></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155530.gif"  alt="" />
+      </p>
+<p><em>图7：全局、局部和融合显著性在VR Saliency上的得分分布对比</em></p>
+<p>图8和图9显示了全局、局部和融合的显著图在两个数据集上的一些可视化结果。可以观察到全局子网络预测的显著性区域大致集中在图像的赤道部分，局部显著性预测可以精细地预测一些显著对象，如阶梯。但是，由于缺乏全局性，某些物体被错误地预测为高显著性（如坐具和树木）。结合全局和局部显著图的特性，融合后的显著图可以恰到好处地预测这些显著性区域，从而提高SalBiNet360的预测质量。在VR Saliency上，融合的显著图的效果稍差（因为模型没有进行微调就直接测试，主要是由于其数据集很少，只有22张图片），但融合的显著图也可以削弱一些物体的显著性。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155754.gif"  alt="" />
+      </p>
+<p><em>图8：Salient 360上的全局、局部、融合的显著图和ground truths 的视觉对比</em></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223155853.gif"  alt="" />
+      </p>
+<p><em>图9：VR Saliency上的全局、局部、融合的显著图和ground truths 的视觉对比</em></p>
+
+        <h2 id="43-与最新技术的比较"   >
+          <a href="#43-与最新技术的比较" class="heading-link"><i class="fas fa-link"></i></a>4.3 与最新技术的比较</h2>
+      
+<p>表4显示了SalBiNet360与现有的7种经过测试的最先进的显著性模型在Salient360!上的量化结果，包括GBVS360、SalNet360、Maugey、Startsev、SJTU、CDSR和SalGAN360。很明显，SalBiNet360在大多数情况下优于所有其他方法。只有SalGAN360获得了与SalBiNet360相同的AUC分数。值得注意的是，与CC、NSS和AUC相比，SalBiNet360在KL方面有明显的提高，这说明SalBiNet360在减少<strong>显著性密度分布</strong>的信息损失方面效果更好。表5是VR Saliency中的量化比较。比较的三种模型（EB、SalNet+EB、ML-Net+EB）的性能结果，可以看出，SalBiNet360得到的性能最好。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223160455.png"  alt="" />
+      </p>
+<p><em>表4：不同方法在Salient360!上的比较。</em></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223160542.png"  alt="" />
+      </p>
+<p><em>表5：不同方法在VR Saliency上的比较。</em></p>
+<p>Salient360!上一些案例的视觉对比如图10所示。与SalGAN360相比，SalBiNet360不仅可以精细预测图像赤道附近的显著性区域，还可以预测一些SalGAN360忽略的低显著性区域（如树木和地板）。此外，SalBiNet360还可以预测图像左右边界附近的显著性区域，从而减少了显著性密度分布中的信息损失。这与表4中SalBiNet360在KL得分上有所提高的结果是一致的。这一现象可以解释为利用多尺度的上下文模块从多个尺度中提取上下文特征，包括边界的特征。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223160909.gif"  alt="" />
+      </p>
+<p><em>图10：SalBiNet360和最先进的模型在Salient360!的视觉对比</em></p>
+<p>图11是SalBiNet360在VR Saliency上的视觉效果。在不对网络进行微调的情况下，SalBiNet360只能大概的做到预测一些显著性区域。但图像左右边界附近的显著性区域还是可以预测的。 它证明了SalBiNet360能够有效地解决等角ERP图像左右边界的不连续视觉信息问题。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223161046.gif"  alt="" />
+      </p>
+<p><em>图11：SalBiNet360对VR Saliency的视觉效果</em></p>
+
+        <h2 id="44-讨论"   >
+          <a href="#44-讨论" class="heading-link"><i class="fas fa-link"></i></a>4.4 讨论</h2>
+      
+<p>在两个360°全景图数据集上的大量实验表明，提出的SalBiNet360实现了具有竞争力的性能。它是一个包含全局和局部显著性预测子网络的二叉式深度网络。该网络仅通过直线图像进行联合微调。如果将这两个子网络作为两个独立的分支分别进行微调，则可能会浪费很多时间。</p>
+<p>在缺乏大的360°图像saliency数据集的情况下，必须利用失真较小的直线图像和相应的ground truths来微调模型，这样可以忽略ERP图像上下边界的尺度和严重失真。显然，在测试步骤中，由于等角图像的赤道附近失真较小，全局子网络可以很好地预测赤道附近的显著性（如图8、9中的&quot;全局显著性图&quot;）。<strong>但是，两极的预测效果并不好。因此，需要将其与局部显著性相结合，以弥补全局显著性的不足。</strong></p>
+<p>与表4和表5中的其他模型相比，SalBiNet360构建了两个子网络，分别适合预测360°图像的全局和局部显著性。<strong>全局子网络可以大致预测360°全景图的赤道附近和左右边界的显著性区域，而局部子网络可以精细地预测一些显著性高的区域和观察者不太关注的区域，从而弥补了全局显著性的劣势</strong>。SalBiNet360的分叉架构可以应用于其他利用360°全景图的全局和局部显著性的显著性模型。</p>
+
+        <h1 id="5-总结"   >
+          <a href="#5-总结" class="heading-link"><i class="fas fa-link"></i></a>5 总结</h1>
+      
+<p>本文提出了一种全新的360°全景图的显著性预测框架，命名为SalBiNet360。所提出的框架在ResNet50的第二个卷积块之后分为两个深度子网络，这两个子网络分别预测全局和局部的显著图。在全局深度子网络中，上下文特征从网络的中层和深层中提取，<strong>并由三个多尺度的上下文模块和一个多层次的解码器进行整合</strong>。而在局部深度子网络中，为了减少图像低显著性区域的冗余，<strong>只利用一个多尺度的上下文模块和一个单层解码器来生成局部显著图</strong>。最后，通过线性组合融合全局和局部显著图，生成最终的显著图。在两个可用的数据集上进行了广泛的实验表明，SalBiNet360的性能优于已测试的最先进的方法。</p>
+
+        <h1 id="补充概念"   >
+          <a href="#补充概念" class="heading-link"><i class="fas fa-link"></i></a>补充概念</h1>
+      
+<p>为了更好的理解本文，我查阅了许多资料，补充了文章中的作者所提到一些术语和概念：</p>
+<p>（1）<strong>视觉显著性检测</strong>(Visual saliency detection)指通过智能算法模拟人的视觉特点，提取图像中的显著区域***(***即人类感兴趣的区域)。</p>
+<p>（2）<strong>视觉注意机制</strong>(Visual Attention Mechanism，VA)，即面对一个场景时，人类自动地对感兴趣区域进行处理而选择性地忽略不感兴趣区域，这些人们感兴趣区域被称之为显著性区域。如下图所示，当看到这幅图像时，图中的四个人最能引起人的注意，而其它区域（如地面）就不会引起人们注意。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223123107.png"  alt="" />
+      </p>
+<p><em>来源：<span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/ariel-dreamland/p/8919541.html"  target="_blank" rel="noopener">https://www.cnblogs.com/ariel-dreamland/p/8919541.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></em></p>
+<p>（3）<strong>ERP</strong>全称equirectangular projection，又可以称为equidistant cylindrical projection，中文译为等距柱状投影。这种投影方式将经线映射为恒定间距的垂直线，将纬线映射为恒定间距的水平线，映射关系相对简单，但既不是等面积的也不是保角的，引入了相当大的失真。下图是一幅用ERP方式投影的360全景图，长宽比为2:1，可以明显看出，两极区域拉伸严重，造成了极大的冗余，增加了编码负担。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223124401.png"  alt="" />
+      </p>
+<p><em>来源：<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/lin453701006/article/details/71173090"  target="_blank" rel="noopener">https://blog.csdn.net/lin453701006/article/details/71173090</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></em></p>
+<p>（4）<strong>立方体投影</strong>就是将360°全景图被投影到各面都是正方形的六面体上（面积未保持不变），经线和纬线都是直线，在纬度 +45° 和 -45° 之间，东南西北方向是准确的，但常规方向不准确。在极面上，由中心确定的方向是真实的。在纬度 +45° 到 -45° 之间，比例尺是正确的。如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223125906.png"  alt="" />
+      </p>
+<p><em>来源：<span class="exturl"><a class="exturl__link"   href="https://desktop.arcgis.com/zh-cn/arcmap/10.7/map/projections/cube.htm"  target="_blank" rel="noopener">https://desktop.arcgis.com/zh-cn/arcmap/10.7/map/projections/cube.htm</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></em></p>
+<p>（5）<strong>视场角（FOV）</strong>。在光学仪器中，以光学仪器的镜头为顶点，以被测目标的物像可通过镜头的最大范围的两条边缘构成的夹角，称为视场角。如下图。 视场角的大小决定了光学仪器的视野范围，视场角越大，视野就越大。通俗地说，目标物体超过这个角就不会被收在镜头里，就只能看到局部物体。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223130328.png"  alt="" />
+      </p>
+<p><em>来源：<span class="exturl"><a class="exturl__link"   href="http://www.colorspace.com.cn/kb/2013/02/24/fov/"  target="_blank" rel="noopener">http://www.colorspace.com.cn/kb/2013/02/24/fov/</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></em></p>
+<p>（6）<strong>Fused Saliency Maps</strong>（FSM，融合显著性方法）。其作者认为（引用论文的作者），在传统情况下，摄影师倾向于将感兴趣的对象定格在赤道近旁，对于边界的区域其实是不敏感的，因此，使用传统图像训练显著性模型很可能不包含这些区域的特征，尤其是基于深度神经网络的模型。为了解决显著性模型的中心先验限制，提出了Fused Saliency Maps（FSM）方法，该方法过程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223144925.png"  alt="" />
+      </p>
+<ol>
+<li>首先，输入ODI图像（omnidirectional images，全向图像，球面投影产生的图像）。</li>
+<li>将其随机翻译成不同的版本，具体做法是将里面的场景、物体随机移动、随机拼接，这里的T即翻译的版本数，可根据实际情况设置。</li>
+<li>用相应的显著性模型预测这T幅图像的显著性图</li>
+<li>采用线性组合的方式将3产生的T幅显著性图融合，其中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mn>1</mn></msub></mrow><annotation encoding="application/x-tex">W_1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mn>2</mn></msub></mrow><annotation encoding="application/x-tex">W_2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mn>3</mn></msub></mrow><annotation encoding="application/x-tex">W_3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>、<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>W</mi><mn>4</mn></msub></mrow><annotation encoding="application/x-tex">W_4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>为这4幅图的权重。</li>
+</ol>
+<p>FSM方法可以解决全景图左右边界不连续的问题。</p>
+<p><em>来源：Look around you: Saliency maps for omnidirectional images in VR applications. Ninth International Conference on Quality of Multimedia Experience (QoMEX). IEEE, 1-6, 2017</em></p>
+<p>（7）Kullback-Leibler Divergence，简称<strong>KL散度</strong>，通常用来衡量两个分布之间的距离， KL散度越小说明，两个分布之间的距离越小，该模型检测性能越好。</p>
+<p>（8）Pearson’s Correlation Coefficient（<strong>CC</strong>）是指皮尔逊相关系数，用来评价预测的眼关注点显著图和ground truth之间的线性相关性，其值越大，相关性越强，算法性能越好，值为正表示正相关，值为负表示负相关。下面是其一个公式（CC有很多变种）：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201223152740.png"  alt="" />
+      </p>
+<p>（9）Normalized Scanpath Saliency （<strong>NSS</strong>）是指标准化扫描路径显着性，用来评价预测的人眼凝视位置与ground truth之间的差异性，NSS越大说明差异越小，模型性能越好。</p>
+<p>（10）Area Under Curve（<strong>AUC</strong>），显示了模型预测人眼注视点的能力大小，最理想的预测对应的score是1，AUC越大说明算法检测性能越好。</p>
+<p><em>参考：<span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/hSheng/archive/2012/12/05/2803424.html"  target="_blank" rel="noopener">https://www.cnblogs.com/hSheng/archive/2012/12/05/2803424.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></em></p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2020/12/23/111602/">https://wxler.gitee.io/2020/12/23/111602/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-next"><a class="paginator-next__link" href="/2020/12/20/163913/"><span class="paginator-prev__text">破解DeePL翻译ppt后下载下来的加密文件</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#摘要"><span class="toc-text">
+          摘要</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-引言"><span class="toc-text">
+          1 引言</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-相关工作"><span class="toc-text">
+          2 相关工作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-方法"><span class="toc-text">
+          3 方法</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#31-salbinet360机制"><span class="toc-text">
+          3.1 SalBiNet360机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#311-framework"><span class="toc-text">
+          3.1.1 Framework</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#312-预训练"><span class="toc-text">
+          3.1.2 预训练</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#313-微调"><span class="toc-text">
+          3.1.3 微调</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#314-测试"><span class="toc-text">
+          3.1.4 测试</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-多尺度上下文模块"><span class="toc-text">
+          3.2 多尺度上下文模块</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-多层解码器"><span class="toc-text">
+          3.3 多层解码器</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-实验"><span class="toc-text">
+          4 实验</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#41-实验配置"><span class="toc-text">
+          4.1 实验配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#411评估数据集"><span class="toc-text">
+          4.1.1评估数据集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#412-评价指标"><span class="toc-text">
+          4.1.2 评价指标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#413-实施细节"><span class="toc-text">
+          4.1.3 实施细节</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#42-salbinet360的分析"><span class="toc-text">
+          4.2 SalBiNet360的分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#421-融合策略中权重的选择"><span class="toc-text">
+          4.2.1 融合策略中权重的选择</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#422-多尺度上下文模块的有效性"><span class="toc-text">
+          4.2.2 多尺度上下文模块的有效性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#423-全局-局部和融合显著性预测的表现"><span class="toc-text">
+          4.2.3 全局、局部和融合显著性预测的表现</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#43-与最新技术的比较"><span class="toc-text">
+          4.3 与最新技术的比较</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#44-讨论"><span class="toc-text">
+          4.4 讨论</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-总结"><span class="toc-text">
+          5 总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#补充概念"><span class="toc-text">
+          补充概念</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">63</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">14</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">29</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
