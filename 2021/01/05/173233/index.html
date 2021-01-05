@@ -1,0 +1,605 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="一、前言        高光谱图像（Hyperspectral image，以下简称HSI）分类广泛应用于遥感图像的分析，随着深度学习和神经网络的兴起，越来越多的人使用二维CNN对HSI进行分类，而HSI分类性能却高度依赖于空间和光谱信息，由于计算复杂度增加，很少有人将三维CNN应用于HSI分类中。这篇 Exploring 3-D–2-D CNN Feature Hierar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用HybridSN进行高光谱图像分类">
+<meta property="og:url" content="https://wxler.gitee.io/2021/01/05/173233/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="一、前言        高光谱图像（Hyperspectral image，以下简称HSI）分类广泛应用于遥感图像的分析，随着深度学习和神经网络的兴起，越来越多的人使用二维CNN对HSI进行分类，而HSI分类性能却高度依赖于空间和光谱信息，由于计算复杂度增加，很少有人将三维CNN应用于HSI分类中。这篇 Exploring 3-D–2-D CNN Feature Hierar">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210103152030.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210103230613.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210103232652.gif">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210104232604.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210104222745.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210104232504.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210104232720.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2020072322071327.png">
+<meta property="article:published_time" content="2021-01-05T09:32:33.000Z">
+<meta property="article:modified_time" content="2021-01-05T09:40:23.946Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="HybridSN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210103152030.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>使用HybridSN进行高光谱图像分类 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/01/05/173233/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">使用HybridSN进行高光谱图像分类</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-01-05</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-01-05</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">6.3k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">45分</span></span></div></header><div class="post-body">
+        <h2 id="一-前言"   >
+          <a href="#一-前言" class="heading-link"><i class="fas fa-link"></i></a>一、前言</h2>
+      
+<p>高光谱图像（Hyperspectral image，以下简称HSI）分类广泛应用于遥感图像的分析，随着深度学习和神经网络的兴起，越来越多的人使用二维CNN对HSI进行分类，而HSI分类性能却高度依赖于空间和光谱信息，由于计算复杂度增加，很少有人将三维CNN应用于HSI分类中。这篇 <span class="exturl"><a class="exturl__link"   href="https://ieeexplore.ieee.org/document/8736016"  target="_blank" rel="noopener">Exploring 3-D–2-D CNN Feature Hierarchy for Hyperspectral Image Classification</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>构建一种混合网络(HybridSN)解决了HSI分类所遇到的问题，它首先用三维CNN提取空间-光谱的特征，然后在三维CNN基础上进一步使用二维CNN学习更多抽象层次的空间特征，这与单独使用三维CNN相比，混合的CNN模型既降低了复杂性，也提升了性能。经实验证明，使用HybridSN进行HSI分类，能够获得非常不错的效果。</p>
+<a id="more"></a>
+
+        <h2 id="二-高光谱图像"   >
+          <a href="#二-高光谱图像" class="heading-link"><i class="fas fa-link"></i></a>二、高光谱图像</h2>
+      
+<p>在进行高光谱图像分类之前，我认为有必要了解什么是高光谱图像。从计算机的角度来说，高光谱图像（Hyperspectral image）就是由多通道（几十甚至几百个）的数组构成的图像，每个像素点都有很多的数来描述，<strong>单个通道上的“灰度值”反映了被拍摄对象对于某一波段的光的反射情况。</strong></p>
+<p>我们知道，常见的RGB彩色图像只有三个通道，而高光谱图像有几十甚至几百个通道，所以高光谱图像包含包含更多的目标信息，利用高光谱图像进行目标的分类识别也必然比采用RGB图像具有更高的准确度。如下图所示，利用高光谱相机可以拍摄出由不同波长组成的空间立方体图像（即高光谱图像），用一个光谱曲线将其显示出来，横轴表示波长，纵轴表示反射系数，由于同一物体对不同波长的光反射因子不一样，因此利用高光谱图像更能反映出不同物体的差异性。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210103152030.png"  alt="" />
+      </p>
+<p>其实高光谱成像技术在很早以前就已经被广泛应用了，天上的卫星拍摄到的就是高光谱图像，通过分析每个像素点的光谱曲线，可以把不同地面目标对应的像素点分类，从而在高光谱图像中把地面、建筑物、草坪、江河等等区分开。</p>
+
+        <h2 id="三-hybridsn模型"   >
+          <a href="#三-hybridsn模型" class="heading-link"><i class="fas fa-link"></i></a>三、HybridSN模型</h2>
+      
+<p>对于HSI分类问题，我们在提取空间信息的同时，也希望能获取到不同波长的光谱信息，而二维CNN是无法处理光谱信息的，也就无法提取到更具有判别性的特征图。幸运的是，三维CNN能够同时提取光谱和空间的特征，但代价是增加计算复杂度。为了充分发挥二维和三维CNN的优势，Swalpa Kumar Roy等人提出了HSI分类模型HybridSN，其模型图如下图所示，它由三个三维卷积、一个二维卷积和三个全连接层组成。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210103230613.png"  alt="" />
+      </p>
+<p>在HybridSN模型中，三维卷积核的尺寸分别为<code>8×3×3×7×1</code>(即图中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>K</mi><mn>1</mn><mn>1</mn></msubsup></mrow><annotation encoding="application/x-tex">K_1^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=3 ，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>K</mi><mn>2</mn><mn>1</mn></msubsup></mrow><annotation encoding="application/x-tex">K_2^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=3 ，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>K</mi><mn>3</mn><mn>1</mn></msubsup></mrow><annotation encoding="application/x-tex">K_3^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=7)、<code>16×3×3×5×8</code>(即图中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>K</mi><mn>1</mn><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">K_1^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=3 ，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>K</mi><mn>2</mn><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">K_2^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=3 ，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>K</mi><mn>3</mn><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">K_3^2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=5)和<code>32×3×3×3×16</code>(即图中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>K</mi><mn>1</mn><mn>3</mn></msubsup></mrow><annotation encoding="application/x-tex">K_1^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=3 ，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>K</mi><mn>2</mn><mn>3</mn></msubsup></mrow><annotation encoding="application/x-tex">K_2^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=3 ，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>K</mi><mn>3</mn><mn>3</mn></msubsup></mrow><annotation encoding="application/x-tex">K_3^3</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">3</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span>=3），分别位于第一、第二和第三卷积层中。其中，<code>16×3×3×5×8</code>表示输入特征图的个数为8，输出特征图个数为16，三维卷积核大小为<code>3x3x5</code>，可理解为有两个空间维度和一个光谱维度。<strong>二维卷积在flatten之前被应用一次，它能有效的判别空间信息，也不会大量损失光谱信息，这是对HSI数据非常重要</strong>。</p>
+<p>模型的详细参数配置如下表所示，可以看出，第一个FC层（即dense1)参数量最多，最后一个全连接层（dense3）的输出为16，这是因为Indian Pines (IP)数据集的类别数为16。HybridSN中可训练的权重参数总数为5122176，所有参数都是随机初始化的，使用Adam优化器，交叉熵损失函数，学习率为0.001，batch大小为128，训练100个epoch。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210103232652.gif"  alt="" />
+      </p>
+<p>下面是我实现的HybridSN模型：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">class_num = <span class="number">16</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HybridSN</span><span class="params">(nn.Module)</span>:</span>  </span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, in_channels=<span class="number">1</span>, out_channels=class_num)</span>:</span></span><br><span class="line">    super(HybridSN, self).__init__()</span><br><span class="line">    self.conv3d_features = nn.Sequential(</span><br><span class="line">        nn.Conv3d(in_channels,out_channels=<span class="number">8</span>,kernel_size=(<span class="number">7</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Conv3d(in_channels=<span class="number">8</span>,out_channels=<span class="number">16</span>,kernel_size=(<span class="number">5</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Conv3d(in_channels=<span class="number">16</span>,out_channels=<span class="number">32</span>,kernel_size=(<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.ReLU()</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    self.conv2d_features = nn.Sequential(</span><br><span class="line">        nn.Conv2d(in_channels=<span class="number">32</span> * <span class="number">18</span>, out_channels=<span class="number">64</span>, kernel_size=(<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.ReLU()</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    self.classifier = nn.Sequential(</span><br><span class="line">        nn.Linear(<span class="number">64</span> * <span class="number">17</span> * <span class="number">17</span>, <span class="number">256</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Dropout(p=<span class="number">0.4</span>),</span><br><span class="line">        nn.Linear(<span class="number">256</span>, <span class="number">128</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Dropout(p=<span class="number">0.4</span>),</span><br><span class="line">        nn.Linear(<span class="number">128</span>, <span class="number">16</span>)</span><br><span class="line">    )</span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">    x = self.conv3d_features(x)</span><br><span class="line">    x = x.view(x.size()[<span class="number">0</span>],x.size()[<span class="number">1</span>]*x.size()[<span class="number">2</span>],x.size()[<span class="number">3</span>],x.size()[<span class="number">4</span>])</span><br><span class="line">    x = self.conv2d_features(x)</span><br><span class="line">    x = x.view(x.size()[<span class="number">0</span>],<span class="number">-1</span>)</span><br><span class="line">    x = self.classifier(x)</span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></div></figure>
+<p>带有Batch Normalization的HybridSN模型：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HybridSN_BN</span><span class="params">(nn.Module)</span>:</span>  </span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, in_channels=<span class="number">1</span>, out_channels=class_num)</span>:</span></span><br><span class="line">    super(HybridSN_BN, self).__init__()</span><br><span class="line">    self.conv3d_features = nn.Sequential(</span><br><span class="line">        nn.Conv3d(in_channels,out_channels=<span class="number">8</span>,kernel_size=(<span class="number">7</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.BatchNorm3d(<span class="number">8</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Conv3d(in_channels=<span class="number">8</span>,out_channels=<span class="number">16</span>,kernel_size=(<span class="number">5</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.BatchNorm3d(<span class="number">16</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Conv3d(in_channels=<span class="number">16</span>,out_channels=<span class="number">32</span>,kernel_size=(<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.BatchNorm3d(<span class="number">32</span>),</span><br><span class="line">        nn.ReLU()</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    self.conv2d_features = nn.Sequential(</span><br><span class="line">        nn.Conv2d(in_channels=<span class="number">32</span> * <span class="number">18</span>, out_channels=<span class="number">64</span>, kernel_size=(<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.BatchNorm2d(<span class="number">64</span>),</span><br><span class="line">        nn.ReLU()</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    self.classifier = nn.Sequential(</span><br><span class="line">        nn.Linear(<span class="number">64</span> * <span class="number">17</span> * <span class="number">17</span>, <span class="number">256</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Dropout(p=<span class="number">0.4</span>),</span><br><span class="line">        nn.Linear(<span class="number">256</span>, <span class="number">128</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Dropout(p=<span class="number">0.4</span>),</span><br><span class="line">        nn.Linear(<span class="number">128</span>, <span class="number">16</span>)</span><br><span class="line">    )</span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">    x = self.conv3d_features(x)</span><br><span class="line">    x = x.view(x.size()[<span class="number">0</span>],x.size()[<span class="number">1</span>]*x.size()[<span class="number">2</span>],x.size()[<span class="number">3</span>],x.size()[<span class="number">4</span>])</span><br><span class="line">    x = self.conv2d_features(x)</span><br><span class="line">    x = x.view(x.size()[<span class="number">0</span>],<span class="number">-1</span>)</span><br><span class="line">    x = self.classifier(x)</span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></div></figure>
+<p>上面我实现了两种模型，一种是原始的HybridSN模型，另一种是带有Batch Normalization的HybridSN模型，下面还会再实现另外两种模型。</p>
+
+        <h2 id="四-注意力机制"   >
+          <a href="#四-注意力机制" class="heading-link"><i class="fas fa-link"></i></a>四、注意力机制</h2>
+      
+<p>为了提升HSI分类模型的性能，我也实现了带有注意力机制的HybridSN模型进行训练，这里我采用<span class="exturl"><a class="exturl__link"   href="https://arxiv.org/pdf/1807.06521.pdf"  target="_blank" rel="noopener">CBAM: Convolutional Block Attention Module</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>的空间注意力和通道注意力机制。</p>
+<p>（1）Channnel attetion module(通道注意力模块)</p>
+<p>通道注意力模是解决<strong>look what</strong>的问题，主要是探索不同通道之间特征图的关系，通过分配各个卷积通道上的资源，使模型更应该注意哪一部分特征。通道注意力的过程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210104232604.png"  alt="" />
+      </p>
+<ol>
+<li>首先使用MaxPool和AvgPool聚合两个空间维度上的特征，实现时可以用<code>AdaptiveAvgPool2d</code>和<code>AdaptiveMaxPool2d</code>保证尺寸不变</li>
+<li>然后通过共享的MLP层，即FC+Relu+FC层，学习每个通道的权重，再将两个特征图相加，后接一个sigmoid函数。</li>
+<li>最后将结果与未经channel attention的原始输入相乘，从而得到的新的特征图。</li>
+</ol>
+<p>Channnel attetion module实现如下：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 参考 https://github.com/luuuyi/CBAM.PyTorch</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ChannelAttention</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, in_planes, ratio=<span class="number">16</span>)</span>:</span></span><br><span class="line">        super(ChannelAttention, self).__init__()</span><br><span class="line">        self.avg_pool = nn.AdaptiveAvgPool2d(<span class="number">1</span>)</span><br><span class="line">        self.max_pool = nn.AdaptiveMaxPool2d(<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">        self.fc1   = nn.Conv2d(in_planes, in_planes // <span class="number">16</span>, <span class="number">1</span>, bias=<span class="literal">False</span>)</span><br><span class="line">        self.relu1 = nn.ReLU()</span><br><span class="line">        self.fc2   = nn.Conv2d(in_planes // <span class="number">16</span>, in_planes, <span class="number">1</span>, bias=<span class="literal">False</span>)</span><br><span class="line"></span><br><span class="line">        self.sigmoid = nn.Sigmoid()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        avg_out = self.fc2(self.relu1(self.fc1(self.avg_pool(x))))</span><br><span class="line">        max_out = self.fc2(self.relu1(self.fc1(self.max_pool(x))))</span><br><span class="line">        out = avg_out + max_out</span><br><span class="line">        <span class="keyword">return</span> self.sigmoid(out)</span><br></pre></td></tr></table></div></figure>
+<p>（2）Spatial attention module(空间注意力模块)</p>
+<p>空间注意力模块解决的是<strong>look where</strong>的问题，通过对特征图每个位置进行二维调整（即attention调整），使模型关注到值得更多关注的区域上。空间注意力的过程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210104222745.png"  alt="" />
+      </p>
+<ol>
+<li>首先对不同特征图上相同位置的像素值进行全局的MaxPooling和AvgPooling操作，分别得到两个spatial attention map。</li>
+<li>将这两个特征图concatenate，通过7*7的卷积核对这个feature map进行卷积操作，后接一个sigmoid函数。</li>
+<li>最后把得到的空间注意力特征图与未经Spatial attention的原始输入相乘，得到的新的特征图。</li>
+</ol>
+<p>Spatial attention module实现如下：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 参考 https://github.com/luuuyi/CBAM.PyTorch</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SpatialAttention</span><span class="params">(nn.Module)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, kernel_size=<span class="number">7</span>)</span>:</span></span><br><span class="line">        super(SpatialAttention, self).__init__()</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> kernel_size <span class="keyword">in</span> (<span class="number">3</span>, <span class="number">7</span>), <span class="string">'kernel size must be 3 or 7'</span></span><br><span class="line">        padding = <span class="number">3</span> <span class="keyword">if</span> kernel_size == <span class="number">7</span> <span class="keyword">else</span> <span class="number">1</span></span><br><span class="line"></span><br><span class="line">        self.conv1 = nn.Conv2d(<span class="number">2</span>, <span class="number">1</span>, kernel_size, padding=padding, bias=<span class="literal">False</span>)</span><br><span class="line">        self.sigmoid = nn.Sigmoid()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">        avg_out = torch.mean(x, dim=<span class="number">1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line">        max_out, _ = torch.max(x, dim=<span class="number">1</span>, keepdim=<span class="literal">True</span>)</span><br><span class="line">        x = torch.cat([avg_out, max_out], dim=<span class="number">1</span>)</span><br><span class="line">        x = self.conv1(x)</span><br><span class="line">        <span class="keyword">return</span> self.sigmoid(x)</span><br></pre></td></tr></table></div></figure>
+<p><strong>加上注意力机制的HybridSN模型如下：</strong></p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">class_num = <span class="number">16</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HybridSN_Attention</span><span class="params">(nn.Module)</span>:</span>  </span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, in_channels=<span class="number">1</span>, out_channels=class_num)</span>:</span></span><br><span class="line">    super(HybridSN_Attention, self).__init__()</span><br><span class="line">    self.conv3d_features = nn.Sequential(</span><br><span class="line">        nn.Conv3d(in_channels,out_channels=<span class="number">8</span>,kernel_size=(<span class="number">7</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Conv3d(in_channels=<span class="number">8</span>,out_channels=<span class="number">16</span>,kernel_size=(<span class="number">5</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Conv3d(in_channels=<span class="number">16</span>,out_channels=<span class="number">32</span>,kernel_size=(<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.ReLU()</span><br><span class="line">    )</span><br><span class="line">	<span class="comment"># 通道和空间注意力</span></span><br><span class="line">    self.ca = ChannelAttention(<span class="number">32</span> * <span class="number">18</span>)</span><br><span class="line">    self.sa = SpatialAttention()</span><br><span class="line"></span><br><span class="line">    self.conv2d_features = nn.Sequential(</span><br><span class="line">        nn.Conv2d(in_channels=<span class="number">32</span> * <span class="number">18</span>, out_channels=<span class="number">64</span>, kernel_size=(<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.ReLU()</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    self.classifier = nn.Sequential(</span><br><span class="line">        nn.Linear(<span class="number">64</span> * <span class="number">17</span> * <span class="number">17</span>, <span class="number">256</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Dropout(p=<span class="number">0.4</span>),</span><br><span class="line">        nn.Linear(<span class="number">256</span>, <span class="number">128</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Dropout(p=<span class="number">0.4</span>),</span><br><span class="line">        nn.Linear(<span class="number">128</span>, <span class="number">16</span>)</span><br><span class="line">    )</span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">    x = self.conv3d_features(x)</span><br><span class="line">    x = x.view(x.size()[<span class="number">0</span>],x.size()[<span class="number">1</span>]*x.size()[<span class="number">2</span>],x.size()[<span class="number">3</span>],x.size()[<span class="number">4</span>])</span><br><span class="line"></span><br><span class="line">    x = self.ca(x) * x</span><br><span class="line">    x = self.sa(x) * x</span><br><span class="line"></span><br><span class="line">    x = self.conv2d_features(x)</span><br><span class="line">    x = x.view(x.size()[<span class="number">0</span>],<span class="number">-1</span>)</span><br><span class="line">    x = self.classifier(x)</span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></div></figure>
+<p><strong>加上Batch Normalization、注意力机制的HybridSN模型如下：</strong></p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HybridSN_BN_Attention</span><span class="params">(nn.Module)</span>:</span>  </span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, in_channels=<span class="number">1</span>, out_channels=class_num)</span>:</span></span><br><span class="line">    super(HybridSN_BN_Attention, self).__init__()</span><br><span class="line">    self.conv3d_features = nn.Sequential(</span><br><span class="line">        nn.Conv3d(in_channels,out_channels=<span class="number">8</span>,kernel_size=(<span class="number">7</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.BatchNorm3d(<span class="number">8</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Conv3d(in_channels=<span class="number">8</span>,out_channels=<span class="number">16</span>,kernel_size=(<span class="number">5</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.BatchNorm3d(<span class="number">16</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Conv3d(in_channels=<span class="number">16</span>,out_channels=<span class="number">32</span>,kernel_size=(<span class="number">3</span>,<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.BatchNorm3d(<span class="number">32</span>),</span><br><span class="line">        nn.ReLU()</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line">    self.ca = ChannelAttention(<span class="number">32</span> * <span class="number">18</span>)</span><br><span class="line">    self.sa = SpatialAttention()</span><br><span class="line"></span><br><span class="line">    self.conv2d_features = nn.Sequential(</span><br><span class="line">        nn.Conv2d(in_channels=<span class="number">32</span> * <span class="number">18</span>, out_channels=<span class="number">64</span>, kernel_size=(<span class="number">3</span>,<span class="number">3</span>)),</span><br><span class="line">        nn.BatchNorm2d(<span class="number">64</span>),</span><br><span class="line">        nn.ReLU()</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    self.classifier = nn.Sequential(</span><br><span class="line">        nn.Linear(<span class="number">64</span> * <span class="number">17</span> * <span class="number">17</span>, <span class="number">256</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Dropout(p=<span class="number">0.4</span>),</span><br><span class="line">        nn.Linear(<span class="number">256</span>, <span class="number">128</span>),</span><br><span class="line">        nn.ReLU(),</span><br><span class="line">        nn.Dropout(p=<span class="number">0.4</span>),</span><br><span class="line">        nn.Linear(<span class="number">128</span>, <span class="number">16</span>)</span><br><span class="line">    )</span><br><span class="line"> </span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(self, x)</span>:</span></span><br><span class="line">    x = self.conv3d_features(x)</span><br><span class="line">    x = x.view(x.size()[<span class="number">0</span>],x.size()[<span class="number">1</span>]*x.size()[<span class="number">2</span>],x.size()[<span class="number">3</span>],x.size()[<span class="number">4</span>])</span><br><span class="line"></span><br><span class="line">    x = self.ca(x) * x</span><br><span class="line">    x = self.sa(x) * x</span><br><span class="line"></span><br><span class="line">    x = self.conv2d_features(x)</span><br><span class="line">    x = x.view(x.size()[<span class="number">0</span>],<span class="number">-1</span>)</span><br><span class="line">    x = self.classifier(x)</span><br><span class="line">    <span class="keyword">return</span> x</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="五-开始实验"   >
+          <a href="#五-开始实验" class="heading-link"><i class="fas fa-link"></i></a>五、开始实验</h2>
+      
+<p>上面，我共实现了四种HybridSN模型，分别是：</p>
+<ul>
+<li>原始的HybridSN模型</li>
+<li>加上Batch Normalization的HybridSN模型：HybridSN_BN</li>
+<li>加上通道和空间注意力机制的HybridSN模型：HybridSN_Attention</li>
+<li>加上Batch Normalization、通道和空间注意力机制的HybridSN模型：HybridSN_BN_Attention</li>
+</ul>
+<p>下面我将分别用这四种模型测试Indian Pines数据集，并分析结果。(考虑到篇幅，下面我只写出了主要的方法，全部实现过程请看我的colab)</p>
+
+        <h3 id="51-下载数据集"   >
+          <a href="#51-下载数据集" class="heading-link"><i class="fas fa-link"></i></a>5.1 下载数据集</h3>
+      
+<p>Indian Pines 是最早的用于HSI分类的数据集，该数据集有尺寸为145×145 的空间图像和224个波长范围为400～2500nm的光谱反射谱带，由于第 104~108、150-163 和第 220 个波段不能被水反射，因此一般使用的是剔除了这 20 个波段后剩下的 200 个波段作为测试的对象。该数据集共有16类庄稼，用不同的颜色标出。可通过如下方式下载数据集：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">! wget http://www.ehu.eus/ccwintco/uploads/<span class="number">6</span>/<span class="number">67</span>/Indian_pines_corrected.mat</span><br><span class="line">! wget http://www.ehu.eus/ccwintco/uploads/c/c4/Indian_pines_gt.mat</span><br><span class="line">! pip install spectral</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="52-pca降维"   >
+          <a href="#52-pca降维" class="heading-link"><i class="fas fa-link"></i></a>5.2 PCA降维</h3>
+      
+<p>可以把HSI数据立方体表示为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>I</mi><mtext> </mtext><mo>∈</mo><msup><mi>R</mi><mrow><mi>M</mi><mo>×</mo><mi>N</mi><mo>×</mo><mi>D</mi></mrow></msup></mrow><annotation encoding="application/x-tex">I\ \in R^{M \times N \times D}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72243em;vertical-align:-0.0391em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mspace"> </span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8413309999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">M</span><span class="mbin mtight">×</span><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span><span class="mbin mtight">×</span><span class="mord mathdefault mtight" style="margin-right:0.02778em;">D</span></span></span></span></span></span></span></span></span></span></span></span> ，其中<em>I</em>为原始输入，<em>M</em>为宽度，<em>N</em>为高度，<em>D</em>为光谱带数（即深度）。<strong>I</strong>中的每一个HSI像素都包含<em>D个</em>光谱量，并形成一个one-hot 标签向量，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>Y</mi><mo>=</mo><mo stretchy="false">(</mo><msub><mi mathvariant="normal">y</mi><mn>1</mn></msub><mo separator="true">,</mo><msub><mi mathvariant="normal">y</mi><mn>2</mn></msub><mo separator="true">,</mo><mo>⋯</mo><mtext> </mtext><mo separator="true">,</mo><msub><mi mathvariant="normal">y</mi><mi>C</mi></msub><mo stretchy="false">)</mo><mo>∈</mo><msup><mi>R</mi><mrow><mn>1</mn><mo>×</mo><mn>1</mn><mo>×</mo><mi>C</mi></mrow></msup></mrow><annotation encoding="application/x-tex">Y = ({ {\rm{y}}_1},{ {\rm{y} }_2}, \cdots ,{ {\rm{y} }_C}) \in {R^{1 \times 1 \times C} }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.22222em;">Y</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord"><span class="mord"><span class="mord"><span class="mord"><span class="mord"><span class="mord mathrm" style="margin-right:0.01389em;">y</span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord"><span class="mord"><span class="mord"><span class="mord"><span class="mord mathrm" style="margin-right:0.01389em;">y</span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.30110799999999993em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="minner">⋯</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord"><span class="mord"><span class="mord"><span class="mord"><span class="mord mathrm" style="margin-right:0.01389em;">y</span></span></span></span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span><span class="mclose">)</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8413309999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mbin mtight">×</span><span class="mord mtight">1</span><span class="mbin mtight">×</span><span class="mord mathdefault mtight" style="margin-right:0.07153em;">C</span></span></span></span></span></span></span></span></span></span></span></span></span>，其中，C表示谱带覆盖类别（land-cover categories）。然而，高光谱像素谱带覆盖类别的混合特性，使得类内差异性和类间相似性较高，这对任何模型来说都具有很大的挑战，为了消除光谱冗余，我们采用主成分分析(PCA)的方法将谱带的数量从<em>D</em>减少到<em>B</em>，同时保持相同的空间尺寸（即宽度<em>M</em>和高度<em>N</em>）。因为只减少了光谱带的数量，从而保留了空间信息，这对识别任何物体都是非常重要的。这里将PCA降维后的数据表示为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>X</mi><mo>∈</mo><msup><mi>R</mi><mrow><mi>M</mi><mo>×</mo><mi>N</mi><mo>×</mo><mi>B</mi></mrow></msup></mrow><annotation encoding="application/x-tex">X \in {R^{M \times N \times B}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72243em;vertical-align:-0.0391em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">X</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8413309999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.10903em;">M</span><span class="mbin mtight">×</span><span class="mord mathdefault mtight" style="margin-right:0.10903em;">N</span><span class="mbin mtight">×</span><span class="mord mathdefault mtight" style="margin-right:0.05017em;">B</span></span></span></span></span></span></span></span></span></span></span></span></span>， 其中X为PCA后的修正输入，<em>M</em>为宽度，<em>N</em>为高度，<em>B</em>为PCA后的谱带数。</p>
+<p>为了更好的进行HSI分类，下面将HSI数据立方体划分为一个个小的有重叠的3D-patch，其真值由中心像素的标签决定。对于上面<strong>X</strong>中的3D neighboring patches <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>P</mi><mo>∈</mo><msup><mi>R</mi><mrow><mi>S</mi><mo>×</mo><mi>S</mi><mo>×</mo><mi>B</mi></mrow></msup></mrow><annotation encoding="application/x-tex">P \in {R^{S \times S \times B}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72243em;vertical-align:-0.0391em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">∈</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.8413309999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault" style="margin-right:0.00773em;">R</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8413309999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.05764em;">S</span><span class="mbin mtight">×</span><span class="mord mathdefault mtight" style="margin-right:0.05764em;">S</span><span class="mbin mtight">×</span><span class="mord mathdefault mtight" style="margin-right:0.05017em;">B</span></span></span></span></span></span></span></span></span></span></span></span></span> ，其空间位置的中心为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo stretchy="false">(</mo><mi>α</mi><mo separator="true">,</mo><mi>β</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(\alpha ,\beta )</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span><span class="mclose">)</span></span></span></span>，覆盖S×S窗口或空间范围和所有<em>B</em>谱段。因此，在位置<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo stretchy="false">(</mo><mi>α</mi><mo separator="true">,</mo><mi>β</mi><mo stretchy="false">)</mo></mrow><annotation encoding="application/x-tex">(\alpha ,\beta )</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span><span class="mpunct">,</span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span><span class="mclose">)</span></span></span></span>处的3D-patch，用<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>P</mi><mrow><mi>α</mi><mo separator="true">,</mo><mi>β</mi></mrow></msub></mrow><annotation encoding="application/x-tex">{P_{\alpha ,\beta }}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">P</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.0037em;">α</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight" style="margin-right:0.05278em;">β</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span></span>表示，涵盖了宽度从<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi><mo>−</mo><mo stretchy="false">(</mo><mi>S</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mi mathvariant="normal">/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\alpha  - (S - 1)/2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mord">/</span><span class="mord">2</span></span></span></span> 到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>α</mi><mo>+</mo><mo stretchy="false">(</mo><mi>S</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mi mathvariant="normal">/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\alpha  + (S - 1)/2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.0037em;">α</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mord">/</span><span class="mord">2</span></span></span></span> ，高度从<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>β</mi><mo>−</mo><mo stretchy="false">(</mo><mi>S</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mi mathvariant="normal">/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\beta  - (S - 1)/2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mord">/</span><span class="mord">2</span></span></span></span> 到 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>β</mi><mo>+</mo><mo stretchy="false">(</mo><mi>S</mi><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo><mi mathvariant="normal">/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">\beta  + (S - 1)/2</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8888799999999999em;vertical-align:-0.19444em;"></span><span class="mord mathdefault" style="margin-right:0.05278em;">β</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">+</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mopen">(</span><span class="mord mathdefault" style="margin-right:0.05764em;">S</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">−</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord">1</span><span class="mclose">)</span><span class="mord">/</span><span class="mord">2</span></span></span></span>，以及PCA降维后的数据立方体<em>X</em>的所有<em>B</em>谱段。</p>
+<p>下面是PCA降维及3D-patch的实现过程：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对高光谱数据 X 应用 PCA 变换</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">applyPCA</span><span class="params">(X, numComponents)</span>:</span></span><br><span class="line">    newX = np.reshape(X, (<span class="number">-1</span>, X.shape[<span class="number">2</span>]))</span><br><span class="line">    pca = PCA(n_components=numComponents, whiten=<span class="literal">True</span>)</span><br><span class="line">    newX = pca.fit_transform(newX)</span><br><span class="line">    newX = np.reshape(newX, (X.shape[<span class="number">0</span>], X.shape[<span class="number">1</span>], numComponents))</span><br><span class="line">    <span class="keyword">return</span> newX</span><br><span class="line"></span><br><span class="line"><span class="comment"># 对单个像素周围提取 patch 时，边缘像素就无法取了，因此，给这部分像素进行 padding 操作</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">padWithZeros</span><span class="params">(X, margin=<span class="number">2</span>)</span>:</span></span><br><span class="line">    newX = np.zeros((X.shape[<span class="number">0</span>] + <span class="number">2</span> * margin, X.shape[<span class="number">1</span>] + <span class="number">2</span>* margin, X.shape[<span class="number">2</span>]))</span><br><span class="line">    x_offset = margin</span><br><span class="line">    y_offset = margin</span><br><span class="line">    newX[x_offset:X.shape[<span class="number">0</span>] + x_offset, y_offset:X.shape[<span class="number">1</span>] + y_offset, :] = X</span><br><span class="line">    <span class="keyword">return</span> newX</span><br><span class="line"></span><br><span class="line"><span class="comment"># 在每个像素周围提取 patch ，然后创建成符合 keras 处理的格式</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">createImageCubes</span><span class="params">(X, y, windowSize=<span class="number">5</span>, removeZeroLabels = True)</span>:</span></span><br><span class="line">    <span class="comment"># 给 X 做 padding</span></span><br><span class="line">    margin = int((windowSize - <span class="number">1</span>) / <span class="number">2</span>)</span><br><span class="line">    zeroPaddedX = padWithZeros(X, margin=margin)</span><br><span class="line">    <span class="comment"># split patches</span></span><br><span class="line">    patchesData = np.zeros((X.shape[<span class="number">0</span>] * X.shape[<span class="number">1</span>], windowSize, windowSize, X.shape[<span class="number">2</span>]))</span><br><span class="line">    patchesLabels = np.zeros((X.shape[<span class="number">0</span>] * X.shape[<span class="number">1</span>]))</span><br><span class="line">    patchIndex = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> r <span class="keyword">in</span> range(margin, zeroPaddedX.shape[<span class="number">0</span>] - margin):</span><br><span class="line">        <span class="keyword">for</span> c <span class="keyword">in</span> range(margin, zeroPaddedX.shape[<span class="number">1</span>] - margin):</span><br><span class="line">            patch = zeroPaddedX[r - margin:r + margin + <span class="number">1</span>, c - margin:c + margin + <span class="number">1</span>]   </span><br><span class="line">            patchesData[patchIndex, :, :, :] = patch</span><br><span class="line">            patchesLabels[patchIndex] = y[r-margin, c-margin]</span><br><span class="line">            patchIndex = patchIndex + <span class="number">1</span></span><br><span class="line">    <span class="keyword">if</span> removeZeroLabels:</span><br><span class="line">        patchesData = patchesData[patchesLabels&gt;<span class="number">0</span>,:,:,:]</span><br><span class="line">        patchesLabels = patchesLabels[patchesLabels&gt;<span class="number">0</span>]</span><br><span class="line">        patchesLabels -= <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> patchesData, patchesLabels</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">splitTrainTestSet</span><span class="params">(X, y, testRatio, randomState=<span class="number">345</span>)</span>:</span></span><br><span class="line">    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=testRatio, random_state=randomState, stratify=y)</span><br><span class="line">    <span class="keyword">return</span> X_train, X_test, y_train, y_test</span><br></pre></td></tr></table></div></figure>
+<p>然后，创建数据集加载类：</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">""" Training dataset"""</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TrainDS</span><span class="params">(torch.utils.data.Dataset)</span>:</span> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.len = Xtrain.shape[<span class="number">0</span>]</span><br><span class="line">        self.x_data = torch.FloatTensor(Xtrain)</span><br><span class="line">        self.y_data = torch.LongTensor(ytrain)        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, index)</span>:</span></span><br><span class="line">        <span class="comment"># 根据索引返回数据和对应的标签</span></span><br><span class="line">        <span class="keyword">return</span> self.x_data[index], self.y_data[index]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__len__</span><span class="params">(self)</span>:</span> </span><br><span class="line">        <span class="comment"># 返回文件数据的数目</span></span><br><span class="line">        <span class="keyword">return</span> self.len</span><br><span class="line"></span><br><span class="line"><span class="string">""" Testing dataset"""</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TestDS</span><span class="params">(torch.utils.data.Dataset)</span>:</span> </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.len = Xtest.shape[<span class="number">0</span>]</span><br><span class="line">        self.x_data = torch.FloatTensor(Xtest)</span><br><span class="line">        self.y_data = torch.LongTensor(ytest)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getitem__</span><span class="params">(self, index)</span>:</span></span><br><span class="line">        <span class="comment"># 根据索引返回数据和对应的标签</span></span><br><span class="line">        <span class="keyword">return</span> self.x_data[index], self.y_data[index]</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__len__</span><span class="params">(self)</span>:</span> </span><br><span class="line">        <span class="comment"># 返回文件数据的数目</span></span><br><span class="line">        <span class="keyword">return</span> self.len</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="53-训练模型"   >
+          <a href="#53-训练模型" class="heading-link"><i class="fas fa-link"></i></a>5.3 训练模型</h3>
+      
+<p>为了更高效的分析训练结果，我创建了一个训练和测试的方法，然后将上面提到的四种模型作为参数进行训练。</p>
+<p>（1）训练方法</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">train</span><span class="params">(net)</span>:</span></span><br><span class="line">  current_loss_his = []</span><br><span class="line">  current_Acc_his = []</span><br><span class="line"></span><br><span class="line">  best_net_wts = copy.deepcopy(net.state_dict())</span><br><span class="line">  best_acc = <span class="number">0.0</span></span><br><span class="line"></span><br><span class="line">  criterion = nn.CrossEntropyLoss()</span><br><span class="line">  optimizer = optim.Adam(net.parameters(), lr=<span class="number">0.001</span>)</span><br><span class="line"></span><br><span class="line">  <span class="comment"># 开始训练</span></span><br><span class="line">  total_loss = <span class="number">0</span></span><br><span class="line">  <span class="keyword">for</span> epoch <span class="keyword">in</span> range(<span class="number">100</span>):</span><br><span class="line">      net.train()  <span class="comment"># 将模型设置为训练模式</span></span><br><span class="line">      <span class="keyword">for</span> i, (inputs, labels) <span class="keyword">in</span> enumerate(train_loader):</span><br><span class="line">          inputs = inputs.to(device)</span><br><span class="line">          labels = labels.to(device)</span><br><span class="line">          <span class="comment"># 优化器梯度归零</span></span><br><span class="line">          optimizer.zero_grad()</span><br><span class="line">          <span class="comment"># 正向传播 +　反向传播 + 优化 </span></span><br><span class="line">          outputs = net(inputs)</span><br><span class="line">          loss = criterion(outputs, labels)</span><br><span class="line">          loss.backward()</span><br><span class="line">          optimizer.step()</span><br><span class="line">          total_loss += loss.item()</span><br><span class="line"></span><br><span class="line">      net.eval()   <span class="comment"># 将模型设置为验证模式</span></span><br><span class="line">      current_acc = test_acc(net)</span><br><span class="line">      current_Acc_his.append(current_acc)</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> current_acc &gt; best_acc:</span><br><span class="line">        best_acc = current_acc</span><br><span class="line">        best_net_wts = copy.deepcopy(net.state_dict())</span><br><span class="line"></span><br><span class="line">      print(<span class="string">'[Epoch: %d]   [loss avg: %.4f]   [current loss: %.4f]  [current acc: %.4f]'</span> %(epoch + <span class="number">1</span>, total_loss/(epoch+<span class="number">1</span>), loss.item(), current_acc))</span><br><span class="line">      current_loss_his.append(loss.item())</span><br><span class="line"></span><br><span class="line">  print(<span class="string">'Finished Training'</span>)</span><br><span class="line">  print(<span class="string">"Best Acc:%.4f"</span> %(best_acc))</span><br><span class="line"></span><br><span class="line">  <span class="comment"># load best model weights</span></span><br><span class="line">  net.load_state_dict(best_net_wts)</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> net,current_loss_his,current_Acc_his</span><br></pre></td></tr></table></div></figure>
+<p>（2）测试方法</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test_acc</span><span class="params">(net)</span>:</span></span><br><span class="line">  count = <span class="number">0</span></span><br><span class="line">  <span class="comment"># 模型测试</span></span><br><span class="line">  <span class="keyword">for</span> inputs, _ <span class="keyword">in</span> test_loader:</span><br><span class="line">      inputs = inputs.to(device)</span><br><span class="line">      outputs = net(inputs)</span><br><span class="line">      outputs = np.argmax(outputs.detach().cpu().numpy(), axis=<span class="number">1</span>)</span><br><span class="line">      <span class="keyword">if</span> count == <span class="number">0</span>:</span><br><span class="line">          y_pred_test =  outputs</span><br><span class="line">          count = <span class="number">1</span></span><br><span class="line">      <span class="keyword">else</span>:</span><br><span class="line">          y_pred_test = np.concatenate( (y_pred_test, outputs) )</span><br><span class="line"></span><br><span class="line">  <span class="comment"># 生成分类报告</span></span><br><span class="line">  classification = classification_report(ytest, y_pred_test, digits=<span class="number">4</span>)</span><br><span class="line">  index_acc = classification.find(<span class="string">'weighted avg'</span>)</span><br><span class="line">  accuracy = classification[index_acc+<span class="number">17</span>:index_acc+<span class="number">23</span>]</span><br><span class="line">  <span class="keyword">return</span> float(accuracy)</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="54-可视化结果"   >
+          <a href="#54-可视化结果" class="heading-link"><i class="fas fa-link"></i></a>5.4 可视化结果</h3>
+      
+<p>HybridSN、HybridSN_BN、HybridSN_Attention、HybridSN_BN_Attention的训练结果如下：</p>
+<p>（1）四种模型的Loss下降曲线</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210104232504.png"  alt="" />
+      </p>
+<p>（2）四种模型的Accuracy变化曲线</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210104232720.png"  alt="" />
+      </p>
+<p>（3）四种模型最佳Precision、Recall、F1-Score</p>
+<div class="table-container"><table>
+<thead>
+<tr>
+<th style="text-align:center">模型</th>
+<th style="text-align:center">Accuracy</th>
+<th style="text-align:center">Recall</th>
+<th style="text-align:center">F1-Score</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">HybridSN</td>
+<td style="text-align:center">0.9790</td>
+<td style="text-align:center">0.9788</td>
+<td style="text-align:center">0.9786</td>
+</tr>
+<tr>
+<td style="text-align:center">HybridSN_BN</td>
+<td style="text-align:center">0.9897</td>
+<td style="text-align:center">0.9888</td>
+<td style="text-align:center">0.9888</td>
+</tr>
+<tr>
+<td style="text-align:center">HybridSN_Attention</td>
+<td style="text-align:center">0.9807</td>
+<td style="text-align:center">0.9806</td>
+<td style="text-align:center">0.9805</td>
+</tr>
+<tr>
+<td style="text-align:center">HybridSN_BN_Attention</td>
+<td style="text-align:center">0.9885</td>
+<td style="text-align:center">0.9884</td>
+<td style="text-align:center">0.9884</td>
+</tr>
+</tbody>
+</table></div>
+
+        <h3 id="55-分析结论"   >
+          <a href="#55-分析结论" class="heading-link"><i class="fas fa-link"></i></a>5.5 分析结论</h3>
+      
+<p>从收敛速度上看，HybridSN_BN和HybridSN_BN_Attention远快于另外两种模型，说明加上Batch Normalization之后，模型的收敛速度大大提升，而HybridSN_BN和HybridSN_BN_Attention的收敛速度几乎一致，说明Attention并没有提升收敛速度的作用。四种模型大约在25个epoch以后就不怎么收敛了，说明HybridSN本身的收敛速度还是很快的，只不过加了BN以后这种效果更明显了。</p>
+<p>从准确度上看，HybridSN_BN、HybridSN_Attention、HybridSN_BN_Attention均高于HybridSN，说明Attention和Batch Normalization都有提升模型分类准确度的作用，相比HybridSN_Attention而言，HybridSN_BN提升的效果更明显，这就说明了BN不仅提升收敛速度方面效果显著，在提升准确度方面也是很不错的。但是，HybridSN_BN_Attention相比HybridSN_BN，无论是Precision、Recall还是F1-Score，都下降了，说明了BN和Attention这两种机制并不搭配，在下面的思考中，我也给出了为什么会出现这种情况个人理解。</p>
+<p>可以看到，HybridSN模型的收敛速度很快，能在25个epoch内实现，准确度也很高，四种模型的准确度都达到了97%以上，说明采用三维和二维卷积的混合网络，是非常有助于解决高光谱图像分类问题的。</p>
+
+        <h2 id="六-思考"   >
+          <a href="#六-思考" class="heading-link"><i class="fas fa-link"></i></a>六、思考</h2>
+      
+<p>（1）二维卷积和三维卷积的区别</p>
+<p>二维卷积是最常见、用途最广泛的卷积，主要用于提取空间特征，对于一张图片来说，可以根据设定的卷积核的不同，提取不同的特征，如数字图像处理中模糊、锐化、去噪操作都是用特定卷积核实现的。在CNN中，二维卷积的卷积核权重是可学习的，再加上激活函数的非线性变换，几乎可以拟合出任何想要的模型。三维卷积的卷积核可以看作一个数据立方体，因此三维卷积处理的对象是一个立方体图像（或其它相似的数据），三维卷积的思想与二维卷积相同，只不过多了一个维度，所以三维卷积不仅提取处理空间特征，也可以提取除了空间特征以外的另一维度的特征。由于高光谱图像不仅有空间信息，还有不同波长的光谱信息，因此使用三维卷积来提取高光谱图像的特征就再好不过了，但是三维卷积有一个致命的缺点，就是计算复杂度太高，参数量也比二维卷积多出了一维维度的倍数，所以采用三维和二维卷积的混合网络即降低了模型的复杂性，也提升了模型的性能。</p>
+<p>（2）为什么Batch Normalization能够加快收敛速度</p>
+<p>Batch Normalization，顾名思义，以进行学习时的batch为单位，按batch进行规范化。具体而言，把每层神经网络任意神经元输入值的分布强行拉回到均值为0方差为1的标准正态分布，用数学式表示的话，如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/2020072322071327.png"  alt="img" />
+      </p>
+<p><em>m代表batch的大小，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>μ</mi><mi>B</mi></msub></mrow><annotation encoding="application/x-tex">μ_B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.625em;vertical-align:-0.19444em;"></span><span class="mord"><span class="mord mathdefault">μ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.32833099999999993em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.05017em;">B</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>为批处理数据的均值，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>σ</mi><mi>B</mi><mn>2</mn></msubsup></mrow><annotation encoding="application/x-tex">σ^2_B</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.089439em;vertical-align:-0.275331em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.424669em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.05017em;">B</span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">2</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.275331em;"><span></span></span></span></span></span></span></span></span></span>为批处理数据的方差。</em></p>
+<p>BN层可以让激活函数(非线性变化函数)的输入数据落入比较敏感的区域，缓解了梯度消失问题，加速了网络收敛速度。同时，BN层将每一个batch的均值与方差引入到网络中，由于每个batch的这两个值都不相同，可看做为训练过程增加了随机噪音，可以起到一定的正则效果，防止过拟合。</p>
+<p>（3）为什么多测试几次网络会发现每次分类的结果都不一样？</p>
+<p>我认为导致网络每次测试的结果都不一样原因是：没有使用net.eval()将模型切换至测试模式。我们知道，dropout的本质通过在学习过程中随机删除神经元，从而每一次都让不同的模型进行学习。比如，以概率 p=0.6 随机将神经元置0，就相当于在10个神经元选4个神经元输出(4个神经元在工作，另外6神经元置0)，这时我们就相当于训练了 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>C</mi><mn>10</mn><mn>4</mn></msubsup></mrow><annotation encoding="application/x-tex">C_{10}^4</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.0622159999999998em;vertical-align:-0.24810799999999997em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">C</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-2.4518920000000004em;margin-left:-0.07153em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">0</span></span></span></span><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">4</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.24810799999999997em;"><span></span></span></span></span></span></span></span></span></span> 个模型，只是每个模型的参数量更少了。如果测试时仍处理训练模式，那么也会随机将神经元置为0，这就带来了不确定的结果，而在测试模式下，<strong>dropout层会让所有的激活单元都通过</strong>，最后的输出再乘以 (1-p) 作为模型的测试结果，这样得到的数据就是确定的了。同样的，是否处于测试模式也会影响BN层的工作机制，从而影响测试的结果。因此，合理的运用model.train()和model.eval()对测试的结果是至关重要的。</p>
+<p>（4）如果想要进一步提升高光谱图像的分类性能，可以如何使用注意力机制？</p>
+<p>在上述实验中，给HybridSN加上注意力机制后模型的性能有了提升，我也尝试了把注意力机制加在HybridSN模型不同位置上作比较（结果没有在上面呈现），发现把Attention加在第三个三维卷积后，二维卷积之前比加在二维卷积后效果更好。我认为这是因为高光谱图像经过二维卷积之后会损失一部分光谱信息，如果将注意力机制加在二维卷积之后，那么Attention抽取关键信息的效果就不明显了（会忽略少部分光谱信息的关键区域），所以应该把Attention加在第三个三维卷积后，这样会保留更多的光谱信息，从而进一步提升高光谱图像的分类性能。从上面的结果中也看到了，加上Attention之后，模型的Precision、Recall、F1-Score都提升了。</p>
+<p>（5）为什么HybridSN_BN_Attention的性能不如HybridSN_BN？</p>
+<p>我刚开始也很疑惑，为什么两个被公认性能优越的模块加在一起后性能反而下降了呢？我想了很久，得出了自己的一点理解：因为BN是固定每一次输入Batch的分布，把每层神经网络任意神经元输入值的分布强行拉回到均值为0方差为1的标准正态分布，而Attention是为了获取更加显著的区域，经过Attention后显著的区域会变得更为突出，这在一定程度上打乱了原来输入的分布，从这方面来讲，这两个模块似乎是一种相互互斥的存在，效果自然就下降了。这相当于一个精通python的人认为python是世界上最好的语言，而另一个精通java的人认为java是最好世界上的语言，当一个人即会java也会python时，它可能任何一个都不精通。当然，得到这样的结果也可能是如下原因造成：</p>
+<ul>
+<li>由于Indian Pines数据集自身特点，模型对其分类性能的评估并没有广义性，可能在另外一个数据集上BN+Attenion的性能又比只有BN的模型好了</li>
+<li>模型本身的结果可能就存在问题，如果调整一下各个模块的顺序，改变各个模块内卷积核的参数，结果会不会更好呢？</li>
+</ul>
+<p>由于时间原因及个人知识水平的限制，并没有做更多的探索，还望见谅。</p>
+
+        <h2 id="七-结语"   >
+          <a href="#七-结语" class="heading-link"><i class="fas fa-link"></i></a>七、结语</h2>
+      
+<p>HybridSN是一种用于HSI分类的混合网络模型，以三维和二维卷积结合的方式既提升了模型的性能，也降低了复杂度。另外，分别加上BN、Attention之后，模型的性能都有了提升，BN提升更加明显，但是把BN和Attention一起加在HybridSN中，会发现HybridSN_BN_Attention的性能虽然比原始的HybridSN有所提升，但不如HybridSN_BN，我认为这是因为两个模块是一种互斥的存在，从而导致HybridSN_BN的性能降低，上面也给出了自己的解释。这次实验让我学到了很多，不仅熟练掌握了HSI分类，也对BN和Attention的印象更加深刻，更明白了不是所有优秀的模块组合起来就能取得好的结果，只有不断的分析、实践、思考，才能更好的理解其本质。</p>
+<p>最后，附上本文在colab的实现过程：<span class="exturl"><a class="exturl__link"   href="https://colab.research.google.com/drive/12QbZqcxfplFEm7yp3X9wgi7jYXmqRjz9?usp=sharing"  target="_blank" rel="noopener">https://colab.research.google.com/drive/12QbZqcxfplFEm7yp3X9wgi7jYXmqRjz9?usp=sharing</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>【参考文档】</p>
+<p><span class="exturl"><a class="exturl__link"   href="https://ieeexplore.ieee.org/document/8736016"  target="_blank" rel="noopener">HybridSN: Exploring 3-D–2-D CNN Feature Hierarchy for Hyperspectral Image Classification</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p><span class="exturl"><a class="exturl__link"   href="https://github.com/luuuyi/CBAM.PyTorch"  target="_blank" rel="noopener">CBAM: Convolutional Block Attention Module</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p><span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_38290648/article/details/80596543"  target="_blank" rel="noopener">高光谱数据集</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p><span class="exturl"><a class="exturl__link"   href="https://www.sohu.com/a/308158769_394987"  target="_blank" rel="noopener">高光谱图像</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/01/05/173233/">https://wxler.gitee.io/2021/01/05/173233/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/HybridSN/">HybridSN</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-next"><a class="paginator-next__link" href="/2020/12/23/111602/"><span class="paginator-prev__text">SalBiNet360-Saliency Prediction on 360° Images with Local-Global Bifurcated Deep Network</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-前言"><span class="toc-text">
+          一、前言</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-高光谱图像"><span class="toc-text">
+          二、高光谱图像</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-hybridsn模型"><span class="toc-text">
+          三、HybridSN模型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四-注意力机制"><span class="toc-text">
+          四、注意力机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五-开始实验"><span class="toc-text">
+          五、开始实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#51-下载数据集"><span class="toc-text">
+          5.1 下载数据集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#52-pca降维"><span class="toc-text">
+          5.2 PCA降维</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#53-训练模型"><span class="toc-text">
+          5.3 训练模型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#54-可视化结果"><span class="toc-text">
+          5.4 可视化结果</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#55-分析结论"><span class="toc-text">
+          5.5 分析结论</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六-思考"><span class="toc-text">
+          六、思考</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七-结语"><span class="toc-text">
+          七、结语</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">64</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">14</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">30</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
