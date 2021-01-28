@@ -1,0 +1,1857 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta property="og:type" content="article">
+<meta property="og:title" content="我花了72小时，用了近4万字，总结了65道操作系统知识点！">
+<meta property="og:url" content="https://wxler.gitee.io/2021/01/28/163906/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128164145.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126120846.jpg">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126115642.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126150438.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126152544.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126165210.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126171358.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126171425.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126171621.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126181401.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126182822.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126183251.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126212226.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126214010.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126215149.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126220559.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126220856.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126230014.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126231200.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126231750.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127102037.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126233741.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126235007.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126235222.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127000147.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127000217.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127000319.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127104958.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127105313.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127112132.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127133546.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127134135.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127134213.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127142533.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127144617.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127150640.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127151614.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127151944.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127152058.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127201122.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127202038.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127205934.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127210619.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127210958.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127225002.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127230905.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127231021.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127234257.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127234450.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127235301.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128113805.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128114835.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128120327.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128122310.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128123550.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128123650.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128124108.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128124142.png">
+<meta property="article:published_time" content="2021-01-28T08:39:06.000Z">
+<meta property="article:modified_time" content="2021-01-28T08:44:51.078Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="操作系统">
+<meta property="article:tag" content="面经">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128164145.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>我花了72小时，用了近4万字，总结了65道操作系统知识点！ | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/01/28/163906/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">我花了72小时，用了近4万字，总结了65道操作系统知识点！</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-01-28</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-01-28</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">37.2k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">196分</span></span></div></header><div class="post-body"><p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128164145.png"  alt="" />
+      </p>
+<a id="more"></a>
+<blockquote>
+<p>本人是北京航空航天大学21软件学院的一名在读硕士，下面是我研究生复试和面试整理的操作系统知识点，覆盖了操作系统的全部内容，我相信无论是企业面试和还是考试，都不会超出里面的范围。现在发布出来，供大家参考，希望大家能有所收获。</p>
+</blockquote>
+<p>话不多说，直接来干货。</p>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E7%9B%AE%E6%A0%87">1、操作系统的目标</a></li>
+<li><a href="#2-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%BD%9C%E7%94%A8">2、操作系统的作用</a></li>
+<li><a href="#3-%E8%84%B1%E6%9C%BA%E8%BE%93%E5%85%A5%E8%BE%93%E5%87%BAoff-line-io%E6%8A%80%E6%9C%AF">3、脱机输入/输出(Off-Line I/O)技术</a></li>
+<li><a href="#4-%E5%88%86%E6%97%B6-%E5%AE%9E%E6%97%B6-%E5%88%86%E5%B8%83%E5%BC%8F-%E6%89%B9%E5%A4%84%E7%90%86%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%8C%BA%E5%88%AB">4、分时、实时、分布式、批处理系统的区别？</a></li>
+<li><a href="#5-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%89%B9%E6%80%A7">5、操作系统的基本特性</a></li>
+<li><a href="#6-%E6%97%B6%E5%88%86%E5%A4%8D%E7%94%A8%E5%92%8C%E7%A9%BA%E5%88%86%E5%A4%8D%E7%94%A8%E6%8A%80%E6%9C%AF">6、时分复用和空分复用技术</a></li>
+<li><a href="#7-%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%E7%9A%84%E4%B8%BB%E8%A6%81%E5%8A%9F%E8%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B">7、操作系统的主要功能有哪些？</a></li>
+<li><a href="#8-%E5%BE%AE%E5%86%85%E6%A0%B8os%E7%BB%93%E6%9E%84">8、微内核OS结构</a></li>
+<li><a href="#9-%E8%BF%9B%E7%A8%8B%E5%92%8C%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%8C%BA%E5%88%AB%E5%92%8C%E8%81%94%E7%B3%BB">9、进程和程序的区别和联系</a></li>
+<li><a href="#10-%E8%BF%9B%E7%A8%8B%E7%9A%84%E5%9F%BA%E6%9C%AC%E7%8A%B6%E6%80%81%E5%8F%8A%E8%BD%AC%E6%8D%A2">10、进程的基本状态及转换</a></li>
+<li><a href="#11-%E8%BF%9B%E7%A8%8B%E6%8E%A7%E5%88%B6%E5%9D%97pcb%E4%B8%AD%E7%9A%84%E4%BF%A1%E6%81%AF%E5%92%8C%E4%BD%9C%E7%94%A8">11、进程控制块PCB中的信息和作用</a></li>
+<li><a href="#12-%E7%90%86%E8%A7%A3%E8%BF%9B%E7%A8%8B%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">12、理解进程同步机制的基本概念</a></li>
+<li><a href="#13-%E7%90%86%E8%A7%A3%E4%B8%B4%E7%95%8C%E8%B5%84%E6%BA%90-%E4%B8%B4%E7%95%8C%E5%8C%BA%E7%9A%84%E6%A6%82%E5%BF%B5">13、理解临界资源、临界区的概念</a></li>
+<li><a href="#14-%E8%BF%9B%E7%A8%8B%E5%90%8C%E6%AD%A5%E6%9C%BA%E5%88%B6%E5%BA%94%E9%81%B5%E5%BE%AA%E7%9A%84%E8%A7%84%E5%88%99">14、进程同步机制应遵循的规则</a></li>
+<li><a href="#15-%E7%94%A8%E4%BF%A1%E5%8F%B7%E9%87%8F%E6%9C%BA%E5%88%B6%E8%A7%A3%E5%86%B3%E7%BB%8F%E5%85%B8%E8%BF%9B%E7%A8%8B%E5%90%8C%E6%AD%A5%E9%97%AE%E9%A2%98">15、用信号量机制解决经典进程同步问题</a></li>
+<li><a href="#16-%E7%90%86%E8%A7%A3%E8%BF%9B%E7%A8%8B%E9%80%9A%E4%BF%A1%E5%8F%8A%E5%85%B6%E6%96%B9%E5%BC%8F">16、理解进程通信及其方式</a></li>
+<li><a href="#17-%E8%BF%9B%E7%A8%8B%E4%B8%8E%E7%BA%BF%E7%A8%8B%E7%9A%84%E5%8C%BA%E5%88%AB%E4%B8%8E%E8%81%94%E7%B3%BB">17、进程与线程的区别与联系</a></li>
+<li><a href="#18-%E4%BD%9C%E4%B8%9A%E8%B0%83%E5%BA%A6%E7%9A%84%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%85%B6%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95">18、作业调度的概念及其调度算法</a></li>
+<li><a href="#19-%E8%BF%9B%E7%A8%8B%E8%B0%83%E5%BA%A6%E7%9A%84%E6%A6%82%E5%BF%B5%E5%8F%8A%E5%85%B6%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95">19、进程调度的概念及其调度算法</a></li>
+<li><a href="#20-%E5%AE%9E%E6%97%B6%E8%B0%83%E5%BA%A6%E5%8F%8A%E5%85%B6%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95">20、实时调度及其调度算法</a></li>
+<li><a href="#21-%E4%BD%9C%E4%B8%9A%E5%B9%B3%E5%9D%87%E5%91%A8%E8%BD%AC%E6%97%B6%E9%97%B4%E5%92%8C%E5%B9%B3%E5%9D%87%E5%B8%A6%E6%9D%83%E5%91%A8%E8%BD%AC%E6%97%B6%E9%97%B4">21、作业平均周转时间和平均带权周转时间</a></li>
+<li><a href="#22-cpu%E5%88%A9%E7%94%A8%E7%8E%87%E5%92%8Ccpu%E6%9C%80%E5%B0%8F%E6%97%B6%E9%92%9F%E5%91%A8%E6%9C%9F">22、CPU利用率和CPU最小时钟周期</a></li>
+<li><a href="#23-%E6%AD%BB%E9%94%81%E5%8F%8A%E6%AD%BB%E9%94%81%E4%BA%A7%E7%94%9F%E7%9A%84%E6%9D%A1%E4%BB%B6">23、死锁及死锁产生的条件</a></li>
+<li><a href="#24-%E5%A4%84%E7%90%86%E6%AD%BB%E9%94%81%E7%9A%84%E6%96%B9%E6%B3%95">24、处理死锁的方法</a></li>
+<li><a href="#25-%E5%AD%98%E5%82%A8%E5%99%A8%E7%9A%84%E5%A4%9A%E5%B1%82%E7%BB%93%E6%9E%84">25、存储器的多层结构</a></li>
+<li><a href="#26-%E7%A8%8B%E5%BA%8F%E8%A3%85%E5%85%A5%E5%86%85%E5%AD%98%E8%BD%AC%E5%8F%98%E4%B8%BA%E5%8F%AF%E4%BB%A5%E6%89%A7%E8%A1%8C%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%BF%87%E7%A8%8B">26、程序装入内存转变为可以执行程序的过程</a></li>
+<li><a href="#27-%E7%A8%8B%E5%BA%8F%E7%9A%84%E8%A3%85%E5%85%A5%E5%92%8C%E9%93%BE%E6%8E%A5%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B">27、程序的装入和链接方式有哪些？</a></li>
+<li><a href="#28-%E5%AD%98%E5%82%A8%E5%99%A8%E5%86%85%E5%AD%98%E7%9A%84%E7%AE%A1%E7%90%86%E7%AD%96%E7%95%A5%E6%88%96%E6%96%B9%E5%BC%8F">28、存储器（内存）的管理策略或方式</a></li>
+<li><a href="#29-%E8%BF%9E%E7%BB%AD%E5%88%86%E9%85%8D%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F">29、连续分配存储管理方式</a></li>
+<li><a href="#30-%E5%B8%B8%E8%A7%81%E7%9A%84%E5%8A%A8%E6%80%81%E5%88%86%E5%8C%BA%E5%88%86%E9%85%8D%E7%AE%97%E6%B3%95">30、常见的动态分区分配算法</a></li>
+<li><a href="#31-%E5%88%86%E9%A1%B5%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">31、分页存储管理方式的基本概念</a></li>
+<li><a href="#32-%E5%88%86%E6%AE%B5%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">32、分段存储管理方式的基本概念</a></li>
+<li><a href="#33-%E5%88%86%E9%A1%B5%E5%92%8C%E5%88%86%E6%AE%B5%E7%9A%84%E4%B8%BB%E8%A6%81%E5%8C%BA%E5%88%AB">33、分页和分段的主要区别</a></li>
+<li><a href="#34-%E6%AE%B5%E9%A1%B5%E5%BC%8F%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">34、段页式存储管理方式的基本概念</a></li>
+<li><a href="#35-%E8%99%9A%E6%8B%9F%E5%AD%98%E5%82%A8%E5%99%A8%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5">35、虚拟存储器系统的基本概念</a></li>
+<li><a href="#36-%E8%AF%B7%E6%B1%82%E5%88%86%E9%A1%B5%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F">36、请求分页存储管理方式</a></li>
+<li><a href="#37-%E8%AF%B7%E6%B1%82%E5%88%86%E9%A1%B5%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F%E7%9A%84%E9%A1%B5%E9%9D%A2%E7%BD%AE%E6%8D%A2%E7%AE%97%E6%B3%95">37、请求分页存储管理方式的页面置换算法</a></li>
+<li><a href="#38-%E6%8A%96%E5%8A%A8%E5%8F%91%E7%94%9F%E5%8E%9F%E5%9B%A0%E5%8F%8A%E9%A2%84%E9%98%B2%E6%96%B9%E6%B3%95">38、“抖动”发生原因及预防方法</a></li>
+<li><a href="#39-%E4%BB%80%E4%B9%88%E6%98%AF%E5%B7%A5%E4%BD%9C%E9%9B%86">39、什么是工作集</a></li>
+<li><a href="#40-%E8%AF%B7%E6%B1%82%E5%88%86%E6%AE%B5%E5%AD%98%E5%82%A8%E7%AE%A1%E7%90%86%E6%96%B9%E5%BC%8F">40、请求分段存储管理方式</a></li>
+<li><a href="#41-io%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD">41、I/O系统的基本功能</a></li>
+<li><a href="#42-io%E7%B3%BB%E7%BB%9F%E7%9A%84%E5%B1%82%E6%AC%A1%E7%BB%93%E6%9E%84">42、I/O系统的层次结构</a></li>
+<li><a href="#43-io%E7%B3%BB%E7%BB%9F%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%B1%BB%E5%9E%8B%E6%9C%89%E5%93%AA%E4%BA%9B">43、I/O系统接口的类型有哪些</a></li>
+<li><a href="#44-%E8%AE%BE%E5%A4%87%E6%8E%A7%E5%88%B6%E5%99%A8%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%8A%9F%E8%83%BD">44、设备控制器的基本功能</a></li>
+<li><a href="#45-io%E9%80%9A%E9%81%93%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5%E5%92%8C%E5%B8%B8%E7%94%A8%E7%B1%BB%E5%9E%8B">45、I/O通道基本概念和常用类型</a></li>
+<li><a href="#46-%E4%B8%AD%E6%96%ADinterrup%E5%92%8C%E9%99%B7%E5%85%A5%E9%98%B1trap%E7%9A%84%E5%8C%BA%E5%88%AB">46、中断(interrup)和陷入阱(trap)的区别</a></li>
+<li><a href="#47-%E8%BD%AF%E4%B8%AD%E6%96%AD%E4%B8%8E%E7%A1%AC%E4%B8%AD%E6%96%AD%E7%9A%84%E5%8C%BA%E5%88%AB">47、软中断与硬中断的区别</a></li>
+<li><a href="#48-%E5%AF%B9io%E8%AE%BE%E5%A4%87%E7%9A%84%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F%E6%9C%89%E5%93%AA%E4%BA%9B">48、对I/O设备的控制方式有哪些</a></li>
+<li><a href="#49-%E4%BB%80%E4%B9%88%E6%98%AF%E5%81%87%E8%84%B1%E6%9C%BAspooing%E6%8A%80%E6%9C%AF">49、什么是假脱机(Spooing)技术？</a></li>
+<li><a href="#50-%E7%A3%81%E7%9B%98%E7%9A%84%E8%AE%BF%E9%97%AE%E6%97%B6%E9%97%B4%E6%9C%89%E5%93%AA%E4%BA%9B">50、磁盘的访问时间有哪些</a></li>
+<li><a href="#51-%E5%B8%B8%E8%A7%81%E7%9A%84%E7%A3%81%E7%9B%98%E8%B0%83%E5%BA%A6%E7%AE%97%E6%B3%95">51、常见的磁盘调度算法</a></li>
+<li><a href="#52-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E4%B8%AD%E7%9A%84%E4%B8%89%E7%BA%A7%E6%95%B0%E6%8D%AE%E7%BB%84%E7%BB%87%E5%BD%A2%E5%BC%8F">52、文件系统中的三级数据组织形式</a></li>
+<li><a href="#53-%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%E6%A8%A1%E5%9E%8B%E7%9A%84%E4%B8%89%E4%B8%AA%E5%B1%82%E6%AC%A1">53、文件系统模型的三个层次</a></li>
+<li><a href="#54-%E6%96%87%E4%BB%B6%E7%9A%84%E9%80%BB%E8%BE%91%E7%BB%93%E6%9E%84%E5%92%8C%E7%89%A9%E7%90%86%E7%BB%93%E6%9E%84">54、文件的逻辑结构和物理结构</a></li>
+<li><a href="#55-%E6%96%87%E4%BB%B6%E7%9B%AE%E5%BD%95%E5%92%8C%E7%9B%AE%E5%BD%95%E6%96%87%E4%BB%B6">55、文件目录和目录文件</a></li>
+<li><a href="#56-%E6%96%87%E4%BB%B6%E7%9A%84%E9%93%BE%E6%8E%A5%E7%BB%84%E7%BB%87%E5%BD%A2%E5%BC%8F">56、文件的链接组织形式</a></li>
+<li><a href="#57-%E6%96%87%E4%BB%B6%E5%88%86%E9%85%8D%E8%A1%A8fat%E6%8A%80%E6%9C%AF">57、文件分配表FAT技术</a></li>
+<li><a href="#58-ntfs%E7%9A%84%E6%96%87%E4%BB%B6%E7%BB%84%E7%BB%87%E6%96%B9%E5%BC%8F">58、NTFS的文件组织方式</a></li>
+<li><a href="#59-%E6%96%87%E4%BB%B6%E5%AD%98%E5%82%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E7%AE%A1%E7%90%86">59、文件存储空间的管理</a></li>
+<li><a href="#60-%E5%BB%89%E4%BB%B7%E7%A3%81%E7%9B%98%E5%86%97%E4%BD%99%E9%98%B5%E5%88%97raid">60、廉价磁盘冗余阵列（RAID)</a></li>
+<li><a href="#61-%E5%B8%B8%E8%A7%81%E7%9A%84%E7%A3%81%E7%9B%98%E5%AE%B9%E9%94%99%E6%8A%80%E6%9C%AF">61、常见的磁盘容错技术</a></li>
+<li><a href="#62-%E7%89%B9%E6%9D%83%E6%8C%87%E4%BB%A4%E5%92%8C%E9%9D%9E%E7%89%B9%E6%9D%83%E6%8C%87%E4%BB%A4-%E7%AE%A1%E6%80%81%E5%92%8C%E7%9B%AE%E6%80%81">62、特权指令和非特权指令、管态和目态</a></li>
+<li><a href="#63-%E4%BB%80%E4%B9%88%E6%98%AF%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%92%8C%E5%BA%93%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8%E6%9C%89%E4%BD%95%E5%8C%BA%E5%88%AB">63、什么是系统调用？和库函数调用有何区别？</a></li>
+<li><a href="#64-%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8%E5%92%8C%E4%B8%80%E8%88%AC%E7%9A%84%E8%BF%87%E7%A8%8B%E8%B0%83%E7%94%A8%E7%9A%84%E5%8C%BA%E5%88%AB">64、系统调用和一般的过程调用的区别</a></li>
+<li><a href="#65-%E9%80%BB%E8%BE%91%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4%E5%92%8C%E7%89%A9%E7%90%86%E5%9C%B0%E5%9D%80%E7%A9%BA%E9%97%B4">65、逻辑地址空间和物理地址空间</a></li>
+</ul>
+</p>
+
+        <h2 id="1-操作系统的目标"   >
+          <a href="#1-操作系统的目标" class="heading-link"><i class="fas fa-link"></i></a>1、操作系统的目标</h2>
+      
+<p><strong>方便性</strong> 方便用户使用</p>
+<p><strong>有效性</strong> 提高系统资源的利用率和系统的吞吐量（系统的吞吐量表示在单位时间内实际处理的数据量）</p>
+<p><strong>可扩充性</strong> 能够方便地增加新的功能和模块</p>
+<p><strong>开放性</strong> 能够遵循国际标准，凡遵循国际标准所开发的硬件和软件，都能彼此兼容，方便地实现互联。</p>
+
+        <h2 id="2-操作系统的作用"   >
+          <a href="#2-操作系统的作用" class="heading-link"><i class="fas fa-link"></i></a>2、操作系统的作用</h2>
+      
+<p><strong>操作系统提供了用户与计算机硬件之间的接口</strong> 用户在操作系统的帮助下能够方便快捷地操作计算机硬件运行自己的程序。</p>
+<p><strong>操作系统实现了对计算机系统资源的管理</strong> 操作系统能够合理分配计算机系统的各种资源，提高系统资源的利用率和系统的吞吐量</p>
+<p><strong>操作系统实现了对计算机硬件的抽象</strong> 操作系统屏蔽了计算机硬件物理接口的具体细节，用户只需要了解操作系统提供的操作命令，就可以实现对计算机硬件的操作。</p>
+
+        <h2 id="3-脱机输入输出off-line-io技术"   >
+          <a href="#3-脱机输入输出off-line-io技术" class="heading-link"><i class="fas fa-link"></i></a>3、脱机输入/输出(Off-Line I/O)技术</h2>
+      
+<p>为了缓和CPU和I/O设备之间速度不匹配的矛盾，而引入了脱机输入、脱机输出技术。 该技术是利用专门的外围控制机， 先将低速IO 设备上的数据传送到高速磁盘上，或者相反。这样当处理机需要输入数据时，再从磁盘上高速地调入内存，极大地提高了输入速度。 反之，当处理机需要输出数据时，也可以由处理机把数据从内存输出到高速磁盘上，处理机便可去做自己的事情。由于数据的输入和输出是在脱离主机的情况下进行的，故称之为<strong>脱机输入/输出技术</strong>。这种脱机I/O方式的主要优点为：</p>
+<ul>
+<li>减少了CPU的空间时间</li>
+<li>提高了I/O速度</li>
+</ul>
+<p>反之，将在主机的直接控制下进行输入/输出的IO方式称之为<strong>联机输入/输出（On-Line I/O）技术</strong>。另外，如果用一道程序来模拟脱机输入时的外围控制机功能，则将该技术称之为<strong>假脱机技术</strong>即<strong>SPOOLing</strong>（Simultaneaus Periphernal Operating OnLine)技术，<strong>SPOOLing</strong>技术详情见下面题目。</p>
+
+        <h2 id="4-分时-实时-分布式-批处理系统的区别"   >
+          <a href="#4-分时-实时-分布式-批处理系统的区别" class="heading-link"><i class="fas fa-link"></i></a>4、分时、实时、分布式、批处理系统的区别？</h2>
+      
+<p>（1）批处理系统</p>
+<p>批处理系统的特征是<strong>将磁带上的一批作业能自动地逐个地调入内存依次运行</strong>，而无需人工干预。批处理系统分为单道批处理系统和多道批处理系统。</p>
+<p><strong>单道批处理系统</strong>的工作方式：每次从外存上只调入一道程序进入内存运行，各道作业的完成顺序在正常情况下与它们进入内存的顺序完全相同，只有当程序完成或发生异常情况时，才换入其后继程序进入内存运行。</p>
+<p><strong>多道批处理系统</strong>的工作方式：用户所提交的作业都<strong>先存放在外存上</strong>并排成一个队列，称为“后备队列”；然后，由<strong>作业调度程序按一定的算法</strong>从后备队列中选择若干个作业调入内存，使它们共享CPU和系统中的各种资源。由于同时在内存中存在若干道程序，这样便可以利用一个程序执行I/O操作的空档时间，让CPU去运行另一道程序。</p>
+<p>（2）分时系统</p>
+<p>分时系统的引入是为了满足用户对人机交互的需要。</p>
+<p>分时系统的工作方式：在一台主机上连接了多个带有显示器和键盘的终端，同时允许多个用户通过自己的终端，以交互式方式使用计算机，共享主机的资源。<strong>分时系统为了满足人机交互，必须做到及时接受和及时处理</strong>。</p>
+<p>要做到及时接收多个用户键盘输入的命令，只需配置一个多路卡。多路卡的作用是，实现分时多路复用，以很快的速度周期性地扫描各个终端，接收各用户从终端上输入的数据。此外，为了能使从终端输入的数据被依次逐条地进行处理，还需要为每个终端配置一个缓冲区，用来暂存用户键入的命令（或数据）。</p>
+<p>要做到及时处理用户的作业（程序），可将用户提交的作用直接调入内存（不像批处理系统那样，把用户提交的作业依次从磁盘调入内存，这时仍有作业在外存上驻留等待调用，分时系统为了及时处理用户的作业，需要把所有用户提交的作业直接调入内存），并使处理机采用轮转的运行方式。为了避免一个作业长期独占处理机，引入了时间片的概念，系统规定每个作业只能运行一个时间片（如30ms），然后就暂停该作业的运行，并立即调度下一个作业运行。</p>
+<p>（3）实时系统</p>
+<p>实时系统是指系统能及时(或实时)响应外部事件的请求，在规定的时间内完成对该事件的处理，并控制所有实时任务协调一致地运行。实时操作系统要追求的目标是：对外部请求在严格时间范围内做出反应，有高可靠性和及时性。常见实时系统有工业控制系统、信息查询系统、多媒体系统、嵌入式系统等。</p>
+<p>工业控制系统能够实时采集现场数据，能对采集的数据及时处理，进而自动的控制相应设备执行。如火炮的自动控制系统，导弹的制导系统。</p>
+<p>信息查询系统能够接收从远程终端发来的服务请求，根据用户提出的请求，对信息进行检索和处理，并能及时对用户做出正确的回答。如飞机和火车的订票系统。</p>
+<p>多媒体系统是指用于播放音频和视频的系统，为了保证有好的视觉和听觉感受，它必须是实时信息处理系统。</p>
+<p>嵌入式系统用于对设备进行控制或对其中的信息做出处理，除了将各种类型的芯片嵌入到各种仪器和设备中，还需要配置嵌入式OS，它同样需要具有实时控制和处理的功能。</p>
+<p>（4）分布式操作系统</p>
+<p>分布式操作系统是支持分布式处理的软件系统，是在由通信网络互联的多处理机体系结构上执行任务的系统。它将负载分散到多个计算机硬件服务器上，能够提供更好的性能和可用性。</p>
+<p>分布式操作系统通常配置为共享内存和任务的服务器群集。这些服务器协同工作，提供比单个大型计算机服务器更大功率、更大容量、更高性能。</p>
+
+        <h2 id="5-操作系统的基本特性"   >
+          <a href="#5-操作系统的基本特性" class="heading-link"><i class="fas fa-link"></i></a>5、操作系统的基本特性</h2>
+      
+<p>操作系统的基本特性是并发、共享、虚拟、异步</p>
+<p>（1）并发</p>
+<p>并发性和并行性是既相似又有区别的两个概念。并发性是指两个或多个事件在同一时间间隔内发生；而并行性是指两个或多个事件在同一时刻发生。</p>
+<p>倘若在计算机系统中有多个处理机，处理多个可并发执行的程序，这样，多个程序便可同时执行。</p>
+<p>而在单处理机系统，每一时刻只能运行一个程序，比如说0<sub>20ms，20</sub>40ms，40~60ms分别运行A、B、C程序，宏观上有三道程序同时执行，我们可以说这个程序是并发执行的。</p>
+<p>（2）共享</p>
+<p>共享是指系统中的资源，可供内存中多个并发执行的进程（或线程）<strong>共同</strong>使用。共享有两种工作方式，互斥共享方式和同时访问方式。</p>
+<p>互斥共享方式：规定在一段时间内只允许一个进程（或线程）访问某资源，如临界资源，当某一进程访问完并释放该资源后，才允许另一进程进行访问。</p>
+<p>同时访问方式：允许在一段时间内由多个进程同时访问某资源。</p>
+<p>（3）虚拟</p>
+<p>”虚拟“技术通过空分复用或时分复用，将一条物理信道变为若干条逻辑信道，使原来只能供一对用户通话的物理信道，变为能够供多个用户同时通话的逻辑信道。一般地，把通过某种技术将一个物理实体变为若干个逻辑上的对应物的功能称为”虚拟“。空分复用或时分复用技术见题目6。</p>
+<p>（4）异步</p>
+<p>在内存中的每个进程，在何时能获得外理机运行，又以怎样的速度向前推进，都是不可预知的。内存中的每个进程有的侧重于计算而较少需要I/0，有的其计算少而I/O多，这样，很可能是先进入内存的作业后完成，而后进入内存的作业先完成。或者说，进程是以不可预知的速度向前推进的，即为进程的异步性。</p>
+
+        <h2 id="6-时分复用和空分复用技术"   >
+          <a href="#6-时分复用和空分复用技术" class="heading-link"><i class="fas fa-link"></i></a>6、时分复用和空分复用技术</h2>
+      
+<p>（1）时分复用技术</p>
+<p>时分复用技术是利用处理机的空闲时间去运行其它程序，提高了处理机的利用率。时分复用技术广泛用于实现虚拟处理机和虚拟设备，使处理机的利用率得以提升。</p>
+<p>虚拟处理机技术。利用多道程序设计技术，为每道程序建立至少一个进程，让多道程序并发执行。此时，虽然系统中只有一台处理机，但它能同时为多个用户服务，使每个终端用户都认为是有一个处理机（CPU）在专门为他服务。亦即，利用多道程序设计技术，把一台物理上的处理机虚拟为多台逻辑上的处理机，在每台逻辑处理机上运行一道程序，我们把用户所感觉到的处理机称为<strong>虚拟处理机</strong>。</p>
+<p>虚拟设备技术。将一台物理I/O设备虚拟为多台逻辑上的I/O设备，并允许每个用户占用一台逻辑上的I/O设备，这样便可使原来仅允许在一段时间内由一个用户访问的设备（即临界资源），变为允许多个用户“同时”访问的共享设备，即宏观上能“同时”为多个用户服务。例如原来的打印机输入临界资源，而通过虚拟设备技术又可以把它变为多台逻辑上的打印机，供多个用户“同时”打印。</p>
+<p>（2）空分复用技术</p>
+<p>空分复用技术是利用存储器的空闲空间分区域存放和运行其它程序，提高了内存的利用率。</p>
+<p>但是，单纯的空分复用存储器只能提高内存的利用率，并不能实现在逻辑上扩大存储器容量和功能，还必须引入<strong>虚拟存储技术</strong>才能达到此目的，虚拟存储技术在本质上是实现内存的分时复用，即它可以通过分时复用内存的方式，使一道程序仅在远小于它的内存空间中运行。例如，一个100MB的应用程序之所以可以运行在30MB的内存空间，实质上就是每次只把用户程序的一部分调入内存运行，运行完成后将该部分换出，再换入另一部分到内存中运行，通过这样的置换功能，便实现了用户程序的各个部分分时地进入内存运行。</p>
+<p>虚拟的实现，可以采用时分复用，也可以采用空分复用。将一台物理设备对应多个N个逻辑设备，如果是利用空分复用方法来实现虚拟，此时一台虚拟设备平均占用的空间必然也等于或低于物理设备所拥有空间的1/N。如果是利用时分复用方法来实现虚拟，则每台虚拟设备的平均速度必然等于或低于物理设备速度的1/N。</p>
+
+        <h2 id="7-操作系统的主要功能有哪些"   >
+          <a href="#7-操作系统的主要功能有哪些" class="heading-link"><i class="fas fa-link"></i></a>7、操作系统的主要功能有哪些？</h2>
+      
+<p>（1）处理机管理功能</p>
+<p>在传统的多道程序系统中，处理机的分配和运行都是以进程为基本单位的，因而对处理机的管理可归结为对进程的管理。</p>
+<p>主要功能有</p>
+<ul>
+<li>进程控制：创建和撤销进程</li>
+<li>进程同步：为使多个进程余条不紊地运行，可采用进程互斥方式和进程同步方式的协调方式</li>
+<li>进程通信：实现进程之间的信息交换</li>
+<li>调度：作业调度和进程调度</li>
+</ul>
+<p>（2）存储器管理功能</p>
+<p>存储器管理的主要任务，是为多道程序的运行提供良好的环境，提高存储器的利用率，方便用户使用，并能从逻辑上扩充内存。</p>
+<p>主要功能有</p>
+<ul>
+<li>内存分配：为每道程序分配内存空间，可采取静态和动态两种方式</li>
+<li>内存保护：确保每道用户程序都仅在自己的内存空间内运行，彼此互不干扰</li>
+<li>地址映射：将地址空间中的逻辑地址转化为内存空间中与之对应的物理地址</li>
+<li>内存扩充：借助虚拟存储技术，从逻辑上扩充内存容量</li>
+</ul>
+<p>（3）设备管理功能</p>
+<p>设备管理的任务是，完成用户进程提出的I/O请求，为用户进程分配所需的I/O设备，并完成指定的I/O操作，提高CPU和I/O设备的利用率，提高I/O速度。</p>
+<p>主要功能有</p>
+<ul>
+<li>缓冲管理：在I/O设备和CPU之间引入缓冲，可有效缓和CPU和I/O设备速度不匹配的矛盾，提高CPU利用率</li>
+<li>设备分配：根据用户进程的I/O请求，为之分配所需的I/O设备</li>
+<li>设备处理：实现CPU和设备控制器之间的通信</li>
+</ul>
+<p>（4）文件管理功能</p>
+<p>文件管理功能的主要任务，是对用户文件和系统文件进行管理以方便用户使用，并保证文件的安全性</p>
+<p>主要功能有</p>
+<ul>
+<li>文件存储空间的管理：由文件系统对诸多文件及文件的存储空间实施统一的管理</li>
+<li>目录管理：为每个文件建立一个目录项，目录项包括文件名、文件属性、文件在磁盘上的物理位置等，并对众多的目录项实现按名存取</li>
+<li>文件的读/写管理和保护：从外存读取数据，或将数据写入外存，使用存取控制功能对文件进行保护</li>
+</ul>
+<p>（5）操作系统与用户之间的接口</p>
+<p>为了方便用户使用，操作系统提供了<strong>用户与操作系统的接口</strong>，有两大类：</p>
+<ul>
+<li>用户接口：用户与操作系统直接交互的接口，便于用户直接或间接地控制自己的作业</li>
+<li>程序接口：用户程序与操作系统的接口，方便用户程序在执行中访问系统资源，是用户程序取得操作系统服务的唯一途径</li>
+</ul>
+
+        <h2 id="8-微内核os结构"   >
+          <a href="#8-微内核os结构" class="heading-link"><i class="fas fa-link"></i></a>8、微内核OS结构</h2>
+      
+<p>所谓的微内核技术，是指精心设计的、能实现现代OS核心功能的小型内核，其并非是一个完整的OS，只是将操作系统中最基本的部分放入微内核，而将操作系统的绝大部分功能都放在微内核外面的一组服务器中实现的，比如提供进程管理的服务器、提供存储器管理的服务器、提供I/O设备管理的服务器。微内核与服务器之间的消息传递是通过消息传递机制（即网络通信的方式）来实现信息交互的。</p>
+<p>在微内核OS中，一般采用“机制与策略分离”的原理。所谓机制，是指实现某一功能的具体执行机构。而策略，则是在机制的基础上借助于某些参数和算法来实现该功能的优化，或达到不同的功能目标。在传统的OS中，将机制放在OS的内核的较低层，把策略放在内核的较高层次中。在微内核OS中，通常将机制放在OS的微内核，将策略放在微内核外面的一组服务器中。</p>
+
+        <h2 id="9-进程和程序的区别和联系"   >
+          <a href="#9-进程和程序的区别和联系" class="heading-link"><i class="fas fa-link"></i></a>9、进程和程序的区别和联系</h2>
+      
+<p>（1）程序是指令的集合，是静态的概念。<strong>进程是程序在处理机上的一次执行的过程</strong>，是动态的概念。</p>
+<p>（2）当程序没有运行时，程序作为软件资料可长期保存，而进程存在生命周期的，进程只有在运行的时候存在。</p>
+<p>（3）一个程序在运行时可能对应多个进程。</p>
+
+        <h2 id="10-进程的基本状态及转换"   >
+          <a href="#10-进程的基本状态及转换" class="heading-link"><i class="fas fa-link"></i></a>10、进程的基本状态及转换</h2>
+      
+<p>进程有三种基本状态：就绪状态、执行状态、阻塞状态</p>
+<ul>
+<li><strong>就绪状态</strong>：已经获得投入运行所必需的一切资源，一旦分配到CPU，就可以立即执行。</li>
+<li><strong>执行状态</strong>：当进程由调度／分派程序分派后，得到CPU控制权，正在CPU上运行着。</li>
+<li><strong>阻塞状态</strong>：一个进程正在等待某个事件的发生（如等待 I/O 的完成），而暂停执行。</li>
+</ul>
+<p>进程的三种基本状态及其转换图如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126120846.jpg"  alt="" />
+      </p>
+<p>上图的四种中间之间过程：</p>
+<ul>
+<li>就绪到执行：当处理机空闭时，由调度／分派程序从就绪进程队列中选择一个进程占用CPU</li>
+<li>执行到就绪： 时间片用完</li>
+<li>执行到阻塞：等待某事件的发生（如等待I/O完成）</li>
+<li>阻塞到就绪：事件已经发生（如I/O完成）</li>
+</ul>
+<p>为了满足进程控制块对数据及操作的完整性要求以及增强管理的灵活性，通常在系统中又为进程进入了两种常见的状态：创建状态和终止状态。</p>
+<ul>
+<li>创建状态：首先由进程申请PCB，并向PCB填写控制和管理进程的信息；然后，为该进程分配运行时所必须的资源；最后，把该进程转入就绪状态并插入就绪队列之中。如果进程所需的资源尚不得到满足，则创建工作未完成，进程不能被调度，此时进程所处的状态称为创建状态。</li>
+<li>终止状态：首先，等待操作系统进行善后处理，最后将其PCB清零，并将PCB空间返还系统。当一个进程达到了自然结束点，或是出现了无法克服的错误，或是被操作系统所终结，或是被其他有终止权的进程所终结，它将进入终止状态。进入中止状态的进程在操作系统中依然保留一个记录，其中保存状态码和一些计时统计数据，供其他进程收集。一旦其他进程完成了对其信息的提取之后，操作系统将删除该进程，即将其PCB清零。</li>
+</ul>
+<p>进程的五种基本状态及其装换图如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126115642.png"  alt="" />
+      </p>
+<p>为了系统和用户观察分析进程的需要，许多系统还引入一个对进程的重要操作——挂起操作，与挂起操作对应的操作是激活操作。为了方便操作，也引入了相对应的原语，即挂起原语Suspend和激活原语Active。此时，进程会有<strong>增加</strong>如下状态的转化：</p>
+<p>（1）活动就绪-&gt;静止就绪：当进程处于未被挂起的状态时，称此为活动就绪状态，此时进程可以接受调度。当用挂起原语Suspend将该进程挂起后，该进程便转为静止就绪状态，此时进程不再被调度执行。</p>
+<p>（2）执行-&gt;静止就绪：当进程正在执行时，用挂起原语Suspend将该进程挂起后，该进程将暂停执行，进入静止就绪状态。</p>
+<p>（3）活动阻塞-&gt;静止阻塞：当进程处于未被挂起的阻塞状态时，称它是处于活动阻塞状态。当用挂起原语Suspend将该进程挂起后，进程便转为静止阻塞状态。</p>
+<p>（4）静止阻塞-&gt;静止就绪：当处于静止阻塞的进程在其所期待的事件出现之后，它将从静止阻塞变为静止就绪状态。</p>
+<p>（5）静止就绪-&gt;活动就绪：处于静止就绪的进程用激活原语Active激活后，该进程便转为活动就绪状态。</p>
+<p>（6）静止阻塞-&gt;活动阻塞：处于静止阻塞的进程用激活原语Active激活后，该进程便转为活动阻塞状态。</p>
+<p>进程有三种基本状态的中间过程有4个，再加上述6个中间过程，共10个中间过程。</p>
+<p>引入挂起和激活操作的进程状态及其装换图如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126150438.png"  alt="" />
+      </p>
+
+        <h2 id="11-进程控制块pcb中的信息和作用"   >
+          <a href="#11-进程控制块pcb中的信息和作用" class="heading-link"><i class="fas fa-link"></i></a>11、进程控制块PCB中的信息和作用</h2>
+      
+<p>（1）进程控制块中的信息</p>
+<ul>
+<li>进程标识符：用于唯一地标识一个进程</li>
+<li>处理机状态：处理机的上下文信息，主要是由处理器各种寄存器中的内容组成的</li>
+<li>进程调度信息：包括进程的当前状态，进程优先级，引起进程由执行状态变为阻塞状态的事件，进程调度所需的其他信息，如进程调度算法，进程等待CPU时间，进程已执行的时间</li>
+<li>进程控制信息：包括程序和数据的地址，进程同步和通信机制，进程运行期间所需的资源清单，已分配到该进程的资源清单，PCB首地址大的链接指针</li>
+</ul>
+<p>（2）进程控制块的作用</p>
+<ul>
+<li>作为独立运行基本单位的标志：PCB是进程存在于系统中的唯一标志</li>
+<li>能实现间断性的运行方式：进程被阻塞后，PCB能保留CPU现场信息，再次被调度时，PCB供改进程恢复CPU现场</li>
+<li>提供进程管理所需要的信息：操作系统总是根据PCB中的进程控制信息实施对进程的控制和管理</li>
+<li>提供进程调度所需要的信息：操作系统根据PCB中的进程调度信息实施进度调度</li>
+<li>实现由于其它进程的同步与通信：操作系统根据根据PCB中的进程同步和通信机制实施进程的同步与通信</li>
+</ul>
+
+        <h2 id="12-理解进程同步机制的基本概念"   >
+          <a href="#12-理解进程同步机制的基本概念" class="heading-link"><i class="fas fa-link"></i></a>12、理解进程同步机制的基本概念</h2>
+      
+<p>进程同步机制的任务是，对多个相关进程在执行次序上进行协调，使并发执行的进程能按按照一定的规则共享系统资源，并能很好的合作，从而使程序的执行具有可再现性。<strong>因此同步机制包含进程同步和进程互斥两个概念</strong>。</p>
+<p>（1）进程同步和进程互斥</p>
+<ul>
+<li>进程同步：相互合作的进程能够互通消息、彼此协调运行，比如生产者和消费者问题，生产者生产一个商品后，消费者才能消费。</li>
+<li>进程互斥：两个或多个进程访问同一资源，当有一个进程访问时，其他进程不能访问。如生产者和生成者、消费者和消费者。</li>
+</ul>
+<p>（2）进程同步机制的两个制约关系</p>
+<ul>
+<li>间接相互制约：源于资源共享。（进程互斥）</li>
+<li>直接相互制约：源于进程间的合作。（进程同步）</li>
+</ul>
+<p>可以使用信号量机制实现进程同步和进程互斥。</p>
+
+        <h2 id="13-理解临界资源-临界区的概念"   >
+          <a href="#13-理解临界资源-临界区的概念" class="heading-link"><i class="fas fa-link"></i></a>13、理解临界资源、临界区的概念</h2>
+      
+<p>临界资源：一次仅允许一个进程访问的资源，如打印机、磁带机，都属于临界资源，各个进程间应采用互斥访问方式。</p>
+<p>临界区：每个进程中访问临界资源的那段代码称为临界区。显然，若能保证各个进程互斥地进入自己的临界区，便可实现诸进程对临界资源的互斥访问。</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">while(TRUE)</span><br><span class="line">&#123;</span><br><span class="line">   进入区</span><br><span class="line">   临界区</span><br><span class="line">   退出区</span><br><span class="line">   剩余区</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="14-进程同步机制应遵循的规则"   >
+          <a href="#14-进程同步机制应遵循的规则" class="heading-link"><i class="fas fa-link"></i></a>14、进程同步机制应遵循的规则</h2>
+      
+<p>所有的同步进制都应遵循下述四条准则：</p>
+<ul>
+<li><strong>空闲让进</strong>：当无进程处于临界区时，表明临界资源处于空闲状态，应允许一个请求进入临界区的进程立即进入自己的临界区，以有效地利用临界资源。</li>
+<li><strong>忙则等待</strong>：当已有进程进入临界区时，表明临界资源正在被访问，因而其它试图进入临界区的进程必须等待，以保证对临界资源的互斥访问。</li>
+<li><strong>有限等待</strong>：对要求访问临界资源的进程，应保证在有限时间内能进入自己的临界区。</li>
+<li><strong>让权等待</strong>：当进程不能进入自己的临界区时，应立即释放处理机。这里的“权”指处理机。</li>
+</ul>
+
+        <h2 id="15-用信号量机制解决经典进程同步问题"   >
+          <a href="#15-用信号量机制解决经典进程同步问题" class="heading-link"><i class="fas fa-link"></i></a>15、用信号量机制解决经典进程同步问题</h2>
+      
+<p>（1）生产者-消费者问题</p>
+<p>生产者-消费者问题（多人多缓问题），有多个生产者和多个消费者，生产者向缓冲区中放数据，消费者从缓冲区中取数据。当缓冲区满时，生产者不能再产生数据，当缓冲区空时，消费者不能从缓冲区中取走数据。缓冲池是临界资源，<strong>同一时刻只能有一个进程进入缓冲区</strong>，可以利用互斥信号量mutex实现诸进程对缓冲池的互斥作用；利用信号量empty和full分别表示缓冲区中空缓冲区和满缓冲区的数量。只要缓冲区未满，生产者可将数据放入缓冲区，只要缓冲区非空，消费者便可从缓冲区中取走一个数据。其中，生产者和生产者之间、消费者和消费者之间是互传进程，生产者和消费者是同步进程。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126152544.png"  alt="" />
+      </p>
+<figure class="highlight c"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*生产者-消费者问题（多人多缓问题）伪代码*/</span></span><br><span class="line"><span class="comment">// semaphore指信号量的类型</span></span><br><span class="line">semaphore Sbuf=n, Sdata =<span class="number">0</span>；</span><br><span class="line">semaphore mutex=<span class="number">1</span>;</span><br><span class="line">item <span class="built_in">buffer</span>[n]；</span><br><span class="line"><span class="keyword">int</span> in=<span class="number">0</span>, out=<span class="number">0</span>；</span><br><span class="line"></span><br><span class="line">proceducer( ) &#123;</span><br><span class="line">　　<span class="keyword">do</span>&#123;</span><br><span class="line">		producer an item nextp；</span><br><span class="line">		P(Sbuf)；</span><br><span class="line">		P(mutex)；</span><br><span class="line">		<span class="built_in">buffer</span>[in]=nextp；</span><br><span class="line">		in=(in+<span class="number">1</span>) % n；</span><br><span class="line">		V(mutex)；</span><br><span class="line">		V(Sdata)；</span><br><span class="line">		</span><br><span class="line">	&#125;<span class="keyword">while</span>(TRUE);</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">consumer( ) &#123;</span><br><span class="line">　　<span class="keyword">do</span>&#123;</span><br><span class="line">		P(Sdata)； </span><br><span class="line">		P(mutex)；</span><br><span class="line">		nextc=<span class="built_in">buffer</span>[out]；</span><br><span class="line">		out=(out+<span class="number">1</span>) % n；</span><br><span class="line">		V(mutex)；</span><br><span class="line">		V(Sbuf)；</span><br><span class="line">		</span><br><span class="line">	&#125;<span class="keyword">while</span>(TRUE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">       cobegin</span><br><span class="line">         proceducer( ); consumer( ) ;</span><br><span class="line">       coend</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>（2）读者-写者问题</p>
+<p>读者写者( Reader- Writer)问题也是一个著名的进程同步问题。一个数据文件或记录可被多个进程共享。把只要求<br />
+读该文件的进程称为“读进程”，修改文件的进程称为“写进程”。有如下要求：</p>
+<ul>
+<li>允许多者读</li>
+<li>不允许多者写</li>
+<li>不允许读/写并进</li>
+</ul>
+<figure class="highlight c"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*读者-写者问题伪代码*/</span></span><br><span class="line">semaphore wmutex=<span class="number">1</span>；</span><br><span class="line">semaphore rmutex=<span class="number">1</span>；</span><br><span class="line"><span class="keyword">int</span> readcount=<span class="number">0</span>；</span><br><span class="line">Reader( )&#123;</span><br><span class="line">  <span class="keyword">do</span>&#123; </span><br><span class="line">		P(rmutex);　　</span><br><span class="line">		<span class="keyword">if</span> (readcount==<span class="number">0</span>)  P(wmutex)； </span><br><span class="line">		V(rmutex)；</span><br><span class="line">		perform <span class="built_in">read</span> operation；</span><br><span class="line">		P(rmutex);　</span><br><span class="line">		readcount--;</span><br><span class="line">		<span class="keyword">if</span> (readcount==<span class="number">0</span>)  V(wmutex)；</span><br><span class="line">		V(rmutex)；</span><br><span class="line">		</span><br><span class="line">	&#125;<span class="keyword">while</span>(TRUE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Writer( )&#123;</span><br><span class="line">　<span class="keyword">do</span>&#123;</span><br><span class="line">		P(wmutex)；</span><br><span class="line">　　　   perform <span class="built_in">write</span> operation；</span><br><span class="line">　　　   V(wmutex)；</span><br><span class="line"></span><br><span class="line">	&#125;<span class="keyword">while</span>(TRUE);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">main</span><span class="params">()</span></span>&#123;</span><br><span class="line">       cobegin</span><br><span class="line">         Reader( ); Writer( ) ;</span><br><span class="line">       coend</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>在读者-写者问题中，写进程与写进程是互斥进程，读进程与写进程是互斥进程，可以看到，上面代码中声明了两个互斥信号量，并没有声明同步信号量，即读者-写者并没有同步进程。</p>
+<p>那么，如何判断两个进程是互斥或同步的呢？我认为，判断是否同步或互斥要看这两个进程对资源的使用情况，如果两个进程共享同一临界资源，那么肯定是互斥的，如果一个进程所需的资源依赖于另一个进程的输出，那么这两个进程是同步的。</p>
+<p>另外，常见的进程同步问题还有奇偶数问题、黑白棋子问题、和尚提水问题，限于篇幅，这里就不具体介绍了。</p>
+
+        <h2 id="16-理解进程通信及其方式"   >
+          <a href="#16-理解进程通信及其方式" class="heading-link"><i class="fas fa-link"></i></a>16、理解进程通信及其方式</h2>
+      
+<p>进程通信：指进程之间的信息交换，其所交换的信息量，少者是一个状态或数值，多者则是成千上万个字节。由于进程的同步与互斥也要在进程间交换一定的信息，故也称进程通信，但它们是低级进程通信，因为它们信号量机制实现进程通信，通信效率低，信息量少。</p>
+<p>另外，有一种基于共享数据结构的通信方式，它要求诸进程共用某些数据结构，借以实现诸进程间的信息交换。如在生产者—消费者问题中，就是用有界缓冲区这种数据结构来实现通信的。这里，公用数据结构的设置及对进程间同步的处理，都是程序员的职责。这种通信方式是低效的，只适于传递相对少量的数据，也属于低级通信。</p>
+<p><strong>进程的高级通信可以实现进程间大量数据的传送</strong>，具体的高级通信方式有共享存储器系统、管道通信系统、消息传递系统、客户机/服务器系统。</p>
+<ul>
+<li>基于共享存储区的通信方式：为了传输大量数据，在存储器中划出了一块共享存储区，诸进程可通过对共享存储区中数据的读或写来实现通信，属于高级通信。</li>
+<li>管道通信系统：建立在文件系统基础上，适用于大量变化着的信息交换。所谓“管道”，是指用于连接一个读进程和一个写进程以实现它们之间通信的一个共享文件，又名pipe文件。向管道(共享文件)提供输入的发送进程(即写进程)，以字符流形式将大量的数据送入管道；而接受管道输出的接收进程(即读进程)，则从管道中接收(读)数据。为了协调双方的通信，管道机制必须提供三种协调能力，即互斥、同步、确定对方是否存在。</li>
+<li>消息传递系统：在该机制中，进程间的数据交换是以格式化的消息(message)为单位的；在计算机网络中，又把message称为报文。消息传递系统因其实现方式的不同，可进一步分为两类：<br />
+a. 直接通信方式：发送进程利用OS提供的发送原语，直接把消息发送给目标进程。<br />
+b. 间接通信方式：进程之间通过一个作为共享数据结构的中间实体（称为邮箱）的方式进行消息的发送和接收。</li>
+<li>客户机/服务器系统：通过计算机网络进行通信。</li>
+</ul>
+
+        <h2 id="17-进程与线程的区别与联系"   >
+          <a href="#17-进程与线程的区别与联系" class="heading-link"><i class="fas fa-link"></i></a>17、进程与线程的区别与联系</h2>
+      
+<p>（1）在传统的OS中，进程是一个独立拥有资源，能够独立运行，同时又是可独立调度和分派的基本单位。</p>
+<p>（2）在OS引入线程之后，把线程一个独立调度和分派的基本单位，线程本身并不拥有系统资源，仅有一点不可缺少的、能保证独立运行的资源。引入线程的目的是减少程序在并发执行时带来的时空开销，</p>
+<p>（3）同一个进程中，线程的切换不会引起进程的切换，但从一个线程切换到另一个进程中的线程时，必然会引起进程的切换。线程的上下文切换比进程的上下文切换带来的开销小得多。</p>
+<p>（4）一个进程中含有若干个相对独立的线程，多个线程可并发执行。在多线程OS中，所谓进程的执行状态，实际上是指该进程中的某些线程正在执行。</p>
+
+        <h2 id="18-作业调度的概念及其调度算法"   >
+          <a href="#18-作业调度的概念及其调度算法" class="heading-link"><i class="fas fa-link"></i></a>18、作业调度的概念及其调度算法</h2>
+      
+<p>作业调度（又称高级调度）是指根据某种算法，决定将外存上处于后备队列中的哪几个作业调入内存，为它们创建进程、分配必要的资源，并将它们放入就绪队列。作业调度主要用于多道批处理系统中，而在分时和实时系统中不设置这种调度。</p>
+<p>作业调度算法有：</p>
+<p>（1）先来先服务(FCFS)调度算法</p>
+<p>按照作业到达的先后次序来进程调度，该调度算法也适用于进度调度</p>
+<p>（2）短作业优先(SJF)调度算法</p>
+<p>根据作业的长短来计算优先级，作业越短，其优先级越高</p>
+<p>（3）优先级调度算法(PSA)</p>
+<p>对于先来先服务算法，作业的等待时间就是作业的优先级；对于短作业优先调度算法，作业的长短就是作业的优先级。</p>
+<p>（4）高响应比优先（HRRN）调度算法</p>
+<p>既考虑了作业的等待长度，又考虑了运行时间的调度算法，是一个动态的优先级，响应比=优先级=(等待时间+要求服务时间)/要求服务时间</p>
+
+        <h2 id="19-进程调度的概念及其调度算法"   >
+          <a href="#19-进程调度的概念及其调度算法" class="heading-link"><i class="fas fa-link"></i></a>19、进程调度的概念及其调度算法</h2>
+      
+<p>进程调度（又称低级调度）是指，根据某种算法，<strong>决定就绪队列中的哪个进程应获得处理机</strong>，并由分派/调度程序将处理机分配给被选中的进程。在多道批处理系统、分时系统和实时系统中，都必须配置这种调度。除了高级调度和低级调度之外，还有中级调度，它实际上是完成内外存的换入和换出，提高内存的利用率。</p>
+<p>进程调度算法有：</p>
+<p>（1）轮转(RR)调度算法</p>
+<p>系统将所有的就绪进程按FCFS策略排成一个就绪队列，系统可设每隔一定时间(如30ms)便产生一次中断，按照队列中的顺序，把CPU分给进程，并令其执行一个时间片。</p>
+<p>（2）优先级调度算法</p>
+<p>把处理机分配给就绪队列中优先级最高的进程。</p>
+<p>（3）多级反馈队列调度算法</p>
+<p>设置多个队列，为每个队列设置不同的优先级，第一个队列优先级最高，第二个次之，最后一个队列优先级最小。</p>
+<p>每个队列都采用FCFS算法，当新进程进入内存后，首先将它放入第一队列的末尾，按照FCFS算法调度。当轮到该进程执行时，如果它能在该时间片内完成，便可撤离系统，否则，将它放入第二个队列的末尾，依次类推。当进程被降到最后一个队列后，便采取RR方式进行调度。</p>
+<p>队列间按照优先级调度。首先调度最高优先级队列中的各个进程，仅当第一队列空闲才调度第二队列中的进程运行。</p>
+<p>多级反馈队列示意图如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126165210.png"  alt="" />
+      </p>
+<p>（4）基于公平原则的调度算法</p>
+<p>以上的几种进程调度算法保证的只是优先级运行，并不能保证占用了多少处理机时间，而基于公平原则的调度算法考虑的是调度的公平性，常见有两种相对公平的调度算法。</p>
+<ul>
+<li>保证调度算法：让每个进程都获得相同的处理机时间。</li>
+<li>公平分享调度算法：让每个用户获得相同的处理机时间。</li>
+</ul>
+
+        <h2 id="20-实时调度及其调度算法"   >
+          <a href="#20-实时调度及其调度算法" class="heading-link"><i class="fas fa-link"></i></a>20、实时调度及其调度算法</h2>
+      
+<p>（1）实现实时调度的基本条件</p>
+<ul>
+<li>提供必要的信息：就绪时间、开始截止时间和完成截止时间、处理时间、资源要求、优先级。</li>
+<li>系统处理能力强：在实时系统中，若处理机的处理能力不够强，则有可能因处理机忙不过，而致使某些实时任务不能得到及时处理，从而导致发生难以预料的后果。</li>
+<li>采用抢占式调度机制：在含有HRT（硬实时任务）的实时系统中，广泛采用抢占机制。这样便可满足HRT任务对截止时间的要求。</li>
+<li>具有快速切换机制：对中断的快速响应能力、快速的任务分派能力。</li>
+</ul>
+<p>（2）实时调度算法的分类</p>
+<p>① 根据实时任务性质，可将实时调度的算法分为硬实时调度算法和软实时调度算法；② 按调度方式，则可分为非抢占调度算法和抢占调度算法。</p>
+<p><strong>非抢占式调度算法</strong>：</p>
+<ul>
+<li>非抢占式轮转调度算法：用于要求不太严格的实时控制系统。</li>
+<li>非抢占式优先调度算法：用于有一定要求的实时控制系统。</li>
+</ul>
+<p><strong>抢占式调度算法</strong>：</p>
+<ul>
+<li>基于时钟中断的抢占式优先级调度算法：时钟中断发生时才抢占处理机，可用于大多数的实时系统。</li>
+<li>立即抢占的优先级调度算法：能获得非常快的响应。</li>
+</ul>
+<p>（3）两种常见的实时调度算法</p>
+<p>①<strong>最早截止时间优先EDF（Earliest Deadline First）算法</strong></p>
+<p>算法根据任务的截止时间来确定任务的优先级。截止时间愈早，其优先级愈高。该算法要求在系统中保持一个实时任务就绪队列，该队列按各任务截止时间的早晚排序。算法既可用于抢占式调度，也可用于非抢占式调度方式中。</p>
+<p>② <strong>最低松弛度优先LLF（Least Laxity First）算法</strong></p>
+<p>该算法在确定任务的优先级时，根据的是任务的紧急(或松弛)程度。任务紧急程度愈高，赋予该任务的优先级就愈高，以使之优先执行。<strong>该算法主要用于可抢占调度方式中</strong>。</p>
+
+        <h2 id="21-作业平均周转时间和平均带权周转时间"   >
+          <a href="#21-作业平均周转时间和平均带权周转时间" class="heading-link"><i class="fas fa-link"></i></a>21、作业平均周转时间和平均带权周转时间</h2>
+      
+<p>（1）平均周转时间短</p>
+<p>作业的周转时间包含四个部分：作业在外存后备队列上等待(作业)调度的时间，进程在就绪队列上等待进程调度的时间，进程在CPU上执行的时间，以及进程等待I/O操作完成的时间。其中的后三项在一个作业的整个处理过程中，可能发生多次。</p>
+<p>n个作业的平均周转时间=n个作业的周转时间之和/n。</p>
+<p>（2）带权周转时间</p>
+<p>作业的周转时间T与系统为它提供服务的时间<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>T</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">T_s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.83333em;vertical-align:-0.15em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span>之比，即<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>W</mi><mo>=</mo><mi>T</mi><mi mathvariant="normal">/</mi><msub><mi>T</mi><mi>s</mi></msub></mrow><annotation encoding="application/x-tex">W=T/T_s</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">=</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:1em;vertical-align:-0.25em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="mord">/</span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.151392em;"><span style="top:-2.5500000000000003em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.15em;"><span></span></span></span></span></span></span></span></span></span></p>
+<p>（3）平均带权周转时间</p>
+<p>平均带权周转时间可表示为：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>W</mi><mo>=</mo><mfrac><mn>1</mn><mi>n</mi></mfrac><msubsup><mo>∑</mo><mrow><mi>i</mi><mo>=</mo><mn>1</mn></mrow><mi>n</mi></msubsup><mfrac><msub><mi>T</mi><mi>i</mi></msub><msub><mi>T</mi><mi>s</mi></msub></mfrac></mrow><annotation encoding="application/x-tex">W{\rm{ = } }\frac{1}{n}\sum\limits_{i = 1}^n {\frac{ { {T_i} } }{ { {T_s} } } }</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:2.329066em;vertical-align:-0.9776689999999999em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">W</span><span class="mord"><span class="mord"><span class="mord"><span class="mrel">=</span></span></span></span><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.845108em;"><span style="top:-2.6550000000000002em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.394em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.345em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mop op-limits"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.3513970000000004em;"><span style="top:-2.122331em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mrel mtight">=</span><span class="mord mtight">1</span></span></span></span><span style="top:-3.0000050000000003em;"><span class="pstrut" style="height:3em;"></span><span><span class="mop op-symbol small-op">∑</span></span></span><span style="top:-3.950005em;margin-left:0em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">n</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.9776689999999999em;"><span></span></span></span></span></span><span class="mspace" style="margin-right:0.16666666666666666em;"></span><span class="mord"><span class="mord"><span class="mopen nulldelimiter"></span><span class="mfrac"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.8884309999999999em;"><span style="top:-2.655em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.16454285714285719em;"><span style="top:-2.357em;margin-left:-0.13889em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathdefault mtight">s</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span></span><span style="top:-3.23em;"><span class="pstrut" style="height:3em;"></span><span class="frac-line" style="border-bottom-width:0.04em;"></span></span><span style="top:-3.4101em;"><span class="pstrut" style="height:3em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathdefault mtight" style="margin-right:0.13889em;">T</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3280857142857143em;"><span style="top:-2.357em;margin-left:-0.13889em;margin-right:0.07142857142857144em;"><span class="pstrut" style="height:2.5em;"></span><span class="sizing reset-size3 size1 mtight"><span class="mord mathdefault mtight">i</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.143em;"><span></span></span></span></span></span></span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.44509999999999994em;"><span></span></span></span></span></span><span class="mclose nulldelimiter"></span></span></span></span></span></span></p>
+
+        <h2 id="22-cpu利用率和cpu最小时钟周期"   >
+          <a href="#22-cpu利用率和cpu最小时钟周期" class="heading-link"><i class="fas fa-link"></i></a>22、CPU利用率和CPU最小时钟周期</h2>
+      
+<p>（1）CPU利用率</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126171358.png"  alt="" />
+      </p>
+<p>（2）CPU最小时钟周期</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126171425.png"  alt="" />
+      </p>
+<p><strong>时钟发生器发出的脉冲信号做出周期变化的最短时间称之为震荡周期</strong>，也称为 CPU 时钟周期，它是计算机中最基本的、最小的时间单位。每一次震荡周期到来，芯片内的晶体管就改变一次状态，让整个芯片完成一定任务。也就是说在一个时钟周期内，<strong>CPU仅完成一个最基本的动作</strong>，一条指令的执行可能需要好几个时钟周期。由此，更小的时钟周期就意味着更高的工作频率。CPU时钟周期的倒数就是时钟频率。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126171621.png"  alt="" />
+      </p>
+
+        <h2 id="23-死锁及死锁产生的条件"   >
+          <a href="#23-死锁及死锁产生的条件" class="heading-link"><i class="fas fa-link"></i></a>23、死锁及死锁产生的条件</h2>
+      
+<p>如果一组进程中的每一个进程都在等待仅由该组进程中的其它进程才能引发的事件，那么该组进程是是死锁的。</p>
+<p>产生死锁必须具备四个条件，只要任一条件不成立，死锁就不会发生。它们分别是互斥条件、请求和保持条件、不可抢占条件，循环等待条件。</p>
+<ul>
+<li>互斥条件：指进程对所分配到的资源进行排它性使用，即在一段时间内某资源只由一个进程占用。如果此时还有其它进程请求该资源，则请求者只能等待，直至占有该资源的进程用毕释放。</li>
+<li>请求和保持条件：指进程已经保持了至少一个资源，但又提出了新的资源请求，而该资源又已被其它进程占有，此时请求进程阻塞，但又对自己已获得的其它资源保持不放。</li>
+<li>不可抢占条件：指进程已获得的资源在未使用完之前不能被抢占，只能在使用完时由自己释放。</li>
+<li>循环等待条件：指在发生死锁时，必然存在一个进程——资源的环形链，即进程集合{P0，P1，P2，…，Pn}中的P0正在等待一个P1占用的资源； P1正在等待P2占用的资源，……，Pn正在等待已被P0占用的资源。</li>
+</ul>
+
+        <h2 id="24-处理死锁的方法"   >
+          <a href="#24-处理死锁的方法" class="heading-link"><i class="fas fa-link"></i></a>24、处理死锁的方法</h2>
+      
+<p>目前处理死锁的方法可归结为四种：</p>
+<p>（1）预防死锁。一种较简单和直观的事先预防方法。该方法是通过设置某些限制条件，去破坏产生死锁的四个必要条件中的一个或几个条件，来预防发生死锁。<br />
+（2）避免死锁。在资源的动态分配过程中，用某种方法去防止系统进入不安全状态，从而避免发生死锁。同样是属于事先预防的策略，但它并不是事先采取各种限制措施，去破坏死锁的四个必要条件。</p>
+<p>（3）检测死锁。允许系统在运行过程中发生死锁。但可通过系统所设置的检测机构，及时地检测出死锁的发生，然后采取适当的措施，把进程从死锁中解脱出来。</p>
+<p>（4）解除死锁。这是与检测死锁相配套的一种措施。当检测到系统中已发生死锁时，须将进程从死锁状态中解脱出来。</p>
+<p>为了更清楚理解处理死锁四种方法，下面对这四种方法采取的具体措施进行介绍：</p>
+<p>（1）预防死锁</p>
+<p>预防死锁的方法是通过破坏产生死锁的四个必要条件中的一个或几个，以预防发生死锁。由于互斥条件是非共享设备所必须的，不仅不能改变，还应加以保证，因此主要是破坏产生死锁的后三个条件。</p>
+<p><strong>破坏“请求和保持” 条件（静态分配资源法）</strong><br />
+该方法规定，所有进程在开始运行之前，必须一次性地申请其在整个运行过程中所需的全部资源。如果系统有足够资源，则分配，破坏了“请求”条件；如果资源不足，则一个资源也不分配，破坏了“保持”条件。</p>
+<p><strong>破坏“不可抢占” 条件（剥夺式分配资源法）</strong><br />
+进程是逐个地提出对资源的要求的。当一个已经保持了某些资源的进程，再提出新的资源请求而不能立即得到满足时，必须释放它已经保持了的所有资源，待以后需要时再重新申请。这意味着某一进程已经占有的资源，在运行过程中会被暂时地释放掉，也可认为是被抢占了，从而破坏了“不可抢占”条件。</p>
+<p><strong>破坏“循环等待” 条件（按序分配资源法）</strong><br />
+按顺序分配资源，比如规定每个进程必须按序号递增的顺序请求资，这样，在所形成的资源分配图中，不可能再出现环路，因而破坏了“循环等待”条件。</p>
+<p>（2）避免死锁</p>
+<p>在资源的动态分配过程中，用某种方法去防止系统进入不安全状态，从而避免发生死锁，但它并不是事先采取各种限制措施。</p>
+<p>由于在资源动态分配的过程中，要确保系统始终处于安全状态，可以利用<strong>银行家算法</strong>避免死锁。</p>
+<p>银行家算法：当进程在请求一组资源时，首先确定系统中是否有足够的资源分配给他。若有，再进一步计算系统分配这些资源给该进程后，是否会出现不安全状态(是否满足产生死锁的条件)，如果不满足产生死锁的条件，才将资源分配给它。</p>
+<p>（3）检测死锁</p>
+<p>用资源分配图检测死锁</p>
+<p>圆圈代表进程，方框代表资源一类资源，方框中的点代表这一类资源中的一个资源，由进程出发的边是资源请求边，由资源出发的边是资源分配边。<strong>寻找既不阻塞又非独立的进程节点</strong>Pi，如果Pi能够获取所需的资源，则消去Pi的请求边和分配边，依次类推，直到所有的进程节点都是孤立这点，则称该图是可完全简化图。</p>
+<p>一个资源分配图中的进程产生<strong>死锁的</strong>充分条件是：当且仅当该资源分配图是不可完全简化图。</p>
+<p>例如，下面的资源分配图</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126181401.png"  alt="" />
+      </p>
+<p>首先，找到寻找既不阻塞又非独立的进程节点P1，消去P1的请求边和分配边，P1释放资源后，便可使P2获得资源而继续运行，直至P2完成后又释放出它所占有的全部资源，再消去P2的请求边和分配边，此时资源分配图中所有的进程结点都成为孤立结点，该图是可完全简化的，不会发生死锁。</p>
+<p>用资源分配图检测死锁更详细的过程可参考<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_39328436/article/details/111123779"  target="_blank" rel="noopener">死锁检测-资源分配图的简化</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>（4）解除死锁</p>
+<p>主要有两种方法解决死锁，分别是抢占资源和终止（撤消）进程的方式。</p>
+<ul>
+<li>抢占资源。从其它进程抢占足够数量的资源给死锁进程，以解除死锁状态。</li>
+<li>终止（撤消）进程。终止（或撤销）系统中的一个或多个死锁进程，直至打破循环环路，使系统从死锁状态中解脱出来。</li>
+</ul>
+
+        <h2 id="25-存储器的多层结构"   >
+          <a href="#25-存储器的多层结构" class="heading-link"><i class="fas fa-link"></i></a>25、存储器的多层结构</h2>
+      
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126182822.png"  alt="" />
+      </p>
+<p>存储器分为三个层次，分别是CPU寄存器、主存、辅存。</p>
+<ul>
+<li>CPU寄存器：寄存器具有与处理机相同的速度，完全能与CPU协调工作，但价格十分昂贵。</li>
+<li>主存：包括高速缓存、主存储器、磁盘缓存 。<br />
+高速缓存：介于寄存器和主存贮器之间，主要用于备份主存中常用的数据，以减少处理机对主存储器的访问次数。<br />
+主存储器：简称主存或内存，用于保存进程运行时的程序和数据。<br />
+磁盘缓存：为了缓和磁盘的I/O和主存访问速度的不匹配，从而设置磁盘缓存。</li>
+<li>辅存：磁盘，可移动存储介质。</li>
+</ul>
+
+        <h2 id="26-程序装入内存转变为可以执行程序的过程"   >
+          <a href="#26-程序装入内存转变为可以执行程序的过程" class="heading-link"><i class="fas fa-link"></i></a>26、程序装入内存转变为可以执行程序的过程</h2>
+      
+<p>用户程序要在系统中运行，必须先将它装入内存，然后再将其转变为一个可以执行的程序，通常要经过以下步骤：编译、 链接、 装入。</p>
+<p>（1）编译：由编译程序对用户源程序进行编译，形成若干个<strong>目标模块</strong>。</p>
+<p>（2）链接：由链接程序将编译后形成的一组目标模块以及它们需要的库函数链接在一起，形成一个完整的装入模块(可执行目标程序)。</p>
+<p>（3）装入：由装入程序将装入模块装入内存。</p>
+<p>这三步的示意图如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126183251.png"  alt="" />
+      </p>
+
+        <h2 id="27-程序的装入和链接方式有哪些"   >
+          <a href="#27-程序的装入和链接方式有哪些" class="heading-link"><i class="fas fa-link"></i></a>27、程序的装入和链接方式有哪些？</h2>
+      
+<p>（1）程序的装入</p>
+<p>为了阐述方便，先介绍无需进行链接的单个目标模块的装入过程。该目标模块也就是装入模块。在将一个转入模块装入内存时，可以有如下装入方式：</p>
+<ul>
+<li>绝对装入方式。当计算机系统很小，且仅能运行单道程序时，完全有可能知道程序将驻留在内存的什么位置。此时可以采用绝对装入方式。用户程序经编译后，将产生绝对地址(即物理地址)的目标代码。 装入模块被装入内存后，由于程序中的逻辑地址与实际内存地址完全相同，故不须对程序和数据的地址进行修改。</li>
+<li>可重定位装入方式（静态重定位）。**所谓的重定位是指，在装入时对目标程序中指令和数据的修改过程，即地址变换。**可重定位装入方式的地址变换通常是在装入时一次完成的，以后不再改变，故称为静态重定位。</li>
+<li>动态运行时的装入方式（动态重定位）。当把装入程序装入内存后，并不立即把装入模块中的逻辑地址转换为物理地址（即不立即进行地址变换），而是把这种地址变换推迟到程序真正要执行时才进行。因此，装入内存后所有的地址都仍是逻辑地址。</li>
+</ul>
+<p>（2）程序的链接</p>
+<p>源程序经过编译后，可得到一组目标模块。链接程序的功能是将这组目标模块以及它们所需要的函数库装配成一个完成的装入模块。在对目标模块进行链接时，根据链接的时间不同，可把链接分成如下三种：</p>
+<ul>
+<li>静态链接(Static Linking)方式：在程序运行之前，先将各目标模块及它们所需的库函数链接成一个完整的装配模块，以后不再拆开。</li>
+<li>装入时动态链接(Load-time Dynamic Linking)：这是指将用户源程序编译后所得到的一组目标模块，在装入内存时，采用边装入边链接的链接方式。</li>
+<li>运行时动态链接(Run-time Dynamic Linking)：这是指对某些目标模块的链接，是在程序执行中需要该(目标)模块时，才对它进行的链接。</li>
+</ul>
+
+        <h2 id="28-存储器内存的管理策略或方式"   >
+          <a href="#28-存储器内存的管理策略或方式" class="heading-link"><i class="fas fa-link"></i></a>28、存储器（内存）的管理策略或方式</h2>
+      
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126212226.png"  alt="" />
+      </p>
+
+        <h2 id="29-连续分配存储管理方式"   >
+          <a href="#29-连续分配存储管理方式" class="heading-link"><i class="fas fa-link"></i></a>29、连续分配存储管理方式</h2>
+      
+<p>连续分配存储管理方式是指为某一程序分配连续的内存空间，程序在内存中的逻辑地址相邻，体现在内存空间分配时物理地址相邻。连续分配方式可分为四类：</p>
+<p>（1）单一连续分配（单用户连续分配）</p>
+<p>用于单用户、单任务OS中。把内存分为系统区和用户区两部分，系统区仅提供给OS使用，它通常是放在内存的低址部分。而在用户区内存中，仅装有一道用户程序，即整个内存的用户空间由该程序独占。程序装入时一般采用静态重定位的方式。</p>
+<p>（2）固定分区分配</p>
+<p>在多道程序系统出现以后，为了能在内存中装入多道程序，且使这些程序之间又不会发生相互干扰，于是将整个用户空间划分为若干个固定大小的区域，在每个分区中只装入一道作业，这样就形成了最早的、也是最简单的种可运行多道程序的分区式存储管理方式。如果在内存中有四个用户分区，便允许四个程序并发运行。当有一空闲分时，便可以再从外存的后备作业队列中选择一个适当大小的作业，装入该分区。当该作业结束时，又可再从后备作业队列中找出另一作业调入该分区。</p>
+<p>对于分区的划分，可以大小相等(指所有的内存分区大小相等)，也可以分为若干大小不等的分区。</p>
+<p>为了便于内存分配，通常将分区按其大小进行排队，并为之建立一张分区使用表，其中各表项包括每个分区的起始地址、大小及状态(是否已分配)，如下图所示。当有一用户程序要装入时，由内存分配程序依据用户程序的大小检索该表，从中找出一个能满足要求的、尚未分配的分区，将之分配给该程序，然后将该表项中的状态置为“已分配”。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126214010.png"  alt="" />
+      </p>
+<p>每个分区只能装一个作业，作业不一定占满分区，所以会产生碎片、零头。需要注意的是，固定分区分配在程序装入内存时采用的也是静态重定位的方式。</p>
+<p>（3）动态分区分配（可变分区分配）</p>
+<p>动态分区分配是根据进程的实际需要，动态地为之分配内存空间。其分区的大小可以改变。</p>
+<p>为了实现动态分区分配，系统中必须配置相应的数据结构，用以描述空闲分区和己分配分区的情况，为分配提供依据。常用的数据结构有以下两种形式：①空闲分区表，在系统中设置一张空闲分区表，用于记录每个空闲分区的情况。每个空闲分区占一个表目，表目中包括分区号、分区大小和分区始址等数据项，如下图所示。②空闲分区链。为了实现对空闲分区的分配和链接，在每个分区的起始部分设置一些用于控制分区分配的信息以及用于链接各分区所用的前向指针，在分区尾部则设置一后向指针。通过前、后向链接指针，可将所有的空闲分区链接成一个双向链，如下图所示。为了检索方便，在分区尾部重复设置状态位和分区大小表目。当分区被分配出去以后。把状态位由“0”改为“1”，此时，前、后向指针已无意义。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126215149.png"  alt="" />
+      </p>
+<p>在动态分区管理中，主要的操作是分配内存和回收内存。</p>
+<p><strong>分配内存</strong>：设请求的分区大小为u.size，表中每个空闲分区的大小可表示为m.size，而size是事先规定的不在切割的剩余分区的大小。 分配内存的流程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126220559.png"  alt="" />
+      </p>
+<p><strong>回收内存</strong>：</p>
+<ul>
+<li>回收区与插入点的前一个空闲分区F1相邻接。应将回收区与插入点的前一分区合并，不必为回收分区分配新表项，而只需修改其前一分区F1的大小。</li>
+<li>回收分区与插入点的后一空闲分区F2相邻接。可将两分区合并，形成新的空闲分区，但用回收区的首址作为新空闲区的首址，大小为两者之和。</li>
+<li>回收区同时与插入点的前、后两个分区邻接。此时将三个分区合并，使用F1的表项和F1的首址，取消F2的表项，大小为三者之和。</li>
+<li>回收区既不与F1邻接，又不与F2邻接。这时应为回收区单独建立一个新表项，填写回收区的首址和大小，并根据其首址插入到空闲链中的适当位置。</li>
+</ul>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126220856.png"  alt="" />
+      </p>
+<p><strong>动态分区分配采用的是动态重定位的方式。</strong></p>
+<p>（4）动态可重定位分区分配</p>
+<p>连续分配方式的一个重要特点是，一个系统或用户程序必须被装入一片连续的内存空间中。当一台计算机运行了一段时间后，它的内存空间将会被分割成许多小的分区，而缺乏大的空闲空间。即使这些分散的许多小分区的容量总和大于要装入的程序，但由于这些分区不相邻接，也无法把该程序装入内存。</p>
+<p>如下图所示，图a中示出了在内存中现有四个互不邻接的小分区，它们的容量分别为10KB、30KB、14KB和26KB，其总容量是80KB。但如果现在有一个作业到达，要求获得40KB的内存空间，<strong>由于必须为它分配一个连续空间</strong>，故此作业无法装入。这种不能被利用的小分区即是前已提及的“碎片”，或称为“零头“。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126230014.png"  alt="" />
+      </p>
+<p>若想把大作业装入，可采用的一种方法是：将内存中的所有作业进行移动，使它们全都相邻接。这样，即可把原来分散的多个空闲小分区拼接成一个大分区，可将一个作业装入该区。这种通过移动内存中作业的位置，把原来多个分散的小分区拼接成一个大分区的方法,称为“拼接”或“紧凑”，如上图b所示。</p>
+<p>虽然“紧凑”能获得大的空闲空间，但也带来了新的问题，即经过紧凑后的用户程序在内存中的位置发生了变化，此时若不对程序和数据的地址加以修改(变换)，则程序必将无法执行。为此，在每次“紧凑”后，都必须对移动了的程序或数据进行重定位。为了提高内存的利用率，系统在运行过程中是经常需要进行“紧凑”的。每“紧凑”一次，就要<br />
+对移动了的程序或数据的地址进行修改，这不仅是一件相当麻烦的事情，而且还大大地影响到系统的效率，下面要介绍的动态重定位方法将能很好地解决此问题。</p>
+<p><strong>动态重定位</strong></p>
+<p>在前面所介绍的<strong>动态运行时装入的方式</strong>中，作业装入内存后的所有地址仍然都是相对(逻辑)地址，而将相对地址转换为绝对(物理)地址的工作被推迟到程序指令要真正执行时进行。为使地址的转换不会影响到指令的执行速度，必须有硬件地址变换机构的支持，即须在系统中增设一个重定位寄存器，用它来存放程序(数据)在<strong>内存中的起始地址</strong>。程序在执行时，真正访问的内存地址是相对地址与重定位寄存器中的地址相加而形成的。下图显示出了动态重定位的实现原理。地址变换过程是在程序执行期间，随着对每条指令或数据的访问自动进行的，故称为<strong>动态重定位</strong>。当系统对内存进行了“紧凑”，而使若干程序从内存的某处移至另一处时，不需对程序做任何修改，只要用该程序在内存的新起始地址去置换原来的起始地址即可。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126231200.png"  alt="" />
+      </p>
+<p><strong>动态重定位分区分配算法</strong></p>
+<p><strong>动态重定位分区分配算法与动态分区分配算法基本上相同</strong>，差别仅在于：在动态重定位分区分配算中，增加了紧凑的功能。通常，当该算不能找到一个足够大的空闲分区以满足用户需求时，如果所有小的空闲分区的容量总和大于用户的要求，这时便须对内存进行“紧凑”，将经“紧凑”后所得到的大空闲分区分配给用户。如果所有小的空闲分区的容量总和仍小于用户的要求，则返回分配失败信息。下图是动态分区分配算法流程图：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126231750.png"  alt="" />
+      </p>
+
+        <h2 id="30-常见的动态分区分配算法"   >
+          <a href="#30-常见的动态分区分配算法" class="heading-link"><i class="fas fa-link"></i></a>30、常见的动态分区分配算法</h2>
+      
+<p>（1）基于顺序搜索的动态分区分配算法</p>
+<p>①首次适应(first fit，FF)算法</p>
+<p>FF算法要求空闲分区链以<strong>地址递增</strong>的次序链接。</p>
+<p>在分配内存时，从链首开始顺序查找，直至找到一个大小能满足要求的空闲分区为止。然后再按照作业的大小，从该分区中划出一块内存空间，分配给请求者，余下的空闲分区仍留在空闲链中。</p>
+<p>②循环首次适应(next fit，NF)算法（下次适应）</p>
+<p>NF算法要求空闲分区链以<strong>地址递增</strong>的次序链接成循环链。</p>
+<p>算法是从上次找到的空闲分区的下一个空闲分区开始查找，直至找到一个能满足要求的空闲分区，从中划出一块与请求大小相等的内存空间分配给作业。</p>
+<p>③最佳适应(best fit，BF)算法</p>
+<p>BF算法要求空闲分区链以<strong>容量大小递增</strong>的次序链接。</p>
+<p>为一作业选择分区时总是寻找其大小最接近于作业大小的存储区域。</p>
+<p>④最坏适应(worst fit，WF)算法</p>
+<p>WF算法要求空闲分区链以<strong>容量大小递减</strong>的次序链接。</p>
+<p>在为作业选择存储区域时，总是挑选一个最大的空闲区。在划分后剩下的空闲区也是最大的，对以后的分配很可能是有用的。</p>
+<p>（2）基于索引搜索的动态分区分配算法</p>
+<p>①快速适应(quick fit)算法（分类搜索法）</p>
+<p>将空闲分区根据其<strong>容量大小进行分类</strong>，对于每一类具有相同容量的所有空闲分区，单独设立一个空闲分区链表，这样系统中存在多个空闲分区链表。</p>
+<p>空闲分区的分类是根据进程常用的空间大小进行划分，如2 KB、4 KB、8 KB等，对于其它大小的分区，如7 KB这样的空闲区，既可以放在8 KB的链表中，也可以放在一个特殊的空闲区链表中。</p>
+<p>在分配内存时，根据进程的长度，寻找到能容纳它的最小空闲区链表，并取下第一块进行分配即可。</p>
+<p>②伙伴系统(buddy system)</p>
+<p>该算法规定，无论已分配分区或空闲分区，其大小均为2的k次幂，k为整数，1≤k≤m，其中：<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mn>1</mn></msup></mrow><annotation encoding="application/x-tex">2^1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span>表示分配的最小分区的大小，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mi>m</mi></msup></mrow><annotation encoding="application/x-tex">2^m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.664392em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">m</span></span></span></span></span></span></span></span></span></span></span>表示分配的最大分区的大小，通常<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mi>m</mi></msup></mrow><annotation encoding="application/x-tex">2^m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.664392em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">m</span></span></span></span></span></span></span></span></span></span></span>是整个可分配内存的大小。</p>
+<p>假设系统的可利用空间容量为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mi>m</mi></msup></mrow><annotation encoding="application/x-tex">2^m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.664392em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">m</span></span></span></span></span></span></span></span></span></span></span>个字，则系统开始运行时，整个内存区是一个大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mi>m</mi></msup></mrow><annotation encoding="application/x-tex">2^m</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.664392em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.664392em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">m</span></span></span></span></span></span></span></span></span></span></span>的空闲分区。在系统运行过程中，由于不断地划分，将会形成若干个不连续的空闲分区，将这些空闲分区按分区的大小进行分类。对于具有相同大小的所有空闲分区，单独设立一个空闲分区双向链表，这样，不同大小的空闲分区形成了k个空闲分区链表。</p>
+<p>设分配一个长度为n的存储空间，首先计算一个i值，使<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>i</mi><mo>−</mo><mn>1</mn></mrow></msup><mo>&lt;</mo><mi>n</mi><mo>≤</mo><msup><mn>2</mn><mi>i</mi></msup></mrow><annotation encoding="application/x-tex">2^{i-1}&lt;n\le 2^i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.863764em;vertical-align:-0.0391em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mbin mtight">−</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">&lt;</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.7719400000000001em;vertical-align:-0.13597em;"></span><span class="mord mathdefault">n</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span><span class="mrel">≤</span><span class="mspace" style="margin-right:0.2777777777777778em;"></span></span><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span></span></span></span></span></span></span>。在空闲分区大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mi>i</mi></msup></mrow><annotation encoding="application/x-tex">2^i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span></span></span></span></span></span></span>的空闲分区链表中查找。若找到，即把该空闲分区分配给进程。</p>
+<p>否则，在分区大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{i+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span>的空闲分区链表中寻找。若找到，则把该空闲分区分为相等的两个分区，这两个分区称为<strong>一对伙伴</strong>，其中的一个分区用于分配，而把另一个加入分区大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mi>i</mi></msup></mrow><annotation encoding="application/x-tex">2^i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span></span></span></span></span></span></span>的空闲分区链表中。</p>
+<p>若大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{i+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span>的分区也不存在，则需要查找大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>i</mi><mo>+</mo><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{i+2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span>的空闲分区，若找到则对其进行两次分割。若仍然找不到，则继续查找大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>i</mi><mo>+</mo><mn>3</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{i+3}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">3</span></span></span></span></span></span></span></span></span></span></span></span>的空闲分区，依此类推。</p>
+<p>在最坏的情况下，可能需要对2k的空闲分区进行k次分割才能得到所需分区。</p>
+<p>在回收内存时，一次回收也可能要进行多次合并，如回收大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mi>i</mi></msup></mrow><annotation encoding="application/x-tex">2^i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span></span></span></span></span></span></span>的空闲分区时，若已存在<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mi>i</mi></msup></mrow><annotation encoding="application/x-tex">2^i</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight">i</span></span></span></span></span></span></span></span></span></span></span>的空闲分区时，则应将其与伙伴分区合并大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{i+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span>的闲分区；若已存在<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>i</mi><mo>+</mo><mn>1</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{i+1}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">1</span></span></span></span></span></span></span></span></span></span></span></span>的空闲分区时，又应继续与其伙伴分区合并为大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mrow><mi>i</mi><mo>+</mo><mn>2</mn></mrow></msup></mrow><annotation encoding="application/x-tex">2^{i+2}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.824664em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.824664em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathdefault mtight">i</span><span class="mbin mtight">+</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span>的空闲分区，依此类推。</p>
+<p>（3）哈希算法</p>
+<p>在快速适应算法和伙伴系统算法中，都是将空闲分区根据分区大小进行分类，对于每一类空闲分区，设立一个空闲分区链表。在为进程分配空间时，需要在一张管理索引表中查找到所需空间大小所对应的表项，从中得到对应的空闲分区链表表头指针，从而通过查找得到一个空闲分区。</p>
+<p>哈希算法是利用哈希快速查找的优点，建立哈希函数，构造一张<strong>以空闲分区大小为关键字</strong>的哈希表，该表的每一个表项记录了一个对应的空闲分区链表表头指针。</p>
+<p>当进行空闲分区分配时，根据所需空闲分区大小，通过哈希函数计算，即得到在哈希表中的位置，从中得到相应的空闲分区链表，实现最佳分配策略。</p>
+
+        <h2 id="31-分页存储管理方式的基本概念"   >
+          <a href="#31-分页存储管理方式的基本概念" class="heading-link"><i class="fas fa-link"></i></a>31、分页存储管理方式的基本概念</h2>
+      
+<p>我们知道，离散分配方式分为分页存储管理方式、分段存储管理方式、段页式存储管理方式。这一题介绍分页存储管理方式。</p>
+<p><strong>（1）引入分页的好处</strong></p>
+<p>①没有外碎片，每个内碎片不超过页面大小。</p>
+<p>②一个程序的页面不必连续存放</p>
+<p>③以页面作为内存分配的基本单位，能有效地提高内存利用率</p>
+<p><strong>（2）分页存储管理方式</strong></p>
+<p>分页存储管理方式是指将<strong>用户程序的地址空间</strong>分为若干个固定大小的区域，称为页或页面（典型大小一般为4KB）。相应地，也将内存空间分为若干个物理块，页和块的大小相同，这样可将用户程序的任一页放入一物理块中，实现离散分配。分页的地址结构包含页号和页内地址。分页地址结构如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127102037.png"  alt="" />
+      </p>
+<p><em>图中地址长度为32位，其中0<sub>11位为页内地址，即每页大小为4KB；12</sub>31位页号，地址空间最多允许有1M页，即2的20次方个页面</em></p>
+<p>在分页系统中，允许将进程的各个页离散地存储在内存的任一物理块中，为保证进程仍然能够正确地运行，即能在内存中找到每个页面所对应的物理块，<strong>系统为每个进程建立了一张页面映像表</strong>，简称<strong>页表</strong>，从而实现从页号到物理块号的地址映射。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126233741.png"  alt="" />
+      </p>
+<p>（3）<strong>分页存储管理方式中的地址变换机构</strong></p>
+<p>为了实现进程从逻辑地址到物理地址的变换功能，在系统设置了页表寄存器，用于存放页表在内存中的始址和页表的长度，当进程要访问某个逻辑地址中的数据时，地址变换机构会先将要访问的页号与页表长度进行比较，如果页号大于页表长度，则表示本次所访问的地址已超越进程的地址空间，将产生地址<strong>越界中断</strong>。如果未出现越界错误，则<strong>将页号与页表项长度相乘再和页表始址相加</strong>，便得到该表项在页表中的位置，于是可从中得到该页的物理块号，再与页内地址拼接，得到物理地址，再根据物理地址获取所需数据。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126235007.png"  alt="" />
+      </p>
+<p>（4）<strong>具有快表的地址变换机构</strong></p>
+<p>由于页表是存放在内存中的，这使CPU在每存取一个数据时，都要两次访问内存。第一次是访问内存中的页表，从中找到指定页的物理块号，再将块号与页内偏移量W拼接，以形成物理地址。第二次访问，才是从第一次所得地址中获得所需数据(或向此地址中写入数据)。</p>
+<p>为了提高地址变换速度，可增加一个快表(寄存器)，先从快表读出该页所对应的物理块号。如果未在快表中找到所对应的表项，则再从页表中去寻找。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210126235222.png"  alt="" />
+      </p>
+<p>（5）<strong>两级和多级页表</strong></p>
+<p>现代的计算机系统中，都支持非常大的逻辑地址空间。例如，对于一个具有32位逻辑地址空间的分页系统，规定页面大小为4KB即<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mn>12</mn></msup></mrow><annotation encoding="application/x-tex">2^{12}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span>B，在每个进程页表中的页表数最大可达<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mn>20</mn></msup></mrow><annotation encoding="application/x-tex">2^{20}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">2</span><span class="mord mtight">0</span></span></span></span></span></span></span></span></span></span></span></span>个即1M个，又因为每个页表项在内存中占一个字节，故每个进程仅仅其页表就要占用1MB的内存空间（分页中的页表在内存中占据一片连续的空间），而且还要求是连续的，多个进程情况下，这简直就是灾难。显然这是不现实的，为此可以将页表的存储也采用离散分配方式，即：</p>
+<p>①对于页表所需的内存空间，采用离散分配方式，以解决难以找到一块连续的大内存空间的问题。</p>
+<p>②只将当前需要的部分<strong>页表项</strong>调入内存，其余的<strong>页表项</strong>仍驻留在磁盘上，需要时再调入。</p>
+<p><strong>两级页表</strong></p>
+<p>针对难于找到大的连续的内存空间来存放页表的问题，可利用将页表进行分页，并离散地将各个页面分别存放在不同的物理块中的办法来加以解决，即两级页表的方式。下图是两级页表的结构</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127000147.png"  alt="" />
+      </p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127000217.png"  alt="" />
+      </p>
+<p>具有两级页表的地址变换机构</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127000319.png"  alt="" />
+      </p>
+<p><strong>多级页表</strong></p>
+<p>在二级页表基础上再将页表进行分页，即采用三级页表结构。依次类推，可进行多级分页。</p>
+
+        <h2 id="32-分段存储管理方式的基本概念"   >
+          <a href="#32-分段存储管理方式的基本概念" class="heading-link"><i class="fas fa-link"></i></a>32、分段存储管理方式的基本概念</h2>
+      
+<p>我们知道，离散分配方式分为分页存储管理方式、分段存储管理方式、段页式存储管理方式。这一题介绍分段存储管理方式。</p>
+<p><strong>（1）为什么要引入分段</strong></p>
+<p>一方面是由于通常的程序都可分为若干个段，如主程序段、子程序段A、子程序段B、…、数据段以及栈段等，每<br />
+个段大多是一个相对独立的逻辑单位；另一方面，实现和满足信息共享、信息保护、动态链接以及信息的动态增长等需要，也都是以段为基本单位的。所以，要引入分段存储管理方式。</p>
+<p><strong>（2）分段存储管理方式</strong></p>
+<p>分段存储管理方式把用户程序的地址空间分为若干个大小<strong>不同</strong>的段，每段定义一组相对完整的信息，(内存空间)分配时以段为单位进行分配。分段的地址结构包含段号和段内地址。分段的地址结构如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127104958.png"  alt="" />
+      </p>
+<p><em>在该地址结构中，允许一个作业最长有64K个段，每个段最大长度为64KB</em></p>
+<p>分段存储管理方式为使程序能正常运行，亦即，能从物理内存中找出每个逻辑段所对应的位置，应像分页系统那样，<strong>在系统中为每个进程建立一张段映射表</strong>，简称<strong>段表</strong>，从而实现从逻辑段到物理内存区的映射。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127105313.png"  alt="" />
+      </p>
+<p>（3）<strong>分段存储管理方式中的地址变换机构</strong></p>
+<p>为了实现进程从逻辑地址到物理地址的变换功能，在系统设置了段表寄存器，用于存放段表在内存中的始址和段表的长度，在进行地址变换时，会先将要访问的段号与段表长度进行比较，如果段号大于段表长度，则表示本次所访问的地址已超越进程的地址空间（逻辑空间），将产生地址<strong>越界中断</strong>。如果未出现越界错误，则根据段表的始址和该段的段号，计算出该段对应段表项的位置，从中读出该段在内存的起始地址。然后，再检查段内地址是否超过该段的段长。若超过，同样发生越界中断。若未越界，则将该段的基址与段内地址相加，即可得到要访问的内存的物理地址。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127112132.png"  alt="" />
+      </p>
+<p>（4）<strong>具有快表的地址变换机构</strong></p>
+<p>像分页系统一样，当段表放在内存中时，每访问一个数据，都须<strong>访问两次内存</strong>，从而极大地降低了计算机的速率。解决的方法也和分页系统类似，再增设一个联想存储器（<strong>快表</strong>），用于保存最近常用的段表项。由于一般段比页大，因而段表项的数目比页表项的数目少，其所需的联想存储器也相对较小，便可以显著地减少存取数据的时间，比起没有地址变换的常规存储器的存取速度来仅慢约10%～15%。</p>
+
+        <h2 id="33-分页和分段的主要区别"   >
+          <a href="#33-分页和分段的主要区别" class="heading-link"><i class="fas fa-link"></i></a>33、分页和分段的主要区别</h2>
+      
+<p>（1）页是信息的物理单位，分页是由于系统管理的需要。段则是信息的逻辑单位，分段的目的是为了能更好地满足用户的需要。</p>
+<p>（2） 页的大小固定且由系统决定，在系统中只能有一种大小的页面；而段的长度却不固定，决定于用户所编写的程序。</p>
+<p>（3）分页的用户程序地址空间（逻辑空间）是一维的。由于分页完全是系统的行为，故在分页系统中，用户程序的地址是属于单一的线性地址空间，程序员只需利用一个记忆符即可表示一个地址。而分段是用户的行为，故在分段系统中，用户程序的地址空间是二维的，程序员在标识一个地址时，既需给出段名，又给出段内地址。</p>
+
+        <h2 id="34-段页式存储管理方式的基本概念"   >
+          <a href="#34-段页式存储管理方式的基本概念" class="heading-link"><i class="fas fa-link"></i></a>34、段页式存储管理方式的基本概念</h2>
+      
+<p>我们知道，离散分配方式分为分页存储管理方式、分段存储管理方式、段页式存储管理方式。这一题介绍段页式存储管理方式。</p>
+<p>（1）为什么要引入段页式</p>
+<p>分页系统以页面作为内存分配的基本单位，能有效地提高内存利用率，而分段系统以段作为内存分配的基本单位，它能够更好地满足用户多方面的需要。如果能对两种存储管理方式“各取所长”，则可形成一种新的存储器管理方式——段页式存储管理方式。这种新的系统既具有分段系统的便于实现、分段可共享、易于保护、可动态链接等一系列优点，又能像分页系统那样，很好地解决内存的外部碎片问题。</p>
+<p>（2）段页式存储管理方式</p>
+<p>段页式存储管理方式是分段和分页原理结合的产物，即先将用户程序分为若干个段，再把每个段分成若干个页，并为每个段赋予一个段名。段页式的地址结构包含段号和段内页号以及页内地址。段页式的地址结构如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127133546.png"  alt="" />
+      </p>
+<p><em>在该地址结构中，允许一个作业最多有256个段，每段最多有4K个页，每页大小为4KB</em></p>
+<p>（3）段页式存储管理方式中的地址变换</p>
+<p>在段页式系统中，为了实现从逻辑地址到物理地址的变换，<strong>系统中需要同时配置段表和页表</strong>。<strong>段表的内容不再是内存始址和段长，而是页表始址和页表长度</strong>。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127134135.png"  alt="" />
+      </p>
+<p>地址变换过程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127134213.png"  alt="" />
+      </p>
+<p>其实就是先进行分段的地址变换，根据段号从段表中找到对应的页表，再进行分页的地址变换，根据页号从页表中找到相应页面在内存中的起始地址（即物理块号），最后再结合页内地址，找到在内存中的物理地址，</p>
+<p>（4）具有快表的地址变换机构</p>
+<p><strong>在段页式系统中，为了获得一条指令或数据，须三次访问内存。第一次访问是访问内存中的段表，从中取得页表始址；第二次访问是访问内存中的页表，从中取出该页所在的物理块号，并将该块号与页内地址一起形成指令或数据的物理地址；第三次访问才是真正从第二次访问所得的地址中，取出指令或数据。</strong></p>
+<p>为了提高执行速度，在地址变换机构中增设一个联想存储器（快表）。</p>
+
+        <h2 id="35-虚拟存储器系统的基本概念"   >
+          <a href="#35-虚拟存储器系统的基本概念" class="heading-link"><i class="fas fa-link"></i></a>35、虚拟存储器系统的基本概念</h2>
+      
+<p>存储器（内存）的管理策略除了连续分配方式、离散分配方式之外，还有虚拟存储系统。</p>
+<p>（1）为什么要引入虚拟存储器</p>
+<p>前面所介绍的各种存储器管理方式有一个共同的特点，即<strong>它们都要求将一个作业全部装入内存后方能运行</strong>。于是，出现了下面这样两种情况：</p>
+<p>①有的作业很大，其所要求的内存空间超过了内存总容量，作业不能全部被装入内存，致使该作业无法运行。</p>
+<p>②有大量作业要求运行，但由于内存容量不足以容纳所有这些作业，只能将少数作业装入内存让它们先运行，而将其它大量的作业留在外存上等待。</p>
+<p>出现上述两种情况的原因都是由于内存容量不够大。一个显而易见的解决方法是从物理上增加内存容量，但这往往会受到机器自身的限制，而且无疑要增加系统成本，因此这种方法是受到一定限制的。另一种方法是从逻辑上扩充内存容量，这正是虚拟存储技术所要解决的主要问题。</p>
+<p>（2）局部性原理</p>
+<p>局部性原理是指，在一个较短的时间内，程序的执行仅局限于<strong>某个部分</strong>，相应地，它所访问的存储空间也局限于某个区域。</p>
+<p>局限性表现在时间局限性和空间局限性。</p>
+<p>①时间局限性。 如果程序中的某条指令被执行，则不久以后该指令可能再次执行；如果某数据被访问过，则不久以后该数据可能再次被访问。 产生时间局限性的典型原因是在程序中存在着大量的循环操作。</p>
+<p>②空间局限性。 一旦程序访问了某个存储单元，在不久之后，其附近的存储单元也将被访问，其典型情况便是程序的顺序执行。</p>
+<p>（3）虚拟存储器</p>
+<p><strong>基于局部性原理可知，应用程序在运行之前没有必要将之全部装入内存</strong>，而仅须将那些当前要运行的少数页面或段先装入内存便可运行，其余部分暂留在盘上。程序在运行时，如果它所要访问的页(段)已调入内存，便可继续执行下去；但如果程序所要访问的页(段)尚未调入内存(称为缺页或缺段)，便发出<strong>缺页(段)中断请求</strong>，此时OS将利用<strong>请求调页(段)功能</strong>将它们调入内存，以使进程能继续执行下去。如果此时内存已满，无法再装入新的页(段)，OS还须再利用<strong>页(段)的置换功能</strong>，将内存中暂时不用的页(段)调至盘上，腾出足够的内存空间后，再将要访问的页(段)调入内存，使程序继续执行下去。这样，便可使一个大的用户程序在较小的内存空间中运行，也可在内存中同时装入更多的进程，使它们并发执行。</p>
+<p>总结一下，所谓虚拟存储器，是指具有<strong>请求调入功能和置换功能</strong>，<strong>能从逻辑上</strong>对内存容量加以扩充的一种存储器系统。其逻辑容量由内存容量和外存容量之和所决定，其运行速度接近于内存速度，而每位的成本却又接近于外存。</p>
+<p>虚拟存储器的实现方法有：请求分页存储管理方式、请求分段存储管理方式、请求段页式存储管理方式。这些将在后面的题目中介绍。</p>
+
+        <h2 id="36-请求分页存储管理方式"   >
+          <a href="#36-请求分页存储管理方式" class="heading-link"><i class="fas fa-link"></i></a>36、请求分页存储管理方式</h2>
+      
+<p>请求分页系统是建立在基本分页基础上的，为了能支持虚拟存储器功能，而增加了<strong>请求调页功能和页面置换功能</strong>。相应地，每次调入和换出的基本单位都是长度固定的页面，这使得请求分页系统在实现上要比请求分段系统简单(后者在换进和换出时是可变长度的段)。因此，请求分页便成为目前最常用的一种实现虚拟存储器的方式</p>
+<p>为了实现请求分页，系统必须提供一定的硬件支持。计算机系统除了要求一定容量的内存和外存外，还需要有<strong>请求页表机制、缺页中断机构以及地址变换机构</strong>。</p>
+<p>（1）请求页表机制</p>
+<p>为了满足页面换进换出的需要，在<strong>请求页表</strong>中又增加了四个字段。这样，在请求分页系统中的每个页表应含以下诸项：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127142533.png"  alt="" />
+      </p>
+<ul>
+<li>状态位P：用于指示该页是否已调入内存。</li>
+<li>访问字段A：用于记录本页在一段时间内被访问的次数，或记录本页最近已有多长时间未被访问。</li>
+<li>修改位M：表示该页在调入内存后是否被修改过。</li>
+<li>外存地址：用于指出该页在外存上的地址，通常是<strong>磁盘块号</strong>，供调入该页时参考。</li>
+</ul>
+<p>（2）缺页中断机构</p>
+<p>缺页中断是一种特殊的中断，它与一般的中断相比，有着明显的区别：</p>
+<ul>
+<li>在指令执行期间产生和处理中断信号。而一般中断是在一条指令执行完后，检查是否有中断请求到达。</li>
+<li>一条指令在执行期间可能产生多次缺页中断。</li>
+</ul>
+<p>缺页中断就是要访问的页不在主存中，需要操作系统将页调入主存后再进行访问，此时会暂时停止指令的执行，产生一个缺页中断异常，对应的异常处理程序就会从选择一页调入到内存，调入内存后之前被中断的的异常指令就可以继续执行。</p>
+<p>缺页中断的处理过程如下：</p>
+<ol>
+<li>如果内存中有空闲的物理块，则分配一物理块，然后转第4步，否则转第2步；</li>
+<li>选择某种页面置换算法，选择一个将被替换的物理块，它所对应的页面号为q，将q页面换出，如果该页在内存期间被修改过，则需把它写回到外存；</li>
+<li>将q所对应的页表项进行修改，把其状态位P置为0；</li>
+<li>将需要访问的页装入到空闲的物理块中；</li>
+<li>修改访问的页所对应的页表项的内容，把状态位P位置1，物理块号置为该页装入的物理块所对应的块号，访问字段A加1，外存地址置为访问的页在外存的磁盘块号；</li>
+<li>重新运行被中断的指令。</li>
+</ol>
+<p>（3）地址变换机构</p>
+<p>请求分页系统中的地址变换机构是在分页系统地址变换机构的基础上，为实现虚拟存储器，再增加了某些功能所形成的，如产生和处理缺页中断，以及从内存中换出一页的功能等等，具体过程如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127144617.png"  alt="" />
+      </p>
+
+        <h2 id="37-请求分页存储管理方式的页面置换算法"   >
+          <a href="#37-请求分页存储管理方式的页面置换算法" class="heading-link"><i class="fas fa-link"></i></a>37、请求分页存储管理方式的页面置换算法</h2>
+      
+<p>（1）最佳置换算法</p>
+<p>最佳置换算法是一种理论上的算法，其所选择的被淘汰页面将是以后永不使用的，或许是在最长(未来)时间内不再被访问的页面。</p>
+<p>（2）先进先出(FIFO)页面置换算法</p>
+<p>先进先出(FIFO)页面置换算法总是淘汰最先进入内存的页面，即选择在内存中驻留时间最久的页面予以淘汰。</p>
+<p>（3）LRU(Least Recently Used)最近最久未使用置换算法</p>
+<p>LRU算法利用“最近的过去”作为“最近的将来”的近似，因此，LRU置换算法是选择最近最久未使用的页面予以淘汰。</p>
+<p>（4）最少使用(Least Frequently Used，LFU)置换算法</p>
+<p>在采用最少使用置换算法时，应为在内存中的<strong>每个页面设置一个移位寄存器</strong>，用来记录该页面被访问的频率。该置换算法选择在最近时期使用最少的页面作为淘汰页。</p>
+<p>（5）Clock置换算法</p>
+<p>为每页设置一位访问位，再<strong>将内存中的所有页面都通过链接指针链接成一个循环队列</strong>。当某页被访问时，其访问位被置1。</p>
+<p>Clock置换算法在选择一页淘汰时，检查页的访问位。<strong>如果是0，就选择该页换出</strong>；若为1，则重新将它置0，暂不换出，再按照循环队列次序检查下一个页面。</p>
+<p>（6）页面缓冲算法（Page Buffering Algorithm PBA）</p>
+<p>页面缓冲算法建立了一个已修改换出页面的链表，对每一个要被换出的页面(已修改)，系统暂不把它们写回磁盘，而是将它们挂在已修改换出页面的链表上，仅当换出页面数目达到一定值时，再将它们<strong>一起写回磁盘上</strong>。</p>
+
+        <h2 id="38-抖动发生原因及预防方法"   >
+          <a href="#38-抖动发生原因及预防方法" class="heading-link"><i class="fas fa-link"></i></a>38、“抖动”发生原因及预防方法</h2>
+      
+<p>每个进程在运行时，频繁地出现缺页，造成每个进程的大部分时间都用于页面的换进/换出，而几乎不能再去做任何有效的工作，从而导致发生处理机的利用率急剧下降并趋于0的情况。称此时的进程是处于“抖动”状态。</p>
+<p>预防抖动的方法：</p>
+<p>（1）采取局部置换策略</p>
+<p>当某进程发生缺页时，只能在分配给自己的内存空间里进行置换，不允许它从别的进程空间获得新的物理块，这样即使本进程发生了“抖动”，也不会对其它进程产生影响。</p>
+<p>（2）把工作集融入到处理机调度中</p>
+<p>调度程序从外存调入作业之前，必须检查每个进程在内存的驻留页面是否足够多。</p>
+<p>（3）利用“L=S”准则调节缺页率</p>
+<p>其中L是缺页之间的平均时间，S是平均缺页服务时间，即用于置换一个页面所需的时间。如果是L远比S大，说明很少发生缺页，磁盘的能力尚未得到充分的利用；反之，如果是L比S小，则说明频繁发生缺页，缺页的速度已超过磁盘的处理能力。只有当L与S接近时，磁盘和处理机都可达到它们的最大利用率。</p>
+<p>（4）选择暂停某些进程，释放它们的物理块。</p>
+
+        <h2 id="39-什么是工作集"   >
+          <a href="#39-什么是工作集" class="heading-link"><i class="fas fa-link"></i></a>39、什么是工作集</h2>
+      
+<p>所谓工作集，是指在某段时间间隔Δ里，进程实际所要访问页面的集合。<strong>由于进程发生缺页率的时间间隔与进程所获得的物理块数有关</strong>，虽然程序只需要少量的几页在内存便可运行，但为了较少地产生缺页，应将程序的全部工作集装入内存中。</p>
+<p>缺页率与物理块数之间的关系如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127150640.png"  alt="" />
+      </p>
+<p>然而无法事先预知程序在不同时刻将访问哪些页面，即无法事先预知程序的工作集，故仍只有像页面置换算法那样，用程序的过去某段时间内的行为作为程序在将来某段时间内行为的近似。</p>
+
+        <h2 id="40-请求分段存储管理方式"   >
+          <a href="#40-请求分段存储管理方式" class="heading-link"><i class="fas fa-link"></i></a>40、请求分段存储管理方式</h2>
+      
+<p>在分页基础上建立的请求分页式虚拟存储器系统，是以页面为单位进行换入、换出的。而在分段基础上所建立的请求分段式虚拟存储器系统，则是以分段为单位进行换入、换出的。在请求分段系统中,程序运行之前，只需先调入少数几个分段(不必调入所有的分段)便可启动运行，当所访问的段不在内存中时，可请求OS将所缺的段调入内存。像请求分页系统一样，为实现请求分段存储管理方式，同样需要一定的硬件支持和相应的软件。</p>
+<p>与请求分页系统相似，在请求分段系统中所需的硬件支持有<strong>段表机制</strong>、<strong>缺段中断机构</strong>,以及<strong>地址变换机构</strong>。</p>
+<p>（1）段表机制</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127151614.png"  alt="" />
+      </p>
+<ul>
+<li>存取方式：用于标识本分段的存取属性是只执行、只读，还是允许读/写。</li>
+<li>访问字段A：其含义与请求分页的相应字段相同，用于记录该段被访问的频繁程度。</li>
+<li>修改位M：用于表示该段在进入内存后是否已被修改过，供置换段时参考。</li>
+<li>存在位P：指示本段是否已调入内存，供程序访问时参考。</li>
+<li>增补位：是请求分段式管理中所特有的字段，用于表示本段在运行过程中是否做过动态增长。</li>
+<li>外存始址：指示本段在外存中的起始地址，即起始盘块号。</li>
+</ul>
+<p>（2）缺段中断机构</p>
+<p>与缺页中断机构类似，缺段中断机构同样需要在一条指令的执行期间产生和处理中断，以及在一条指令执行期间，可能产生多次缺段中断。<br />
+但由于分段是信息的逻辑单位，因而不可能出现一条指令被分割在两个分段中，和一组信息被分割在两个分段中的情况。</p>
+<p>请求分段系统中的中断处理过程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127151944.png"  alt="" />
+      </p>
+<p>（3）地址变换机构</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127152058.png"  alt="" />
+      </p>
+
+        <h2 id="41-io系统的基本功能"   >
+          <a href="#41-io系统的基本功能" class="heading-link"><i class="fas fa-link"></i></a>41、I/O系统的基本功能</h2>
+      
+<p>（1）隐藏物理设备的细节</p>
+<p>I/O系统通过对I/O设备进行抽象，以隐藏物理设备的实现细节，用户只需通过I/O系统提供的读、写命令就可以操作相应的I/O设备。</p>
+<p>（2）与设备的无关性</p>
+<p>与设备无关的基本含义：应用程序中所用的设备，不局限于使用某个具体的物理设备。比如，当用户要输出打印时，只须提供读/写命令和逻辑设备名，不必指名是哪一台打印机。另一方面，也可以有效提高OS的可移植性和易适应性，对于OS而言，应允许在不需要将整个操作系统进行重新编译的情况下，增添新的设备驱动程序。如Windows中，系统可以为新I/O设备自动安装和寻找驱动程序，从而做到即插即用。</p>
+<p>引入该层的目的：为了方便用户和提高OS的可适应性和可扩展性。</p>
+<p>（3）提高处理机和I/O设备的利用率</p>
+<p>I/O系统的第三个功能是要尽可能地让处理机和I/O设备并行操作，以提高它们的利用率。为此，一方面要求处理机能快速响应用户的I/O请求，使I/O设备尽快地运行起来；另一方面，也应尽量减少在每个I/O设备运行时处理机的干预时间。</p>
+<p>（4）对I/O设备进行控制</p>
+<p>对I/O设备进行控制是驱动程序的功能。目前对I/O设备有四种控制方式：①采用轮询的可编程I/O方式；②采用中断的可编程I/O方；③直接存储器访问方式；④I/O通道方式。后面的题目会具体介绍这四种方式。</p>
+<p>（5）确保对设备的正确共享</p>
+<p>从设备的共享属性上，可将系统中的设备分为如下两类:<br />
+①独占设备，进程应互斥地访问这类设备，即系统一旦把这类设备分配给了某进程后，便由该进程独占，直至用完释放。典型的独占设备有打印机、磁带机等。<br />
+②共享设备，是指在一段时间内允许多个进程同时访问的设备。典型的共享设备是磁盘，当有多个进程需对磁盘执行读、写操作时，可以交叉进行，不会影响到读、写的正确性。</p>
+<p>（6）错误处理</p>
+<p>从处理的角度，可将错误分为临时性错误和持久性错误。对于临时性错误，可通过重试操作来纠正，只有在发生了持久性错时，才需要向上层报告。例如，在磁盘传输过程中发生错误，系统并不认为磁盘发生了故障，而是可以重新再传，一直要重传多次后，若仍有错，才认为磁盘发生了故障。<strong>由于多数错误是与设备紧密相关的</strong>，因此对于错误的处理，应该尽可能在接近硬件的层面上进行，即<strong>在低层软件能够解决的错误就不向上层报告，因此高层也就不能感知；只有底层软件解决不了的错误才向上报告，请求高层软件解决</strong>。</p>
+
+        <h2 id="42-io系统的层次结构"   >
+          <a href="#42-io系统的层次结构" class="heading-link"><i class="fas fa-link"></i></a>42、I/O系统的层次结构</h2>
+      
+<p>为使十分复杂的I/O软件能具有清晰的结构、更好的可移植性和易适应性，目前已普遍采用<strong>层次式结构</strong>的I/O系统。这是将系统中的<strong>设备管理模块</strong>分为若干个层次，每一层都是利用其下层提供的服务，完成输入输出功能中的某些子功能，并屏蔽这些功能实现的细节，向高层提供服务。</p>
+<p>I/O软件的层次结构如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127201122.png"  alt="" />
+      </p>
+<p>I/O系统中各模块之间的层次视图如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127202038.png"  alt="" />
+      </p>
+<p>与前面的I/O软件组织的层次结构相对应，I/O系统本身也可分为如下三个层次:</p>
+<p>（1）<strong>中断处理程序</strong></p>
+<p>它处于I/O系统的底层，直接与硬件进行交互。当有I/O设备发来中断请求信号时，在中断硬件做了初步处理后，便转向中断处理程序。它首先保存被中断进程的CPU环境，然后转入相应设备的中断处理程序进行处理，在处理完成后，又恢复被中断进程的CPU环境，返回断点继续运行。</p>
+<p>（2）<strong>设备驱动程序</strong></p>
+<p>它处于I/O系统的次底层，是进程和设备控制器之间的通信程序，其主要功能是，将上层发来的抽象I/O请求转换为对I/O设备的具体命令和参数，并把它装入到设备控制器中的命令和参数寄存器中，或者相反。由于设备之间的差异很大，每类设备的驱动程序都不相同，故必须由设备制造厂商提供，而不是由OS设计者来设计。</p>
+<p>（3）<strong>设备独立性软件</strong></p>
+<p>现代OS中的I/O系统基本上都实现了与设备无关性，也称为与<strong>设备无关的软件</strong>。其基本含义是：I/O软件独立于具体使用的物理设备。由此带来的最大好处是，提高了I/O系统的可适应性和可扩展性，使它们能应用于许多类型的设备，而且在每次增加新设备或替换老设备时，都不需要对I/O软件进行修改，这样就方便了系统的更新和扩<br />
+展。设备独立性软件的内容包括<strong>设备命名、设备分配、数据缓冲</strong>和数据高速缓冲一类软件等。</p>
+<p>另外，用户层软件实现与用户交互的接口，用户通过该层发出I/O命令与I/O系统接口交互，从而操作相应的I/O设备。</p>
+
+        <h2 id="43-io系统接口的类型有哪些"   >
+          <a href="#43-io系统接口的类型有哪些" class="heading-link"><i class="fas fa-link"></i></a>43、I/O系统接口的类型有哪些</h2>
+      
+<p>根据设备类型的不同，I/O系统接口进一步分为块设备接口、流设备接口和网络接口。</p>
+<p>（1）块设备接口</p>
+<p>快设备接口是块设备管理程序与高层之间的接口。</p>
+<p>所谓块设备，数据的存取和传输都是以数据块为单位的设备。典型的块设备是磁盘，该设备的基本特征是传输速率较高，通常每秒钟为数MB到数十MB。另一特征是可寻址，即能指定数据的输入源地址及输出的目标地址，可随机地读门写磁盘中任一块；磁盘设备的I/O常采用DMA方式。</p>
+<p>（2）流设备接口</p>
+<p>流设备接口是流设备管理程序与高层之间的接口，该接口又称为字符设备接口。</p>
+<p>所谓字符设备，是指数据的存取和传输是以字符为单位的设备，如键盘、打印机等，字符设备的基本特征是传输速率较低，通常为每秒几个字节至数千字节。另一特征是不可寻址，即不能指定数据的输入源地址及输出的目标地址，字符设备在输入/输出时，常采用中断驱动方式。</p>
+<p>（3）网络通信接口<br />
+通过网络进行通信，接入该接口的设备成为通信设备。</p>
+
+        <h2 id="44-设备控制器的基本功能"   >
+          <a href="#44-设备控制器的基本功能" class="heading-link"><i class="fas fa-link"></i></a>44、设备控制器的基本功能</h2>
+      
+<p>设备控制器的主要功能是，控制一个或多个I/O设备，以实现I/O设备和计算机之间的数据交换。它是CPU与I/O设备之间的接口，接收从CPU发来的命令，去控制I/O设备工作，使处理机能够从繁杂的设备控制事务中解脱出来。设备控制器是一个可编址的设备，当它仅控制一个设备时，它只有一个唯一的设备地址；若控制器可连接多个设备，则应含有多个设备地址，每一个设备地址对应一个设备。</p>
+<p>设备控制器的基本功能如下：</p>
+<ul>
+<li>接收和识别处理机发来的命令</li>
+<li>实现CPU与控制器之间、控制器与设备之间的数据交换</li>
+<li>标识和报告I/O设备的状态</li>
+<li>识别其所控制的每个I/O设备的地址</li>
+<li>提供主机与I/O设备之间的数据缓冲</li>
+<li>对I/O设备传来的数据进行差错控制</li>
+</ul>
+
+        <h2 id="45-io通道基本概念和常用类型"   >
+          <a href="#45-io通道基本概念和常用类型" class="heading-link"><i class="fas fa-link"></i></a>45、I/O通道基本概念和常用类型</h2>
+      
+<p>（1）为什么要引入I/O通道</p>
+<p>虽然在CPU与I/O设备之间增加了设备控制器后，已能大大减少CPU对I/O的干预，但当主机所配置的外设很多时，CPU的负担仍然很重。为此，在CPU和设备控制器之间又增设了I/O通道，其主要目的是为了建立独立的I/O操作，不仅使数据的传送能独立于CPU，而且也希望有关对I/O操作的组织、管理及其结束处理尽量独立，以保证CPU有更多的时间去进行数据处理；或者说，其目的是使一些原来由CPU处理的I/O任务转由通道来承担，从而把CPU从繁杂的I/O任务中解脱出来。在设置了通道后，CPU只需向通道发送一条I/O指令。通道在收到该指令后，便从内存中取出来本次要执行的通道程序，然后执行该通道程序，仅当通道完成了规定的I/O任务后，才向CPU发中断信号。</p>
+<p>（2）什么是I/O通道</p>
+<p>I/O通道是一种特殊的处理机，它具有执行I/O指令的能力，并通过执行通道(I/O)程序来控制I/O操作。<br />
+I/O通道与一般的处理机不同：</p>
+<ul>
+<li>指令类型单一。其所能执行的命令主要局限于与I/O操作有关的指令。</li>
+<li>通道没有自己的内存。通道所执行的通道程序是放在主机的内存中的，即通道与CPU共享内存。</li>
+</ul>
+<p>（3）I/O通道的类型</p>
+<p>根据信息交换方式的不同，可把通道分为以下三种类型：</p>
+<p>①字节多路通道(Byte Multiplexor Channel)</p>
+<p>这是一种按字节交叉方式工作的通道。它通常都含有许多非分配型子通道，其数量可从几十到数百个，每一个子通道连接一台I/O设备，并控制该设备的I/O操作。这些子通道按时间片轮转方式共享主通道。字节多路通道的原理图如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127205934.png"  alt="" />
+      </p>
+<p>② 数组选择通道(Block Selector Channel)</p>
+<p>这种通道虽然可以连接多台高速设备，但由于它只含有一个分配型子通道，在一段时间内只能执行一道通道程序，控制一台设备进行数据传送。</p>
+<p>③ 数组多路通道(Block Multiplexor Channel)</p>
+<p>数组多路通道是将数组选择通道传输速率高和字节多路通道能使各子通道(设备)<strong>分时并行</strong>操作的优点相结合而形成的一种新通道。它含有多个非分配型子通道，用于连接多台高、中速的外围设备，其数据传送是按数组方式进行的。</p>
+<p>这里，不得不提由于通道而引发的**“瓶颈问题”**。由于通道加个昂贵，致使机器中所设置的通道数量势必较少，这往往由使它成了I/O的瓶颈，进而造成整个系统吞吐量的下降。单通道I/O系统如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127210619.png"  alt="" />
+      </p>
+<p>解决瓶颈问题最有效的方法，便是增加设备到主机间的通路而不增加通道，如下图所示。换言之，就是把一个设备连接到多个控制器上，而一个控制器又连接到多个通道上。多通路方式不仅解决了瓶颈问题，而且提高了系统的可靠性，因为个别通道或控制器的故障不会使设备和存储器之间没有通路。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127210958.png"  alt="" />
+      </p>
+
+        <h2 id="46-中断interrup和陷入阱trap的区别"   >
+          <a href="#46-中断interrup和陷入阱trap的区别" class="heading-link"><i class="fas fa-link"></i></a>46、中断(interrup)和陷入阱(trap)的区别</h2>
+      
+<p>（1）中断<br />
+中断是指CPU对I/O设备发来的中断信号的一种响应。CPU暂停正在执行的程序，保留CPU环境后，自动地转去执行该I/O设备的中断处理程序。执行完后，再回到断点，继续执行原来的程序。I/O设备可以是字符设备，也可以是块设备、通信设备等，由于中断是由外部设备引起的，故又称<strong>外中断</strong>。<br />
+（2）陷入<br />
+另外还有一种由CPU内部事件所引起的中断，例如进程在运算中发生了上溢或下溢，又如程序出错，如非法指令、地址越界，以及电源故障等。通常把这类中断称为<strong>内中断或陷入(tuap)</strong>。与中断一样，若系统发现了有陷入事件，CPU也将暂停正在执行的程序，转去执行该陷入事件的处理程序。<strong>中断和陷入的主要区别是信号的来源，即是来自CPU外部，还是CPU内部。</strong></p>
+
+        <h2 id="47-软中断与硬中断的区别"   >
+          <a href="#47-软中断与硬中断的区别" class="heading-link"><i class="fas fa-link"></i></a>47、软中断与硬中断的区别</h2>
+      
+<p>（1）软中断是软件实现的中断，也就是程序运行时其他程序对它的中断；而硬中断是硬件实现的中断，是程序运行时外接设备对它的中断。<br />
+（2）软中断是程序安排好的，不具有随机行。硬中断是由外部事件引起的，具有随机性和突发性。<br />
+（3）软中断并不会直接中断CPU，接收软中断的进程只有在得到处理机之后才会产生软中断。由于处理硬中断的驱动是需要运行在CPU上的，因此，当中断产生的时候，CPU会中断当前正在运行的任务，来处理中断。<br />
+（4）软中断的中断信号由中断指令直接发出的，是不可屏蔽的；硬中断的中断信号是由中断控制器提供的，是可屏蔽的。</p>
+
+        <h2 id="48-对io设备的控制方式有哪些"   >
+          <a href="#48-对io设备的控制方式有哪些" class="heading-link"><i class="fas fa-link"></i></a>48、对I/O设备的控制方式有哪些</h2>
+      
+<p>（1）使用轮询的可编程I/O方式（程序I/O方式）</p>
+<p>在处理机向控制器发出一条I/O指令，启动输入设备输入数据时，要同时把状态寄存器中的忙/闲标志busy置为1，然后便不断地循环测试busy(称为轮询)。当busy=1时，表示输入机尚未输完一个字（符），处理机应继续对该标志进行测试，直至busy=0，表明输入机已将输入数据送入控制器的数据寄存器中。于是处理机将数据寄存器中的数据取出，送入内存指定单元中，这样便完成了个字(符)的I/O。</p>
+<p>它的特点是：</p>
+<ul>
+<li>CPU和I/O设备串行</li>
+<li>每次传送一个字（节）</li>
+</ul>
+<p>（2）使用中断的可编程I/O方式（中断驱动I/O方式）</p>
+<p>当某进程要启动某个I/O设备工作时，便由CPU向相应的设备控制器发出一条I/O命令，然后立即返回继续执行原来的任务。设备控制器于是按照该命令的要求去控制指定I/O设备。此时，CPU与I/O设备并行操作。例如，在输入时，当设备控制器收到CPU发来的读命令后，便去控制相应的输入设备读数据。一旦数据进入数据寄存器，控制器便通过控制线应CPU发送一中断信号，由CPU检查输入过程中是否出错。若无，便向控制器发送取走数据的信号，然后再通过控制器及数据线，将数据写入内存指定单元中。</p>
+<p>（3）直援存储器访问方式（DMA方式）</p>
+<p>为了进一步减少CPU对I/O的干预，引入了直接存储器访问方式，该方式的特点是：</p>
+<ul>
+<li>数据传输的基本单位是数据块，即在CPU与I/O设备之间，每次传送至少一个数据块。</li>
+<li>所传送的数据是从设备直接送入内存的，或者相反。</li>
+<li>仅在传送一个或多个数据块的开始和结束时，才需CPU干预，整块数据的传送是在控制器的控制下完成的。可见，DMA方式较之中断驱动方式又进一步提高了CPU与I/O设备的并行操作程度。</li>
+</ul>
+<p>它的特点是：</p>
+<ul>
+<li>CPU和I/O设备并行。</li>
+<li>每次传送一个至少一个数据块。所传送的多个数据块是连续的，从设备直接送入内存，或者相反。</li>
+</ul>
+<p>（4）I/O通道控制方式</p>
+<p>虽然DMA方式比起中断方式来已经显著地减少了CPU的干预，即已由以字(节)为单位的干预减少到以数据块为单位的干预，但CPU每发出一条I/O指令，也只能去读(或写)一个连续的数据块。而当我们需要一次去读多个数据块且将它们分别传送到不同的内存区域，或者相反时，则须由CPU分别发出多条I/O指令及进行多次中断处理才能完成。</p>
+<p>I/O通道方式是DMA方式的发展，它可进一步减少CPU的干预，即把对一个数据块的读(或写)为单位的干预，减少为对一组数据块的读(或写)及有关的控制和管理为单位的干预。同时，又可实现CPU、通道和I/O设备三者的并行操作，从而更有效地提高整个系统的资源利用率。例如，当CPU要完成一组相关的读(或写)操作及有关控制时，只需向I/O通道发送一条I/O指令，以给出其所要执行的通道程序的首址和要访问的I/O设备，通道接到该指令后，通过执行通道程序便可完成CPU指定的I/O任务。</p>
+<p>它的特点是：</p>
+<ul>
+<li>CPU、通道、I/O设备并行。</li>
+<li>每次传送多个不同方向且不连续的数据块。</li>
+</ul>
+
+        <h2 id="49-什么是假脱机spooing技术"   >
+          <a href="#49-什么是假脱机spooing技术" class="heading-link"><i class="fas fa-link"></i></a>49、什么是假脱机(Spooing)技术？</h2>
+      
+<p>当系统中引入了多道程序技术后，完全可以利用其中的一道程序，来模拟脱机输入时的外围控制机功能，把低速I/O设备上的数据传送到高速磁盘上。再用另一道程序模拟脱机输出时外围控制机的功能，把数据从磁盘传送到低速I/O设备上。 这样，便可在主机的直接控制下，实现以前的脱机输入、输出功能。我们把这种在联机情况下利用多道程序实现数据输入和输出的技术称为 SPOOLing（Simultaneaus Periphernal Operating OnLine)技术，或称为假脱机技术。</p>
+
+        <h2 id="50-磁盘的访问时间有哪些"   >
+          <a href="#50-磁盘的访问时间有哪些" class="heading-link"><i class="fas fa-link"></i></a>50、磁盘的访问时间有哪些</h2>
+      
+<p>磁盘设备在工作时以恒定速率旋转。为了读或写，磁头必须能移动到所指定的磁道上，并等待所指定的扇区的开始位置旋转到磁头下，然后再开始读或写数据。故可把对磁盘的访问时间分成以下三部分：</p>
+<ul>
+<li><strong>寻道时间</strong>：把磁头移动到指定磁道上所经历的时间</li>
+<li><strong>旋转延迟时间</strong> ：指定扇区移动到磁头下面所经历的时间</li>
+<li><strong>传输时间</strong> ：数据的传输时间（数据读出或写入的时间）</li>
+</ul>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127225002.png"  alt="" />
+      </p>
+
+        <h2 id="51-常见的磁盘调度算法"   >
+          <a href="#51-常见的磁盘调度算法" class="heading-link"><i class="fas fa-link"></i></a>51、常见的磁盘调度算法</h2>
+      
+<p>为了减少对文件的访问时间，应采用一种最佳的磁盘调度算法，<strong>以使各进程对磁盘的平均访问时间最小</strong>。<strong>由于在访问磁盘的时间中主要是寻道时间</strong>，因此，磁盘调度的目标是使磁盘的平均寻道时间最少。目前常用的磁盘调度算法有先来先服务、最短寻道时间优先及扫描等算法。</p>
+<p>（1）先来先服务(FCFS)<br />
+根据进程请求访问磁盘的先后次序进行调度。<br />
+（2）最短寻道时间优先(SSTF)<br />
+该算法选择的进程，其要求访问的磁道与当前磁头所在的磁道距离最近，以使每次的寻道时间最短。<br />
+（3）扫描(SCAN)算法（电梯调度算法）<br />
+该算法不仅考虑到欲访问的磁道与当前磁道间的距离，更优先考虑的是磁头当前的移动方向。这是典型电梯调度算法。<br />
+（4）循环扫描(CSCAN)算法<br />
+电梯调度算法的改进，即将最小磁道号紧接着最大磁道号构成循环，进行循环扫描。<br />
+（5）NStepSCAN算法<br />
+“<strong>磁臂粘着</strong>”(Armstickiness)：前几种算法中，如果有一个或几个进程对某一磁道频率进行I/O操作，从而垄断了整个磁盘设备。我们把这一现象称为磁臂粘着。<br />
+N步SCAN算法是将磁盘请求队列分成若干个长度为N的子队列，磁盘调度将按FCFS算法依次处理这些子队列。而每处理一个队列时又是按SCAN算法。当系统（磁盘调度）正在处理某子队列的请求时，如果又出现新的磁盘I/O请求，便将新请求进程放入其他队列，这样就可避免出现粘着现象。<br />
+（6）FSCAN算法<br />
+FSCAN算法是N步SCAN算法的简化，即FSCAN只将磁盘请求队列分成两个子队列。一个是由当前所有请求磁盘I/O的进程形成的队列，由磁盘调度按SCAN算法进行处理。在扫描期间，将新出现的所有请求磁盘I/O的进程，放入另一个等待处理的请求队列。</p>
+
+        <h2 id="52-文件系统中的三级数据组织形式"   >
+          <a href="#52-文件系统中的三级数据组织形式" class="heading-link"><i class="fas fa-link"></i></a>52、文件系统中的三级数据组织形式</h2>
+      
+<p>在文件系统中，通常把数据分为数据项、记录和文件三级。</p>
+<p>（1）数据项</p>
+<p>最低级的数据组织形式，分为：</p>
+<ul>
+<li>基本数据项：原子数据，最小逻辑单位，即数据元素、字段。如学号、姓名</li>
+<li>组合数据项：由若干个基本数据项组成，简称组项。如工资（基本工资、奖励工资）</li>
+</ul>
+<p>数据项的型和值：型指数据项名字和类型，实体在数据项上的数据则称为值。</p>
+<p>（2）记录</p>
+<p>一组相关数据项的集合，用于描述一个对象在某方面的属性。一个记录应包含哪些数据项，取决于需要描述对象的哪个方面。由于对象所处的环境不同可把他作为不同的对象。例如，一个学生，当把他作为班上的一名学生时，对他的描述应使用学号、姓名、年龄及所在系班，也可能还包括他所学过的课程的名称、成绩等数据项。但若把学生作为个医疗对象时，对他描述的数据项则应使用诸如病历号、姓名、性别、出生年月、身高、体重、血压及病史等项。<br />
+在诸多记录中，为了能唯一地标识一个记录，必须在一个记录的各个数据项中确定出一个或几个数据项，把它们的集合称为关键字(key)。或者说，关键字是唯一能标识一个记录的数据项。通常，只需用一个数据项作为关键字。例如，前面的病历号或学号便可用来从诸多记录中标识出唯一的一个记录。然而有时找不到这样的数据项，只好把几个数据项定为能在诸多记录中唯一地标识出某个记录的关键字。</p>
+<p>（3）文件</p>
+<p>文件是指由创建者者所定义的、具有文件名的一组相关元素的集合，可分为有结构文件和无结构文件两种。在有结的文件中，文件由若干个相关记录组成，而无结构文件则被看成是一个字符流。文件在文件系统中是一个最大的数据单位，它描述了一个<strong>对象集</strong>。例如，可以将一个班的学生记录作为一个文件。</p>
+<p>文件、记录和数据项之间的层次关系如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127230905.png"  alt="" />
+      </p>
+
+        <h2 id="53-文件系统模型的三个层次"   >
+          <a href="#53-文件系统模型的三个层次" class="heading-link"><i class="fas fa-link"></i></a>53、文件系统模型的三个层次</h2>
+      
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127231021.png"  alt="" />
+      </p>
+<p><strong>文件系统接口(最高层)</strong>：命令接口和程序接口。命令接口是指用户与文件系统直接交互的接口，程序接口是<strong>用户程序</strong>与文件系统的接口。</p>
+<p><strong>对对象操纵和管理的软件集合(中间层)</strong>：对文件读写的管理、对文件的保护和共享、对文件目录的管理、对存储空间的管理。</p>
+<p>对象及属性(最底层)：对象有文件、目录、磁盘存储空间。</p>
+
+        <h2 id="54-文件的逻辑结构和物理结构"   >
+          <a href="#54-文件的逻辑结构和物理结构" class="heading-link"><i class="fas fa-link"></i></a>54、文件的逻辑结构和物理结构</h2>
+      
+<p>（1）文件的逻辑结构</p>
+<p>文件的逻辑结构：从用户角度出发所看到的文件组织形式，是<strong>用户可以直接处理</strong>的数据及其结构。</p>
+<p>文件的逻辑结构有：</p>
+<p>①按有无结构可分为有结构文件和无结构文件两种。在有结构的文件中，文件有若干个相关记录组成，而无结构文件则被看成是一个字符流。</p>
+<p>②按文件的组织方式分类可分为顺序文件、索引文件、索引顺序文件。</p>
+<ul>
+<li>顺序文件：按照某种顺序排列所形成的文件，其记录可以是定长记录或可变长记录。</li>
+<li>索引文件：（定长记录可以通过简单计算，实现随机查找）当记录为可变长时，通常为之建立一张索引表，并<strong>为每一个记录设置一个表项</strong>，以加快检索记录的速度。</li>
+<li>索引顺序文件：这是顺序文件和索引文件相结合的产物，这里，在为每个文件建立一张索引表时，并不是为每一个记录建立一个索引表项，而是<strong>为每一组记录中的第一个记录设置一个表项</strong>。</li>
+</ul>
+<p>（2）文件的物理结构</p>
+<p>文件在外存上的存储组织形式，又称为文件的存储结构**。文件在外存上的存储组织形式可分为以下形式**：</p>
+<p>①连续组织方式<br />
+为每个文件分配相邻的物理块（盘块/扇区），将分配给文件的首物理块的地址登记在它的文件目录项内，这样的文件结构是顺序式的文件结构。<br />
+②链接组织方式<br />
+通过每个盘块上的链接指针，将同一个文件的多个离散的盘块链接成一个链表，这样的文件结构是链接式文件结构。<br />
+③索引组织方式<br />
+通过给每个文件的盘块建立索引，形成的是索引式文件结构。</p>
+
+        <h2 id="55-文件目录和目录文件"   >
+          <a href="#55-文件目录和目录文件" class="heading-link"><i class="fas fa-link"></i></a>55、文件目录和目录文件</h2>
+      
+<p>通常，在现代计算机系统中，都要存储大量的文件，为了能对这些文件实施有效的管理，必须对它们加以妥善组织，这主要是通过<strong>文件目录</strong>实现的。文件目录也是一种数据结构，用于标识系统中的文件及其物理地址，供检索时使用。对目录管理的要求如下：<br />
+（1）实现“按名存取”。用户只须向系统提供所需访同文件的名字，便能快速准确地找到指定文件在外存上的存储位置。这是目录管理中最基本的功能。<br />
+（2）提高对目录的检索速度。通过合理地组织目录结构加快对目录的检索速度，从而提高对文件的存取速度。<br />
+（3）文件共享，在多用户系统中,应允许多个用户共享一个文件，这样就只须在外存中保留一份该文件的副本供不同用户使用，以节省大量的存储空间，并方便用户和提高文件利用率。<br />
+（4）允许文件重名。系统应允许不同用户对不同文件采用相同的名字，以便于用户按照自己的习惯给文件命名和使用文件。</p>
+<p>文件控制块(FCB，File Controller Block)：为正确存取文件，而为文件设置的用于描述和控制文件的数据结构。文件与文件控制块一一对应。<br />
+<strong>文件控制块的有序集合构成文件目录。</strong><br />
+<strong>文件目录以文件的形式存放，所以叫做目录文件。</strong></p>
+
+        <h2 id="56-文件的链接组织形式"   >
+          <a href="#56-文件的链接组织形式" class="heading-link"><i class="fas fa-link"></i></a>56、文件的链接组织形式</h2>
+      
+<p>前面也提到了，文件的物理结构也即文件在外存上的存储组织形式，又称为文件的存储结构。文件在外存上的存储组织形式有连续组织方式、链接组织方式、索引组织方式，这里介绍文件的链接组织方式。</p>
+<p>链接组织方式：通过每个盘块上的链接指针，将同一个文件的多个离散的盘块链接成一个链表，这样的文件结构是链接式文件结构。可分为隐式链接和显式链接两种方式。</p>
+<p>（1）隐式链接</p>
+<p>将一文件离散地存放在外存上，并将下一个物理块（磁盘块）的地址登记在分配给它的前一个物理块中。</p>
+<p>磁盘空间的链接式分配如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127234257.png"  alt="" />
+      </p>
+<p>（2）显式链接</p>
+<p>将文件离散地存放，并将链接各个物理块的指针显式地登记在内存的一张文件分配表FAT(File Allocation Table)中。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127234450.png"  alt="" />
+      </p>
+
+        <h2 id="57-文件分配表fat技术"   >
+          <a href="#57-文件分配表fat技术" class="heading-link"><i class="fas fa-link"></i></a>57、文件分配表FAT技术</h2>
+      
+<p>在MS-DOS中，最早使用的是12位的FAT12，后来为16位的FAT16。在Windows 95和Windows 98操作系统中升级为32位的FAT32，Windows NT/2000/XP及以后的操作系统中又进一步发展为新技术文件系统NTFS。</p>
+<p>在FAT中引入了“卷”的概念，支持将一个物理磁盘分成四个逻辑磁盘，每个逻辑磁盘就是一个<strong>卷</strong>(也称为<strong>分区</strong>)，也就是说每个卷都是一个能够被单独格式化和使用的逻辑单元，供文件系统分配空间时使用。一个卷中包含了文件系统信息、一组文件以及空闲空间。每个卷都专门划出一个单独区域来存放自己的目录和FAT表，以及自己的逻辑驱动器字母。通常对仅有一个硬盘的计算机，最多可将其硬盘分为“C:”、“D:”、“E:&quot;、“F:”四个卷。需要指出的是。在现代OS中，一个物理磁盘可以划分为多个卷，一个卷也可以由多个物理磁盘组成。</p>
+<p>（1）FAT12</p>
+<p>FAT12是以盘块为基本分配单位的，每个盘块大小一般为512B，即0.5K，最多能够存放<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mn>12</mn></msup></mrow><annotation encoding="application/x-tex">2^{12}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span>方个盘块。为了安全起见，<strong>在每个分区中</strong>都配有两张相同的文件分配表FAT1和FAT2。在FAT的每个表项中存放下一个盘块号，实际上用于盘块之间链接的指针，<strong>通过它可以将一个文件的所有盘块链接起来</strong>。FAT12技术将文件的第一个盘块号放在自己的文件控制块(FCB)中。</p>
+<p>为了适应磁盘容量不断增大的需要，在进行盘块分配时，不再以盘块而是以<strong>簇</strong>(cluster)为基本单位，簇是一组连续的扇区，大小一般盘块的整数倍。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127235301.png"  alt="" />
+      </p>
+<p>（2）FAT16</p>
+<p>具有16位表宽的FAT表称为FAT16，最大表项数将增至65536 (<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mn>16</mn></msup></mrow><annotation encoding="application/x-tex">2^{16}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">1</span><span class="mord mtight">6</span></span></span></span></span></span></span></span></span></span></span></span>)个，可以存放更多的盘块。</p>
+<p>（3）FAT32</p>
+<p>具有32位表宽的FAT表称为FAT32，FAT12一般以簇为基本分配单位的，FAT32的每个簇都固定为4 KB，管理的最大磁盘空间可达4KB*<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mn>2</mn><mn>32</mn></msup></mrow><annotation encoding="application/x-tex">2^{32}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8141079999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord">2</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8141079999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight">3</span><span class="mord mtight">2</span></span></span></span></span></span></span></span></span></span></span></span>，即16TB。FAT32有最小管理空间的限制，不支持容量小于512M的分区，并且FAT32的单个文件长度不能大于4GB。</p>
+
+        <h2 id="58-ntfs的文件组织方式"   >
+          <a href="#58-ntfs的文件组织方式" class="heading-link"><i class="fas fa-link"></i></a>58、NTFS的文件组织方式</h2>
+      
+<p>NTFS(New Technology File System)是一个专门为Windows NT开发的、全新的文件系统，并适用于Windows 2000/XP及后续的Windows OS。</p>
+<p>（1）NTFS磁盘组织</p>
+<p>NTFS是以簇作为磁盘空间分配和回收的基本单位的。一个文件占用若干个簇，一个簇只属于一个文件。这样，在为文件分配磁盘空间时，就无须知道盘块的大小，只要根据不同的磁盘容量，选择相应大小的簇，即使NTFS具有了与磁盘物理块大小无关的独立性。</p>
+<p>在NTFS文件系统中，把卷上簇的大小称为“<strong>卷因子</strong>”，卷因子是在磁盘格式化时确定的，其大小也是物理磁盘扇区的整数倍。簇的大小可由格式化命令按磁盘容量和应用需求来确定，可以为512B、1KB、…，最大可达64KB。对于小磁盘(≤512MB)，默认簇大小为512字节；对于1GB磁盘，默认簇大小为1KB；对于2GB的磁盘，则默认簇为4KB。事实上，为了在传输效率和簇内碎片之间进行折中，NFS在大多数情况下都是使用4KB。</p>
+<p>（2）NTFS文件的组织</p>
+<p>在NTFS中，<strong>以卷为单位</strong>，将一个卷中的所有文件信息、目录信息以及可用的未分配空间信息，都以文件记录的方式记录在一张<strong>主控文件表 MFT</strong>(Master File Table)中，该表是NTFS卷结构的中心，从逻辑上讲，卷中的每个文件作为一条记录，在MFT表中占有一行，其中还包括MFT自己的这一行。每行大小固定为1 KB，每行称为该行所对应文件的<strong>元数据</strong>(metadata)，也称为文件控制字。</p>
+<p>在MFT表中，每个元数据都将其所对应文件的所有信息(包括文件的内容等)组织在所对文件的一组属性中。由于文件大小相差悬殊，其属性所需空间大小也相差很大。当文件较小时，其属性值所占空间也较小，可以将文件的所有属性直接记录在元数据中。而当文件较大时，元数据仅能记录文件的一部分属性，其余属性，如文件的内容等，只好记录到卷中的其它可用簇中，并将这些簇按其所记录文件的属性进行分类，分别链接成多个队列，并将指向这些队列的指针保存在元数据中。</p>
+<p>例如，对于一个真正的数据文件，即属性为DATA的文件，如果很小，就直接将其存储在MFT表中对应的元数据中，这样对文件数据的访问仅需要对MFT表进行访问即可，减少了磁盘访问次数，显著地提高了对小文件存取的效率。如果文件较大，则文件的真正数据往往保存在其它簇中。此时通过元数据中指向文件DATA属性的队列指针，可以方便地查找到这些簇，完成对文件数据的访问。</p>
+<p>NTFS使用64位磁盘地址，并且支持长文件名，单个文件名限制在255个字符以内。它和FAT技术一样，也是链接组织形式的一种。</p>
+
+        <h2 id="59-文件存储空间的管理"   >
+          <a href="#59-文件存储空间的管理" class="heading-link"><i class="fas fa-link"></i></a>59、文件存储空间的管理</h2>
+      
+<p>文件在外存上的存储组织形式有连续组织方式、链接组织方式、索引组织方式。为了实现任何一种文件组织方式，都需要为文件分配盘块，<strong>因此必须知道磁盘上哪些盘块是可用于分配的</strong>。<strong>故在为文件分配磁盘时，除了需要文件分配表外，系统还应为可分配存储空间设置相应的数据结构</strong>，即设置一个磁盘分配表 (Disk Allocation Table)，用于<br />
+记住可供分配的存储空间情况。此外，还应提供对盘块进行分配和回收的手段。不论哪种分配和回收方式，存储空间的基本分配单位都是磁盘块而非字节。下面介绍几种常用的文件存储空间的管理方法：</p>
+<p>（1）空闲表法</p>
+<p>属于连续分配方式，为每个文件分配一块连续空间。系统为外存上的所有区建立一张空闲表，每个空闲区对应一个空闲表项，每个表项包括表项序号、空闲区的第一个盘块号和空闲区的盘块数。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128113805.png"  alt="" />
+      </p>
+<p><strong>分配与回收</strong></p>
+<p>空闲盘区的分配与内存的分区(动态)分配类似，同样是采用首次适应算法和最佳适应算法等。</p>
+<p>系统在对用户所释放的存储空间进行回收时，也采取类似于内存回收的方法，即要考虑回收区是否与空闲表中插入点的前区和后区相邻接，对相邻接者应予以合并。</p>
+<p>优点：空闲区分配与回收容易。<br />
+缺点：空闲表也会浪费很大存储空间。</p>
+<p>（2）空闲链表法</p>
+<p>将文件存储空间中的所有空闲区拉成一条空闲链表。根据构成链所用基本元素的不同，可以把链表分为两种形式：空闲盘块链和空闲盘区链。</p>
+<p>①空闲盘块链：将磁盘上所有空闲空间，以盘块为单位拉成一条链。</p>
+<p>优点：分配和回收一个盘块的过程简单。<br />
+缺点：空闲盘块链可能很长。分配盘块时，可能要重复操作多次。</p>
+<p>②空闲盘区链：将磁盘上所有空闲盘区拉成一条链。和空闲表法类似。</p>
+<p>（3）位示图法</p>
+<p>利用二进制的一位来表示文件存储空间中的一个盘块的使用情况。其值为0表示空闲，为1表示分配，这样由所有盘块所对应的位构成一个集合，称为位示图。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128114835.png"  alt="" />
+      </p>
+<p>在盘块分配时，将相应位置1，在回收时，将相应位置0。</p>
+<p>（4）成组链接法</p>
+<p>①空闲盘块的组织</p>
+<p>将一个文件卷的所有空闲盘块分成固定大小的组（如100个盘块），将每一组的盘块号和盘块数记入前一组的最后一个盘块中，第一组的盘块数和盘块号记入空闲盘块号栈中。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128120327.png"  alt="" />
+      </p>
+<p>②空闲盘块的分配</p>
+<p>首先检查空闲盘块号栈是否上锁，如未上锁，便从栈顶取出一空闲盘块号，将与之对应的盘块分配给用户，然后将栈顶指针下移一格。把栈中的空闲盘块数减1。</p>
+<p>若该盘块号已是栈底，即S.free(0)，这是当前栈中最后一个可分配的盘块号。调用磁盘读过程，将栈底盘块号所对应盘块的内容读入栈中，作为新的盘块号栈的内容，并把原栈底对应的盘块分配出去(其中的有用数据已读入栈中)。</p>
+<p>③空闲盘块的回收</p>
+<p>将回收盘块的盘块号记入空闲盘块号栈的顶部，并执行空闲盘块数加1操作。</p>
+<p>当栈中空闲盘块号数目已达100时，表示栈已满，便将现有栈中的100个盘块号记入新回收的盘块中，再将其盘块号作为新栈底。空闲盘块数记为1。</p>
+
+        <h2 id="60-廉价磁盘冗余阵列raid"   >
+          <a href="#60-廉价磁盘冗余阵列raid" class="heading-link"><i class="fas fa-link"></i></a>60、廉价磁盘冗余阵列（RAID)</h2>
+      
+<p>人们于1987年开发出由多个小磁盘组成一个大容量的康价碰盘冗余阵列( Redundant Array of Inexpensive Disk,RAID)，该系统是利用一台磁盘阵列控制器来统一管理和控制一组(几台到几十台)磁盘驱动器组成一个大型磁盘系统。RAID不仅是大幅度地增加了磁盘的容量，而且也极大地提高了磁盘的I/O速度和整个磁盘系统的可靠性。故该系统一经推出便很快被许多大型系统所采用。</p>
+<p>（1）并行交叉存取</p>
+<p>把在大、中型机中，用于提高访问内存速度的并行交叉存取技术应用到磁盘存储系统中，以提高对磁盘的I/O速度。在该系统中，有多台磁盘驱动器，系统将每一盘块中的数据分为若干个子盘块数据，再把每一个子盘块的数据分别存储到各个不同磁盘中的<strong>相同位置</strong>上。以后当要将一个盘块的数据传送到内存时，采取并行传输方式，将各个盘块中的子盘块数据同时向内存中传输，从而使传输时间大大减少。</p>
+<p>磁盘并行交叉存取方式如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128122310.png"  alt="" />
+      </p>
+<p>（2）RAID的分级</p>
+<ul>
+<li>RAID 0级。仅提供了并行交叉存取。 无冗余校验功能。</li>
+<li>RAID 1级。具有磁盘镜像功能。</li>
+<li>RAID 3级。具有并行传输功能的磁盘阵列。利用其中一台磁盘做奇偶校验盘完成数据的校验功能。</li>
+<li>RAID 5级。具有独立传送功能的磁盘阵列。每个磁盘都有自己独立的数据通路，独立地进行读/写，无专门的校验盘。</li>
+<li>RAID 6级和RAID 7级。RAID 6级的阵列中，设置了一个专用的、可快速访问的异步校验盘，该盘有独立的数据访问同路。RAID 7级是对RAID 6级的改进，在该阵列中的所有磁盘，都具有较高的传输速率和优异的性能，是目前最高档次的磁盘阵列。</li>
+</ul>
+
+        <h2 id="61-常见的磁盘容错技术"   >
+          <a href="#61-常见的磁盘容错技术" class="heading-link"><i class="fas fa-link"></i></a>61、常见的磁盘容错技术</h2>
+      
+<p>磁盘容错技术，又称系统容错技术SFT(System Fault Tolerance)，主要通过设置冗余部件来提高磁盘系统可靠性。SFT常被分为 低、中、高三个级别。第一级是低级磁盘容错技术；第二级是中级磁盘容错技术；第三级是系统容错技术，它基于集群技术实现容错。</p>
+<p>（1）第一级容错技术SFT-Ⅰ</p>
+<p>主要用于防止因磁盘表面缺陷所造成的数据丢失。它包含双份目录和双份文件分配表、热修复重定向、写后读校验等措施。</p>
+<p>①双份目录和双份文件分配表</p>
+<p>可在不同的磁盘上或在磁盘的不同区域中，分别建立(双份)目录表和FAT。其中，一份被称为主目录及主FAT； 把另一份称为备份目录及备份FAT。</p>
+<p>②热修复重定向</p>
+<p>系统将磁盘的一部分作为热修复重定向区，用于存放当发现磁盘有缺陷时的待写入数据，并对写入该区的数据进行登记，以便以后对数据进行访问。</p>
+<p>③写后读校验</p>
+<p>在每次从内存缓冲区向磁盘中写入数据块后，又立即读出该磁盘块，并送至另一缓冲区与内存中的数据进行比较，若一致则认为写入成功。</p>
+<p>（2）第二级容错技术SFT-Ⅱ</p>
+<p>第二级容错技术主要用于防止由磁盘驱动器和磁盘控制器故障所导致的系统不能正常工作，它具体分为磁盘镜像和磁盘双工。</p>
+<p>①磁盘镜像(Disk Mirroring)</p>
+<p>为了避免磁盘驱动器发生故障而丢失数据，便增设了磁盘镜像功能。为实现该功能，须在同一磁盘控制器下，再增设一个完全相同的磁盘驱动器。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128123550.png"  alt="" />
+      </p>
+<p>②磁盘双工(Disk Duplexing)</p>
+<p>即将两台磁盘驱动器分别接到两个磁盘控制器上，同样使这两台磁盘机镜像成对。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128123650.png"  alt="" />
+      </p>
+<p>（3）第三级容错技术——基于集群技术的容错功能</p>
+<p>主要工作模式有三种：热备份模型、互为备份模式和公用磁盘模式。</p>
+<p>①双机热备份模式</p>
+<p>系统中备有两台服务器，两者的处理能力通常是完全相同的，一台作为主服务器，另一台作为备份服务器。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128124108.png"  alt="" />
+      </p>
+<p>②双机互为备份模式</p>
+<p>两台服务器均为在线服务器，它们各自完成自己的任务。例如，一台作为数据库服务器，另一台作为电子邮件服务器，为了实现两者互为备份的功能，在两台服务器之间，应通过某种专线将其连接起来。如果希望两台服务器之间能相距较远，最好利用FDDI单模光纤来连接两台服务器。在此情况下，最好再通过路由器将两台服务器互连起来，作为备份通信线路。下图是双机互为备份系统的情况：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210128124142.png"  alt="" />
+      </p>
+<p>在互为备份的模式中，最好在每台服务器内都配置两台硬盘，一个用于装载系统程序和应用程序，另一个用于接收由另一台服务器发来的备份数据，作为该服务器的镜像盘。在正常运行时，镜像盘对本地用户是锁死的，这样就较易于保证在镜像盘中数据的正确性。如果仅有一个硬盘，则可用建立虚拟盘的方式或分区方式来分别存放系统程序和应用程序以及另一台服务器的备份数据。</p>
+<p>③公用磁盘模式</p>
+<p>为了减少信息复制的开销，可以将多台计算机连接到一台公共的磁盘系统上去。该公共磁盘被划分为若干个卷。每台计算机使用一个卷。如果某台计算机发生故障，此时系统将重新进行配置，根据某种调度策略来选择另一台替代机器，后者对发生故障的机器的卷拥有所有权，从而可接替故障计算机所承担的任务。</p>
+
+        <h2 id="62-特权指令和非特权指令-管态和目态"   >
+          <a href="#62-特权指令和非特权指令-管态和目态" class="heading-link"><i class="fas fa-link"></i></a>62、特权指令和非特权指令、管态和目态</h2>
+      
+<p>（1）特权指令和非特权指</p>
+<p><strong>特权指令</strong>是指不允许用户程序中直接使用的指令，是关系到系统全局的指令。其对内存空间的访问范围基本不受限制，不仅能访问用户存储空间，也能访问系统存储空间。包括I/O指令、设置系统时钟时间、关中断、清主存、修改存储器管理寄存器、执行停机指令、转换执行状态等。</p>
+<p><strong>非特权指令</strong>只能完成一般性的操作和任务，不能对系统中的硬件和软件直接进行访问，其对内存的访问范围也局限于用户空间。</p>
+<p>（2）管态和目态</p>
+<p><strong>管态（系统态、核心态）</strong>：当CPU处于管态时可执行包括特权指令在内的一切机器指令。当<strong>OS程序</strong>占用中央处理器时应让CPU在管态工作。</p>
+<p><strong>目态（用户态）</strong>：不允许执行特权指令。当<strong>应用程序</strong>占用中央处理器时应让CPU在目态工作。</p>
+
+        <h2 id="63-什么是系统调用和库函数调用有何区别"   >
+          <a href="#63-什么是系统调用和库函数调用有何区别" class="heading-link"><i class="fas fa-link"></i></a>63、什么是系统调用？和库函数调用有何区别？</h2>
+      
+<p>（1）系统调用是操作系统提供的一组用于实现各种系统功能的子程序(过程)，并将它们提供给应用程序调用。库函数调用可以认为是系统调用的封装（并不是所有的库函数都是），有可能包含一个系统调用，有可能包含几个系统调用，也有可能不包含系统调用。<br />
+（2）系统调用是面向硬件的，调用速度明显快于库函数，但是缺乏移植性。库函数的调用是面向开发的，虽然速度要慢于系统调用，但是解决了一致性的问题。<br />
+（3）系统调用发生在内核空间，如果一般应用程序使用系统调用来进行文件操作，会有用户态到系统态切换的开销。事实上，如果使用库函数调用进行文件操作也会有系统调用带来的开销，但是使用库函数可以大大减少系统调用的次数。因为由于双缓冲的存在(双缓冲区肯定比单个缓冲区强)，在用户态和内核态，都应用了缓冲技术，当用户使用fwrite()写文件，都是先将内容写到用户空间缓冲区，当用户空间缓冲去写满或者写操作结束时，才将用户缓冲区的内容写到内核缓冲区，同样的道理，当内核缓冲区写满或者写结束时才将内核缓冲区的内容写到文件对应的硬件媒介上。</p>
+
+        <h2 id="64-系统调用和一般的过程调用的区别"   >
+          <a href="#64-系统调用和一般的过程调用的区别" class="heading-link"><i class="fas fa-link"></i></a>64、系统调用和一般的过程调用的区别</h2>
+      
+<p>(1) 运行在不同的系统状态。系统调用中，调用程序是运行在用户态，而被调用程序是运行在系统态。一般的过程调用，其调用程序和被调用程序都运行在相同的状态——系统态或用户态。</p>
+<p>(2) 状态的转换。系统调用中，涉及到<strong>由用户态到系统态的转换</strong>。而一般的过程调用并不涉及到系统状态的转换。</p>
+<p>(3) 返回问题。系统调用中，在被调用过程执行完后，不一定返回原进程执行，而是重新做进程优先级分析，当原进程仍具有最高优先级时，才返回到调用程序继续执行。但一般的过程调用仍返回原进程。</p>
+<p>(4) 嵌套调用。系统调用中，每个系统对嵌套调用的深度都有一定的限制，例如最大深度为6。但一般的过程对嵌套的深度则没有什么限制。</p>
+
+        <h2 id="65-逻辑地址空间和物理地址空间"   >
+          <a href="#65-逻辑地址空间和物理地址空间" class="heading-link"><i class="fas fa-link"></i></a>65、逻辑地址空间和物理地址空间</h2>
+      
+<p>程序经过编译后，每个目标模块都是从0号单元开始编址，称为目标模块的相对地址(或逻辑地址)。当链接程序将各个目标模块链接成一个完整的可执行目标程序时，依次按各个模块的相对地址构成一个统一的<strong>从0号单元开始编址的逻辑地址空间</strong>。</p>
+<p>物理地址空间是指内存中物理单元的集合，它是地址转换的最终地址，进程在运行时执行指令和访问数据都要通过物理地址从主存中获取。当装入程序(Loader)将可执行目标程序装入内存时，必须通过地址转换将逻辑地址转换成物理地址(因为要分配内存空间)，这个过程称为<strong>地址重定位</strong>，这样形成的地址空间就是<strong>物理地址空间</strong>。</p>
+<blockquote>
+<p>如需转发请联系本人同意，谢谢！</p>
+</blockquote>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/01/28/163906/">https://wxler.gitee.io/2021/01/28/163906/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/">操作系统</a></span><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/%E9%9D%A2%E7%BB%8F/">面经</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-next"><a class="paginator-next__link" href="/2021/01/05/173233/"><span class="paginator-prev__text">使用HybridSN进行高光谱图像分类</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-操作系统的目标"><span class="toc-text">
+          1、操作系统的目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-操作系统的作用"><span class="toc-text">
+          2、操作系统的作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-脱机输入输出off-line-io技术"><span class="toc-text">
+          3、脱机输入&#x2F;输出(Off-Line I&#x2F;O)技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-分时-实时-分布式-批处理系统的区别"><span class="toc-text">
+          4、分时、实时、分布式、批处理系统的区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-操作系统的基本特性"><span class="toc-text">
+          5、操作系统的基本特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-时分复用和空分复用技术"><span class="toc-text">
+          6、时分复用和空分复用技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-操作系统的主要功能有哪些"><span class="toc-text">
+          7、操作系统的主要功能有哪些？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-微内核os结构"><span class="toc-text">
+          8、微内核OS结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-进程和程序的区别和联系"><span class="toc-text">
+          9、进程和程序的区别和联系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-进程的基本状态及转换"><span class="toc-text">
+          10、进程的基本状态及转换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-进程控制块pcb中的信息和作用"><span class="toc-text">
+          11、进程控制块PCB中的信息和作用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-理解进程同步机制的基本概念"><span class="toc-text">
+          12、理解进程同步机制的基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-理解临界资源-临界区的概念"><span class="toc-text">
+          13、理解临界资源、临界区的概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-进程同步机制应遵循的规则"><span class="toc-text">
+          14、进程同步机制应遵循的规则</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-用信号量机制解决经典进程同步问题"><span class="toc-text">
+          15、用信号量机制解决经典进程同步问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-理解进程通信及其方式"><span class="toc-text">
+          16、理解进程通信及其方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-进程与线程的区别与联系"><span class="toc-text">
+          17、进程与线程的区别与联系</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-作业调度的概念及其调度算法"><span class="toc-text">
+          18、作业调度的概念及其调度算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-进程调度的概念及其调度算法"><span class="toc-text">
+          19、进程调度的概念及其调度算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-实时调度及其调度算法"><span class="toc-text">
+          20、实时调度及其调度算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-作业平均周转时间和平均带权周转时间"><span class="toc-text">
+          21、作业平均周转时间和平均带权周转时间</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-cpu利用率和cpu最小时钟周期"><span class="toc-text">
+          22、CPU利用率和CPU最小时钟周期</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-死锁及死锁产生的条件"><span class="toc-text">
+          23、死锁及死锁产生的条件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-处理死锁的方法"><span class="toc-text">
+          24、处理死锁的方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-存储器的多层结构"><span class="toc-text">
+          25、存储器的多层结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-程序装入内存转变为可以执行程序的过程"><span class="toc-text">
+          26、程序装入内存转变为可以执行程序的过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#27-程序的装入和链接方式有哪些"><span class="toc-text">
+          27、程序的装入和链接方式有哪些？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#28-存储器内存的管理策略或方式"><span class="toc-text">
+          28、存储器（内存）的管理策略或方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#29-连续分配存储管理方式"><span class="toc-text">
+          29、连续分配存储管理方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#30-常见的动态分区分配算法"><span class="toc-text">
+          30、常见的动态分区分配算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#31-分页存储管理方式的基本概念"><span class="toc-text">
+          31、分页存储管理方式的基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#32-分段存储管理方式的基本概念"><span class="toc-text">
+          32、分段存储管理方式的基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#33-分页和分段的主要区别"><span class="toc-text">
+          33、分页和分段的主要区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#34-段页式存储管理方式的基本概念"><span class="toc-text">
+          34、段页式存储管理方式的基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#35-虚拟存储器系统的基本概念"><span class="toc-text">
+          35、虚拟存储器系统的基本概念</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#36-请求分页存储管理方式"><span class="toc-text">
+          36、请求分页存储管理方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#37-请求分页存储管理方式的页面置换算法"><span class="toc-text">
+          37、请求分页存储管理方式的页面置换算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#38-抖动发生原因及预防方法"><span class="toc-text">
+          38、“抖动”发生原因及预防方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#39-什么是工作集"><span class="toc-text">
+          39、什么是工作集</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#40-请求分段存储管理方式"><span class="toc-text">
+          40、请求分段存储管理方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#41-io系统的基本功能"><span class="toc-text">
+          41、I&#x2F;O系统的基本功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#42-io系统的层次结构"><span class="toc-text">
+          42、I&#x2F;O系统的层次结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#43-io系统接口的类型有哪些"><span class="toc-text">
+          43、I&#x2F;O系统接口的类型有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#44-设备控制器的基本功能"><span class="toc-text">
+          44、设备控制器的基本功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#45-io通道基本概念和常用类型"><span class="toc-text">
+          45、I&#x2F;O通道基本概念和常用类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#46-中断interrup和陷入阱trap的区别"><span class="toc-text">
+          46、中断(interrup)和陷入阱(trap)的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#47-软中断与硬中断的区别"><span class="toc-text">
+          47、软中断与硬中断的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#48-对io设备的控制方式有哪些"><span class="toc-text">
+          48、对I&#x2F;O设备的控制方式有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#49-什么是假脱机spooing技术"><span class="toc-text">
+          49、什么是假脱机(Spooing)技术？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#50-磁盘的访问时间有哪些"><span class="toc-text">
+          50、磁盘的访问时间有哪些</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#51-常见的磁盘调度算法"><span class="toc-text">
+          51、常见的磁盘调度算法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#52-文件系统中的三级数据组织形式"><span class="toc-text">
+          52、文件系统中的三级数据组织形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#53-文件系统模型的三个层次"><span class="toc-text">
+          53、文件系统模型的三个层次</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#54-文件的逻辑结构和物理结构"><span class="toc-text">
+          54、文件的逻辑结构和物理结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#55-文件目录和目录文件"><span class="toc-text">
+          55、文件目录和目录文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#56-文件的链接组织形式"><span class="toc-text">
+          56、文件的链接组织形式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#57-文件分配表fat技术"><span class="toc-text">
+          57、文件分配表FAT技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#58-ntfs的文件组织方式"><span class="toc-text">
+          58、NTFS的文件组织方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#59-文件存储空间的管理"><span class="toc-text">
+          59、文件存储空间的管理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#60-廉价磁盘冗余阵列raid"><span class="toc-text">
+          60、廉价磁盘冗余阵列（RAID)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#61-常见的磁盘容错技术"><span class="toc-text">
+          61、常见的磁盘容错技术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#62-特权指令和非特权指令-管态和目态"><span class="toc-text">
+          62、特权指令和非特权指令、管态和目态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#63-什么是系统调用和库函数调用有何区别"><span class="toc-text">
+          63、什么是系统调用？和库函数调用有何区别？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#64-系统调用和一般的过程调用的区别"><span class="toc-text">
+          64、系统调用和一般的过程调用的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#65-逻辑地址空间和物理地址空间"><span class="toc-text">
+          65、逻辑地址空间和物理地址空间</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">65</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">15</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">32</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
