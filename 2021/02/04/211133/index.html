@@ -1,0 +1,749 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta property="og:type" content="article">
+<meta property="og:title" content="Linux切换运行级别、关闭防火墙、禁用selinux、关闭sshd、时间同步、修改时区、拍摄快照、克隆操作">
+<meta property="og:url" content="https://wxler.gitee.io/2021/02/04/211133/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210204212150.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203105614.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203110129.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203110555.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203110752.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203121539.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203122603.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203123324.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203123824.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203124002.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203130235.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203130621.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203131358.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203131637.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203131815.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203132029.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203132432.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203132717.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203133012.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203150127.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203153352.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203134321.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203134641.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203154109.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203154314.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203154109.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203160606.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203160701.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203160805.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203160852.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203161605.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203161822.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203162011.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203162457.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203162612.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203162718.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203163146.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203163316.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203163650.png">
+<meta property="article:published_time" content="2021-02-04T13:11:33.000Z">
+<meta property="article:modified_time" content="2021-02-04T13:23:50.427Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="Linux">
+<meta property="article:tag" content="selinux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210204212150.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Linux切换运行级别、关闭防火墙、禁用selinux、关闭sshd、时间同步、修改时区、拍摄快照、克隆操作 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/02/04/211133/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Linux切换运行级别、关闭防火墙、禁用selinux、关闭sshd、时间同步、修改时区、拍摄快照、克隆操作</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-02-04</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-02-04</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">2.6k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">15分</span></span></div></header><div class="post-body"><p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210204212150.png"  alt="" />
+      </p>
+<a id="more"></a>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-linux%E8%BF%90%E8%A1%8C%E7%BA%A7%E5%88%AB%E5%8F%8A%E5%88%87%E6%8D%A2">1. Linux运行级别及切换</a></li>
+<li><a href="#2-%E5%85%B3%E9%97%AD%E9%98%B2%E7%81%AB%E5%A2%99%E5%B9%B6%E7%A6%81%E6%AD%A2%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8">2. 关闭防火墙并禁止开机启动</a></li>
+<li><a href="#3-%E7%A6%81%E7%94%A8selinux">3. 禁用selinux</a></li>
+<li><a href="#4-%E5%85%B3%E9%97%ADsshd%E6%9C%8D%E5%8A%A1">4. 关闭sshd服务</a></li>
+<li><a href="#5-%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5">5. 时间同步</a></li>
+<li><a href="#6-%E4%BF%AE%E6%94%B9%E6%97%B6%E5%8C%BA">6. 修改时区</a></li>
+<li><a href="#7-%E5%88%A0%E9%99%A470-persistent-netrules%E6%96%87%E4%BB%B6">7. 删除70-persistent-net.rules文件</a></li>
+<li><a href="#8-%E6%8B%8D%E6%91%84%E5%BF%AB%E7%85%A7">8. 拍摄快照</a></li>
+<li><a href="#9-%E5%85%8B%E9%9A%86%E8%99%9A%E6%8B%9F%E6%9C%BA">9. 克隆虚拟机</a></li>
+</ul>
+</p>
+
+        <h2 id="1-linux运行级别及切换"   >
+          <a href="#1-linux运行级别及切换" class="heading-link"><i class="fas fa-link"></i></a>1. Linux运行级别及切换</h2>
+      
+<p>在系统输入<code>vim /etc/inittab</code>可以查看系统的运行级别：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203105614.png"  alt="" />
+      </p>
+<p>可以看到，Linux有7个运行级别，分别是：</p>
+<ul>
+<li>0： 系统停止（关机）</li>
+<li>1：单用户模式</li>
+<li>2：无网络的多用户模式</li>
+<li>3：有网络的多用户模式（完整多用户模式）</li>
+<li>4：未使用</li>
+<li>5：图形化界面</li>
+<li>6：重启</li>
+</ul>
+<p><code>id:3:initdefault</code>表示系统初始化的运行级别为3，一般常用的运行级别是3 和 5。如果要修改系统初始化的运行级别，那么只需修改 “id：” 后面的数字即可。</p>
+<p><strong>查看当前运行级别</strong></p>
+<p>输入<code>runlevel</code>可以查看系统当前的运行级别：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203110129.png"  alt="" />
+      </p>
+<p>上图，<code>N</code>表示自系统启动后运行级别尚未更改，<code>3</code>表示系统的当前运行级别。</p>
+<p><strong>切换运行级别</strong></p>
+<p>除了通过修改<code>inittab</code>文件中的默认运行级别之外，管理员还可以通过<code>init</code>命令来任意切换 7个级别，值得一提的是，<code>init 0</code>和<code>init 6</code>等效于 shutdown 和 reboot 。</p>
+<p>执行<code>init</code>命令，将系统级别切换到5，再将级别切换回3：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203110555.png"  alt="" />
+      </p>
+<p>上图，<code>5 3</code>表示系统更改之前的运行级别为5，当前运行级别为3。</p>
+<p><strong>查看系统中所有服务在各运行级别中的启动状态</strong></p>
+<p>输入<code>chkconfig</code>：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203110752.png"  alt="" />
+      </p>
+<p>上图0代表关闭，1代表启用。</p>
+<p><strong>查看network服务在各运行级别中的启动状态</strong></p>
+<p>输入<code>chkconfig --list network</code></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203121539.png"  alt="" />
+      </p>
+
+        <h2 id="2-关闭防火墙并禁止开机启动"   >
+          <a href="#2-关闭防火墙并禁止开机启动" class="heading-link"><i class="fas fa-link"></i></a>2. 关闭防火墙并禁止开机启动</h2>
+      
+<p>在Linux系统中，<code>iptables</code>表示防火墙的服务名，输入<code>chkconfig --list iptables</code>查看防火墙在系统各运行级别的启动状态。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203122603.png"  alt="" />
+      </p>
+<p>可以看到，iptables在运行级别2，3，4，5是on，</p>
+<p>输入命令<code>chkconfig iptables off</code>全部<strong>禁止开机启动</strong>：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203123324.png"  alt="" />
+      </p>
+<p>现在我们只是禁止了开机启动，并没有关闭当前运行的防火墙服务，可以输入<code>service iptables status</code>查看防火墙的状态：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203123824.png"  alt="" />
+      </p>
+<p>可以看到，防火墙还在运行状态，输入命令<code>service iptables stop</code>以关闭防火墙服务：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203124002.png"  alt="" />
+      </p>
+<p>到了这里，防火墙服务以及防火墙开机启动都关闭成功了。</p>
+
+        <h2 id="3-禁用selinux"   >
+          <a href="#3-禁用selinux" class="heading-link"><i class="fas fa-link"></i></a>3. 禁用selinux</h2>
+      
+<p>安全增强型 Linux（Security-Enhanced Linux）简称 seLinux，它是一个 Linux 内核模块，也是 Linux 的一个安全子系统。selinux可能会带来一些权限方面的问题，这是我们在开发过程中不愿看到的，一般将其关闭。</p>
+<p>首先在命令行输入<code>getenforce</code> 查看selinux的状态：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203130235.png"  alt="" />
+      </p>
+<p>可以看到，selinux在运行中。</p>
+<p>在命令行输入 <code>vim /etc/selinux/config</code> 编辑selinux的配置文件：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203130621.png"  alt="" />
+      </p>
+<p>将<code>SELINUX=enforcing</code>注释，增加一行<code>SELINUX=disabled</code>，保存并退出，输入<code>init 6</code>重启虚拟机才能生效。</p>
+
+        <h2 id="4-关闭sshd服务"   >
+          <a href="#4-关闭sshd服务" class="heading-link"><i class="fas fa-link"></i></a>4. 关闭sshd服务</h2>
+      
+<p>一般我们通过<strong>关闭sshd服务的DNS以加快SSH登录速度</strong>。</p>
+<p>在命令行输入<code>vim /etc/ssh/sshd_config</code> ，在vim的命令模式下输入<code>/UseDNS</code>查找UseDNS的位置（可以使用n选择下一个匹配的项目），然后将去掉UseDNS的注释，并将yes改为no，保存退出。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203131358.png"  alt="" />
+      </p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203131637.png"  alt="" />
+      </p>
+<p>输入<code>service sshd restart</code>重启sshd服务：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203131815.png"  alt="" />
+      </p>
+<p>重启之后，修改的配置项就加载了。</p>
+
+        <h2 id="5-时间同步"   >
+          <a href="#5-时间同步" class="heading-link"><i class="fas fa-link"></i></a>5. 时间同步</h2>
+      
+<p>输入<code>date</code>可以查看当前时间：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203132029.png"  alt="" />
+      </p>
+<p>发现时间不对，这时输入<code>yum install ntp -y</code>，安装完ntp之后系统中多了两个服务：<code>ntpd</code>和<code>ntpdate</code>，如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203132432.png"  alt="" />
+      </p>
+<p>可以看到，ntpd的状态都是off，也就是这个服务不会开机启动，现在设置ntp为开机启动。</p>
+<p>输入<code>chkconfig ntpd on</code>，再次通过<code>chkconfig</code>查看：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203132717.png"  alt="" />
+      </p>
+<p>这时，ntpd服务在系统的2、3、4、5级别上已设置为开机启动。</p>
+<p>输入 <code>service ntpd status</code>查看ntpd的服务状态，如果显示stopped表示没有启动，此时输入<code>service ntpd start</code>启动服务，<strong>过几分钟</strong>（5分组左右）就通过网络自动同步到当前时间了。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203133012.png"  alt="" />
+      </p>
+
+        <h2 id="6-修改时区"   >
+          <a href="#6-修改时区" class="heading-link"><i class="fas fa-link"></i></a>6. 修改时区</h2>
+      
+<p>输入<code>date</code>查看当前系统的时间和时区：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203150127.png"  alt="" />
+      </p>
+<p>可以看到，当前时区为EST（英国时间），现在我们要改为CST（北京时间），可以采用如下步骤：</p>
+<p>（1）拷贝时区文件</p>
+<p>输入 <code>cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime</code></p>
+<p>（2）修改/etc/sysconfig/clock</p>
+<p>输入<code>vim /etc/sysconfig/clock</code>将文件里的内容改为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ZONE=<span class="string">"Asia/Shanghai"</span></span><br><span class="line">UTC=<span class="literal">true</span></span><br><span class="line">ARC=<span class="literal">false</span></span><br></pre></td></tr></table></div></figure>
+<p>这里补充一下，ZONE、UTC、ARC、SRM：</p>
+<ul>
+<li>ZONE：指定时区，ZONE的值是一个文件的相对路径名，这个文件是相对 /usr/share/zoneinfo 目录下的一个时区文件。比如ZONE的值可以是：“Asia/Shanghai&quot;、“US/Pacific”、“UTC” 等。</li>
+<li>UTC：指定BIOS中保存的时间是否是GMT/UTC时间，true表示BIOS里面保存的时间是UTC时间，false表示BIOS里面保存的时间是本地时间。</li>
+<li>ARC：这个选项一般配置false，在一些特殊硬件（Alpha）下才配置该选项为true。</li>
+<li>SRM：同ARC，该选项一般配置false，在一些特殊硬件下才配置该选项为false。</li>
+</ul>
+<p>（3）修改/etc/profile</p>
+<p>输入以下命令追加写入到/etc/profile中：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">"TZ='Asia/Shanghai'; export TZ  "</span>&gt;&gt;/etc/profile</span><br><span class="line"><span class="built_in">source</span> /etc/profile <span class="comment">#编译立即生效</span></span><br></pre></td></tr></table></div></figure>
+<p>需要注意的是：</p>
+<ul>
+<li><strong>/etc/profile</strong>：影响所有用户</li>
+<li><strong>~/.bashrc</strong>：影响当前用户</li>
+</ul>
+<p>想要了解更多source和profile的内容，可参考<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/llzhang_fly/article/details/104980029"  target="_blank" rel="noopener">source /etc/profile作用</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>（4）再次输入<code>date</code>查看，发现已经修改成功了</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203153352.png"  alt="" />
+      </p>
+
+        <h2 id="7-删除70-persistent-netrules文件"   >
+          <a href="#7-删除70-persistent-netrules文件" class="heading-link"><i class="fas fa-link"></i></a>7. 删除70-persistent-net.rules文件</h2>
+      
+<p>我们先来看看为什么要删除70-persistent-net.rules文件：</p>
+<ul>
+<li>许多Linux distribution使用udev来动态管理<strong>设备文件</strong>，并根据设备的信息对其进行持久化命名。</li>
+<li>udev 会在系统引导的过程中识别网卡，<strong>将mac地址和网卡名称对应起来</strong>，并记录在udev的规则脚本中。</li>
+<li>当我们在克隆新的虚拟机时，会自动为虚拟机的网卡生成MAC地址。由于你使用的是以前系统虚拟硬盘的信息，而该系统中已经有eth0（表示第一块有线网卡）的信息，对于这个新的网卡，udev会自动将其命名为eth1 （累加的原则）。</li>
+<li>udev记录网络规则的脚本为：/etc/udev/rules.d/70-persistent-net.rules，当克隆新虚拟机打开该文件后，会发现，里面有eth0，eth1 这两个网卡的信息，但实际上输入<code>ifconfig</code>时只能发现eth1这一个网卡的信息，这是因为eth0根本就不存在。</li>
+</ul>
+<p>我在第一次克隆完虚拟机后，输入<code>vim /etc/udev/rules.d/70-persistent-net.rules</code> 确实发现有两条mac地址和网卡名称的对应记录，如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203134321.png"  alt="" />
+      </p>
+<p>此时，系统使用的是新的网卡eth1，，输入 <code>vi /etc/sysconfig/network-scripts/ifcfg-eth0</code>查看当前虚拟机的网络配置文件，可以发现该虚拟机使用是eth0，如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203134641.png"  alt="" />
+      </p>
+<p>这样就对应不上了，此时解决的方法有两个。</p>
+<p><strong>方法一：将70-persistent-net.rules中eth0的那条记录删除，将eht1改为eth0</strong></p>
+<p>但是，如果我们要克隆多台虚拟机，采用方法一，岂不是要修改多次，所以最好采用方法二。</p>
+<p><strong>方法二：输入<code>rm -rf /etc/udev/rules.d/70-persistent-net.rules</code>删除70-persistent-net.rules</strong></p>
+<p>删除70-persistent-net.rules后，再输入<code>init 0</code>关机，这时再克隆虚拟机。启动新克隆的虚拟机后，系统会自动产生70-persistent-net.rules文件，并且只有eth0这一个网卡记录，这样就对应上了，可以愉快的联网了。</p>
+
+        <h2 id="8-拍摄快照"   >
+          <a href="#8-拍摄快照" class="heading-link"><i class="fas fa-link"></i></a>8. 拍摄快照</h2>
+      
+<p>虽然开机的时候也可以拍摄快照，但为了防止系统的不稳定，最好在关机之后拍，因为系统在运行过程中也会产生数据。</p>
+<p>拍摄快照的步骤如下：</p>
+<p>（1）点击下图按钮</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203154109.png"  alt="" />
+      </p>
+<p>（2）点击“拍摄快照”，输入快照名称，再点击弹出框的拍摄快照。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203154314.png"  alt="" />
+      </p>
+<p>这样就完成了一个快照的拍摄了。</p>
+
+        <h2 id="9-克隆虚拟机"   >
+          <a href="#9-克隆虚拟机" class="heading-link"><i class="fas fa-link"></i></a>9. 克隆虚拟机</h2>
+      
+<p>虚拟机的克隆有两种方式<strong>链接克隆</strong>和<strong>完整克隆</strong>。</p>
+<ul>
+<li><strong>链接克隆</strong>就是在被克隆的虚拟机上创建了一个链接指向新的虚拟机，但是如果被克隆的虚拟机系统损坏，则在此基础上所有链接克隆的虚拟机都将不能用。但是链接克隆一个好处是克隆出来的虚拟机不会占用整个虚拟机的磁盘空间，同时链接克隆速度比较快，不用经历安装虚拟机要命的超长等待时间。</li>
+<li><strong>完整克隆</strong>是对被克隆虚拟机的一个完整副本，此副本虚拟机完全独立，但需要较多的存储磁盘空间。</li>
+</ul>
+<p>这里为了速度和存储空间，我们选择链接克隆的方式。步骤如下：</p>
+<p>（1）点击下图按钮</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203154109.png"  alt="" />
+      </p>
+<p>（2）选择一个虚拟机的快照，点击“克隆”。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203160606.png"  alt="" />
+      </p>
+<p>（3）点击下一步，选择“现有快照”，再点下一步。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203160701.png"  alt="" />
+      </p>
+<p>（4）选择创建链接克隆，点击下一步。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203160805.png"  alt="" />
+      </p>
+<p>（5）填写克隆的虚拟机名称，选择位置，点击完成。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203160852.png"  alt="" />
+      </p>
+<p>此时，克隆操作已经完成，但是新克隆出来的虚拟机还不能上网，必须进程配置。</p>
+<p>启动新克隆的虚拟机并登陆，用户名和密码与原来的虚拟机一样。</p>
+<p>登陆完毕后，输入 <code>vim /etc/sysconfig/network</code>修改计算机名称（hostname）：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203161605.png"  alt="" />
+      </p>
+<p>然后输入 <code>vim /etc/sysconfig/network-scripts/ifcfg-eth0</code> 配置网络：</p>
+<p>这是修改之前的网络配置</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203161822.png"  alt="" />
+      </p>
+<p>这是修改之后的网络配置</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203162011.png"  alt="" />
+      </p>
+<p>把网络的IP地址修改一下，别和之前的冲突就行。</p>
+<p>重启layne1虚拟机，使用XShell连接，在XShell中输入<code>ssh root@192.168.218.51</code></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203162457.png"  alt="" />
+      </p>
+<p>点击“接受并保存”，输入密码，连接成功！</p>
+<p>输入<code>ifconfig</code>查看网络配置，可以看到，刚刚配置已经生效。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203162612.png"  alt="" />
+      </p>
+<p>输入<code>ping www.baidu.com</code>，连网成功</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203162718.png"  alt="" />
+      </p>
+<p>输入<code>vim /etc/hosts</code>编辑CentOS的hosts文件，将<code>192.168.218.50</code>改为<code>192.168.218.51</code>，将<code>layne</code>改为<code>layne1</code></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203163146.png"  alt="" />
+      </p>
+<p>输入<code>ping layne1</code>，可以看到，layne1被解析为了<code>192.168.218.51</code>，大功告成。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203163316.png"  alt="" />
+      </p>
+<p>在自己的windows上，进入<code>C:\Windows\System32\drivers\etc</code>目录修改host文件：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210203163650.png"  alt="" />
+      </p>
+<p>然后，windows平台就可以和克隆的虚拟机进行通信了。</p>
+<p>参考文档</p>
+<p><span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/weixin_34346099/article/details/93569068"  target="_blank" rel="noopener">修改系统时间为UTC时间</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/02/04/211133/">https://wxler.gitee.io/2021/02/04/211133/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/Linux/">Linux</a></span><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/selinux/">selinux</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/02/04/212039/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">使用Xftp和lrzsz在Linxu与Windows之间互传文件</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/02/04/211126/"><span class="paginator-prev__text">把Linux系统中的yum替换为清华源，速度瞬间从5KB/s变到3.5MB/s</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-linux运行级别及切换"><span class="toc-text">
+          1. Linux运行级别及切换</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-关闭防火墙并禁止开机启动"><span class="toc-text">
+          2. 关闭防火墙并禁止开机启动</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-禁用selinux"><span class="toc-text">
+          3. 禁用selinux</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-关闭sshd服务"><span class="toc-text">
+          4. 关闭sshd服务</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-时间同步"><span class="toc-text">
+          5. 时间同步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-修改时区"><span class="toc-text">
+          6. 修改时区</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-删除70-persistent-netrules文件"><span class="toc-text">
+          7. 删除70-persistent-net.rules文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-拍摄快照"><span class="toc-text">
+          8. 拍摄快照</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-克隆虚拟机"><span class="toc-text">
+          9. 克隆虚拟机</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">70</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">17</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">40</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
