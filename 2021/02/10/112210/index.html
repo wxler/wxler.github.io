@@ -1,0 +1,827 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="Linux系统中，最常用的有三种安装方式  源码编译安装（根据当前系统编译） rpm安装（需要自己安装相应的依赖） yum安装（自动安装依赖）  当然，解压、配置（相当于windwos下绿色版的安装），也算是一种安装方式。 解压来，我将介绍这三种安装方式的使用方法！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux中软件的三种安装方式">
+<meta property="og:url" content="https://wxler.gitee.io/2021/02/10/112210/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="Linux系统中，最常用的有三种安装方式  源码编译安装（根据当前系统编译） rpm安装（需要自己安装相应的依赖） yum安装（自动安装依赖）  当然，解压、配置（相当于windwos下绿色版的安装），也算是一种安装方式。 解压来，我将介绍这三种安装方式的使用方法！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208223050.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208224110.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208230509.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209110929.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209121603.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209122724.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209125236.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130451.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130649.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130756.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130927.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130958.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209131043.png">
+<meta property="article:published_time" content="2021-02-10T03:22:10.000Z">
+<meta property="article:modified_time" content="2021-02-10T04:13:18.910Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208223050.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Linux中软件的三种安装方式 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/02/10/112210/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Linux中软件的三种安装方式</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">5.7k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">44分</span></span></div></header><div class="post-body"><p>Linux系统中，最常用的有三种安装方式</p>
+<ul>
+<li>源码编译安装（根据当前系统编译）</li>
+<li>rpm安装（需要自己安装相应的依赖）</li>
+<li>yum安装（自动安装依赖）</li>
+</ul>
+<p>当然，解压、配置（相当于windwos下绿色版的安装），也算是一种安装方式。</p>
+<p>解压来，我将介绍这三种安装方式的使用方法！</p>
+<a id="more"></a>
+<p><strong>文章目录</strong></p>
+<p><ul class="markdownIt-TOC">
+<li><a href="#%E6%BA%90%E7%A0%81%E7%BC%96%E8%AF%91%E5%AE%89%E8%A3%85">源码编译安装</a>
+<ul>
+<li><a href="#src-build%E6%A6%82%E8%BF%B0">src-build概述</a></li>
+<li><a href="#src-build%E5%AE%89%E8%A3%85nginx">src-build安装Nginx</a></li>
+</ul>
+</li>
+<li><a href="#rpm%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6">rpm安装软件</a>
+<ul>
+<li><a href="#rpm%E6%A6%82%E8%BF%B0">rpm概述</a></li>
+<li><a href="#rpm%E5%AE%89%E8%A3%85jdk">rpm安装jdk</a></li>
+<li><a href="#rpm%E6%9F%A5%E8%AF%A2">rpm查询</a></li>
+<li><a href="#rpm%E5%AE%89%E8%A3%85mysql">rpm安装MySQL</a></li>
+<li><a href="#rpm%E5%8D%B8%E8%BD%BD">rpm卸载</a></li>
+</ul>
+</li>
+<li><a href="#yum%E5%AE%89%E8%A3%85%E8%BD%AF%E4%BB%B6">yum安装软件</a>
+<ul>
+<li><a href="#%E4%BA%86%E8%A7%A3epl">了解epl</a></li>
+<li><a href="#yum%E5%91%BD%E4%BB%A4">yum命令</a></li>
+<li><a href="#yum%E7%9A%84%E4%B8%89%E7%B1%BB%E6%BA%90">yum的三类源</a></li>
+</ul>
+</li>
+</ul>
+</p>
+
+        <h2 id="源码编译安装"   >
+          <a href="#源码编译安装" class="heading-link"><i class="fas fa-link"></i></a>源码编译安装</h2>
+      
+
+        <h3 id="src-build概述"   >
+          <a href="#src-build概述" class="heading-link"><i class="fas fa-link"></i></a>src-build概述</h3>
+      
+<p>源码编译安装即src-build式安装。</p>
+<p>源码的安装一般由3个步骤组成：配置(configure)、编译(make)、安装(make install)。</p>
+<p>Configure是一个可执行脚本，它有很多选项，在待安装的源码路径下使用命令<code>./configure -help</code>输出详细的选项列表。</p>
+<p>其中<code>-prefix</code>选项是配置安装的路径，如果不配置该选项，安装后可执行文件默认放在<code>/usr/local/bin</code>，库文件默认放在<code>/usr/local/lib</code>，配置文件默认放在<code>/usr/local/etc</code>，其它的资源文件放在<code>/usr/local/share</code>，比较凌乱。</p>
+<p>如果配置<code>-prefix</code>，如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/usr/<span class="built_in">local</span>/<span class="built_in">test</span></span><br></pre></td></tr></table></div></figure>
+<p>可以把所有资源文件放在/usr/local/test的路径中，不会杂乱。</p>
+<p>用了<code>-prefix</code>选项的另一个好处是卸载软件或移植软件。当某个安装的软件不再需要时，只须简单的删除该安装目录，就可以把软件卸载得干干净净；移植软件只需拷贝整个目录到另外一个机器即可（相同的操作系统）。</p>
+<p>当然要卸载程序，也可以在原来的make目录下用一次make uninstall，<strong>但前提是make文件指定过uninstall</strong>。</p>
+
+        <h3 id="src-build安装nginx"   >
+          <a href="#src-build安装nginx" class="heading-link"><i class="fas fa-link"></i></a>src-build安装Nginx</h3>
+      
+<p>接下来，我以Nginx为例子，介绍源码编译安装方式：</p>
+<p>（1）安装 gcc</p>
+<p>Nginx 具有很强的可扩展性，需要使用哪些功能，只需通过 with 配置后重新编译即可添加此功能，所以对于 Nginx 的源码安装方式是我们最常接触到的。</p>
+<p>Nginx 是由 C/C<ins>语言编写的，所以对其进行编译就必须要使用相关编译器。对于C/C</ins>语言的编译器，使用最多的是 gcc 与 gcc-c++，而这两款编译器在 CentOS6.5 中是没有安装的，所以首先要安装这两款编译器。</p>
+<blockquote>
+<p>gcc，GNU Compiler Collection，GNU 编译器集合，其可以编译多种语言。</p>
+</blockquote>
+<p>（2）安装依赖库</p>
+<p>基本的 Nginx 功能依赖于一些基本的库，在安装 Nginx 之前需要提前安装这些库。</p>
+<p>A. pcre-devel：pcre，Perl Compatible Regular Expressions，Perl 脚本语言兼容正则表达式，为 Nginx 提供正则表达式库。（即安装正则表达式的库）</p>
+<p>B. openssl-devel：为 Nginx 提供 SSL（安全套接字层）密码库，包含主要的密码算法、常用的密钥和证书封装管理功能及 SSL 协议，并提供丰富的应用程序供测试或其它目的使用。在安装之前需要注意，很多库具有 devel 库与非 devel 库两种。devel 库表示 development开发库，比非 devel 库会多出一些头文件、静态库、源码包等。而这些包在运行时不可能用到，但在开发时有可能用到。所以对于程序员来说，一般都是需要安装 devel 库的。不过，在 yum 安装 devel 库时，由于其依赖于非 devel 库，所以其会先自动安装非 devel 库，而后再安装 devel 库。所以真正在安装时，只需显示的安装 devel 库即可。通过以下命令可以查看到，非 devel 库也被安装了。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 1.为了编译nginx源码</span></span><br><span class="line">yum  install  gcc  gcc-c++ -y</span><br><span class="line"><span class="comment"># 2. 用于支持https协议</span></span><br><span class="line">yum  install  openssl  openssl-devel -y</span><br><span class="line"><span class="comment"># 3. 解析正则表达式</span></span><br><span class="line">yum install  pcre  pcre-devel -y</span><br><span class="line"><span class="comment"># 4. 压缩 gzip  deflate（下面是和压缩有关的包）</span></span><br><span class="line">yum  install  zlib  zlib-devel -y</span><br></pre></td></tr></table></div></figure>
+<p>然后，下载nginx，下载地址为：<span class="exturl"><a class="exturl__link"   href="http://nginx.org/en/download.html"  target="_blank" rel="noopener">http://nginx.org/en/download.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208223050.png"  alt="" />
+      </p>
+<p>这里选择nginx-1.8.1版本进行下载。</p>
+<ol start="5">
+<li>将nginx-1.8.1.tar.gz上传到linux的/opt/apps/目录下（需要创建apps文件夹）</li>
+<li>解压nginx-1.8.1.tar.gz，输入命令<code>tar -zxvf nginx-1.8.1.tar.gz</code></li>
+<li>配置nginx（configure）</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@layne testdir]<span class="comment"># cd /opt/apps/nginx-1.8.1</span></span><br><span class="line"><span class="comment"># ./configure  --help查看帮助信息</span></span><br><span class="line">[root@layne nginx-1.8.1]<span class="comment"># ./configure  --help</span></span><br><span class="line"></span><br><span class="line">  --<span class="built_in">help</span>                             <span class="built_in">print</span> this message</span><br><span class="line"></span><br><span class="line">  --prefix=PATH                      <span class="built_in">set</span> installation prefix</span><br><span class="line">  --sbin-path=PATH                   <span class="built_in">set</span> nginx binary pathname</span><br><span class="line">  --conf-path=PATH                   <span class="built_in">set</span> nginx.conf pathname</span><br><span class="line">  --error-log-path=PATH              <span class="built_in">set</span> error <span class="built_in">log</span> pathname</span><br><span class="line">  --pid-path=PATH                    <span class="built_in">set</span> nginx.pid pathname</span><br><span class="line">  --lock-path=PATH                   <span class="built_in">set</span> nginx.lock pathname</span><br><span class="line">...(太多了，这里把后面的删除了）</span><br></pre></td></tr></table></div></figure>
+<p>输入以下命令进行配置</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --prefix=/opt/nginx --with-http_ssl_module --with-http_gzip_static_module --error-log-path=/var/<span class="built_in">log</span>/nginx/nginx.log --pid-path=/var/<span class="built_in">log</span>/nginx/pid</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><code>/opt/nginx</code>指的是安装目录</li>
+<li><code>http_ssl_module</code> 支持安全协议</li>
+<li><code>--with-http_gzip_static_module</code> 支持压缩</li>
+<li><code>--error-log-path</code>  错误日志目录</li>
+<li><code>--pid-path=/var/log/nginx/pid</code>  进程id放置的目录信息</li>
+</ul>
+<p>执行后输出以下结果</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208224110.png"  alt="" />
+      </p>
+<p>上面表示：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">nginx path prefix: "/opt/nginx"  将来安装的时候放的目录</span><br><span class="line">  nginx binary file: "/opt/nginx/sbin/nginx" 执行文件目录</span><br><span class="line">  nginx configuration prefix: "/opt/nginx/conf" 配置文件目录前缀</span><br><span class="line">  nginx configuration file: "/opt/nginx/conf/nginx.conf"   配置文件</span><br><span class="line">  nginx pid file: "/var/log/nginx/pid"  进程ID目录</span><br><span class="line">  nginx error log file: "/var/log/nginx/nginx.log" 错误日志文件</span><br><span class="line">  nginx http access log file: "/opt/nginx/logs/access.log"  里面的access目录</span><br><span class="line">  nginx http client request body temporary files: "client_body_temp"</span><br><span class="line">  nginx http proxy temporary files: "proxy_temp"</span><br><span class="line">  nginx http fastcgi temporary files: "fastcgi_temp"</span><br><span class="line">  nginx http uwsgi temporary files: "uwsgi_temp"</span><br><span class="line">  nginx http scgi temporary files: "scgi_temp"</span><br></pre></td></tr></table></div></figure>
+<p>这个步骤可以理解为预编译，主要用于检测系统基准环境库是否满足gcc环境，生成makefile文件。</p>
+<ol start="8">
+<li>编译(make)</li>
+</ol>
+<p><code>make clean</code>命令用来清除上一次编译生成的目标文件（<strong>清除上次的make命令所产生的object文件</strong>（后缀为“.o”的文件）及可执行文件）。这个步骤可有可无，但为了确保编译的成功，还是加上为好。防止由于软件中含有残留的目标文件导致编译失败。</p>
+<p>生成脚本及配置文件：<code>make</code>  （根据Makefile文件编译源代码、连接、生成目标文件、可执行文件）</p>
+<p>编译步骤：根据Makefile文件生成相应的模块</p>
+<p>所以一般先输入<code>make clean</code> 再输入<code>make</code></p>
+<ol start="9">
+<li>安装(make install)</li>
+</ol>
+<p>输入<code>make install</code>（将编译成功的可执行文件安装到系统目录中）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 安装之后进入nginx的安装目录/opt/nginx</span></span><br><span class="line">[root@layne nginx-1.8.1]<span class="comment"># cd /opt/nginx</span></span><br><span class="line">[root@layne nginx]<span class="comment"># ls</span></span><br><span class="line">client_body_temp  conf  fastcgi_temp  html  logs  proxy_temp  sbin  scgi_temp  uwsgi_temp</span><br><span class="line">[root@layne nginx]<span class="comment"># cd conf</span></span><br><span class="line">[root@layne conf]<span class="comment"># ll</span></span><br><span class="line">total 60</span><br><span class="line">-rw-r--r-- 1 root root 1034 Feb  5 17:14 fastcgi.conf</span><br><span class="line">-rw-r--r-- 1 root root 1034 Feb  5 17:14 fastcgi.conf.default</span><br><span class="line">-rw-r--r-- 1 root root  964 Feb  5 17:14 fastcgi_params</span><br><span class="line">-rw-r--r-- 1 root root  964 Feb  5 17:14 fastcgi_params.default</span><br><span class="line">-rw-r--r-- 1 root root 2837 Feb  5 17:14 koi-utf</span><br><span class="line">-rw-r--r-- 1 root root 2223 Feb  5 17:14 koi-win</span><br><span class="line">-rw-r--r-- 1 root root 3957 Feb  5 17:14 mime.types</span><br><span class="line">-rw-r--r-- 1 root root 3957 Feb  5 17:14 mime.types.default</span><br><span class="line">-rw-r--r-- 1 root root 2656 Feb  5 17:14 nginx.conf</span><br><span class="line">-rw-r--r-- 1 root root 2656 Feb  5 17:14 nginx.conf.default</span><br><span class="line">-rw-r--r-- 1 root root  596 Feb  5 17:14 scgi_params</span><br><span class="line">-rw-r--r-- 1 root root  596 Feb  5 17:14 scgi_params.default</span><br><span class="line">-rw-r--r-- 1 root root  623 Feb  5 17:14 uwsgi_params</span><br><span class="line">-rw-r--r-- 1 root root  623 Feb  5 17:14 uwsgi_params.default</span><br><span class="line">-rw-r--r-- 1 root root 3610 Feb  5 17:14 win-utf</span><br></pre></td></tr></table></div></figure>
+<p><strong>conf</strong>：保存nginx所有的配置文件，其中nginx.conf是nginx服务器的最核心最主要的配置文件，其他的.conf则是用来配置nginx相关的功能的，例如fastcgi功能使用的是fastcgi.conf和fastcgi_params两个文件，配置文件一般都有个样板配置文件，以文件名.default结尾，使用的使用将其复制并将default去掉即可。</p>
+<p><strong>html</strong>：目录中保存了nginx服务器的web文件，但是可以更改为其他目录保存web文件，另外还有一个50x的web文件是默认的错误页面提示页面。</p>
+<p><strong>logs</strong>：用来保存nginx服务器的访问日志错误日志等日志，logs目录可以放在其他路径，比如/var/logs/nginx里面。</p>
+<p><strong>sbin</strong>：保存nginx二进制启动脚本，可以接受不同的参数以实现不同的功能。</p>
+<p>现在，我们启动nginx</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne conf]<span class="comment"># cd ../sbin/</span></span><br><span class="line">[root@layne sbin]<span class="comment"># ls</span></span><br><span class="line">nginx</span><br><span class="line">[root@layne sbin]<span class="comment"># ./nginx</span></span><br></pre></td></tr></table></div></figure>
+<p>在浏览器中输入你的ip地址，如<code>http://192.168.50.33/</code></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208230509.png"  alt="" />
+      </p>
+<p>出现该界面说明nginx安装成功。</p>
+<p><strong>关于卸载</strong></p>
+<p>要卸载程序，也可以在原来的<code>make</code>目录下用一次<code>make uninstall</code>，但前提是<code>Makefile</code>文件有<code>uninstall</code>命令。</p>
+<p>也可以将有关目录删除，这个方法会比较麻烦，建议网上查找详细步骤。</p>
+
+        <h2 id="rpm安装软件"   >
+          <a href="#rpm安装软件" class="heading-link"><i class="fas fa-link"></i></a>rpm安装软件</h2>
+      
+
+        <h3 id="rpm概述"   >
+          <a href="#rpm概述" class="heading-link"><i class="fas fa-link"></i></a>rpm概述</h3>
+      
+<p>RPM（RedHat Package Manager）安装管理，这个机制最早是由Red Hat开发出来，后来实在很好用，因此很多 distributions（发行版）就使用这个机制来作为软件安装的管理方式 ，包括Fedora,CentOS,SuSE等等知名的开发商。</p>
+<p>RPM的优点</p>
+<ol>
+<li>RPM内含已经编译过的程序与配置文件等数据,可以让用户免除重新编译的困扰</li>
+<li>RPM在被安装之前,会先检查系统的硬盘容量、操作系统版本等,可避免文件被错误安装</li>
+<li>RPM文件本身提供软件版本信息、相依属性软件名称、软件用途说明、软件所含文件等信息，便于了解软件</li>
+<li>RPM管理的方式使用数据库记录 RPM 文件的相关参数,便于升级 、移除、查询与验证</li>
+</ol>
+<p>rpm默认安装的路径如下：</p>
+<ol>
+<li>/etc    一些配置文件放置的目录,例如/etc/crontab</li>
+<li>/usr/bin 一些可执行文件</li>
+<li>/usr/lib   一些程序使用的动态链接库</li>
+<li>/usr/share/doc 一些基本的软件使用手册与说明文件</li>
+<li>/usr/share/man 一些man page（Linux命令的随机【跟随虚拟机】帮助说明）文件</li>
+</ol>
+<p><strong>rpm安装命令</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh package_name</span><br></pre></td></tr></table></div></figure>
+<p>选项与参数:</p>
+<ul>
+<li><code>-i</code> :install的意思</li>
+<li><code>-v</code>:察看更细部的安装信息画面</li>
+<li><code>-h</code> :以安装信息列显示安装进度</li>
+</ul>
+<p><strong>安装单个rpm包</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh package_name</span><br></pre></td></tr></table></div></figure>
+<p><strong>安装多个rpm包</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh a.i386.rpm b.i386.rpm *.rpm</span><br></pre></td></tr></table></div></figure>
+<p><strong>安装网上某个位置rpm包</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh http://website.name/path/pkgname.rpm</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="rpm安装jdk"   >
+          <a href="#rpm安装jdk" class="heading-link"><i class="fas fa-link"></i></a>rpm安装jdk</h3>
+      
+<p>这里，我通过rpm安装jdk为例子，进行说明：</p>
+<ol>
+<li>将jdk上传到/opt/apps目录下</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># cd /opt/apps</span></span><br><span class="line">[root@layne apps]<span class="comment"># ls</span></span><br><span class="line">jdk-7u80-linux-x64.rpm  nginx-1.8.1  nginx-1.8.1.tar.gz  rpm_mysql</span><br></pre></td></tr></table></div></figure>
+<ol start="2">
+<li>安装当前目录下的jdk-7u80-linux-x64.rpm</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@layne apps]<span class="comment"># rpm -ivh jdk-7u80-linux-x64.rpm</span></span><br><span class="line">Preparing...                <span class="comment">########################################### [100%]</span></span><br><span class="line">   1:jdk                    <span class="comment">########################################### [100%]</span></span><br><span class="line">Unpacking JAR files...</span><br><span class="line">	rt.jar...</span><br><span class="line">	jsse.jar...</span><br><span class="line">	charsets.jar...</span><br><span class="line">	tools.jar...</span><br><span class="line">	localedata.jar...</span><br><span class="line">	jfxrt.jar...</span><br></pre></td></tr></table></div></figure>
+<ol start="3">
+<li>查找java安装目录的位置：</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@layne apps]<span class="comment"># whereis java</span></span><br><span class="line">java: /usr/bin/java</span><br><span class="line">[root@layne apps]<span class="comment"># ll /usr/bin/java</span></span><br><span class="line">lrwxrwxrwx 1 root root 26 Feb  5 19:29 /usr/bin/java -&gt; /usr/java/default/bin/java</span><br><span class="line">[root@layne apps]<span class="comment"># cd /usr/java</span></span><br><span class="line">[root@layne java]<span class="comment"># ls</span></span><br><span class="line">default  jdk1.7.0_80  latest</span><br><span class="line">[root@layne java]<span class="comment"># cd jdk1.7.0_80/</span></span><br><span class="line">[root@layne jdk1.7.0_80]<span class="comment"># pwd</span></span><br><span class="line">/usr/java/jdk1.7.0_80</span><br></pre></td></tr></table></div></figure>
+<ol start="4">
+<li>配置环境变量</li>
+</ol>
+<p>进入<code>vim /etc/profile</code> ，在文件最后加入以下两行代码：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/usr/java/default</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$JAVA_HOME</span>/bin</span><br></pre></td></tr></table></div></figure>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209110929.png"  alt="" />
+      </p>
+<ol start="5">
+<li>让配置生效，使用<code>source /etc/profile</code></li>
+<li>测试安装配置是否成功</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># java -version</span></span><br><span class="line">java version <span class="string">"1.7.0_80"</span></span><br><span class="line">Java(TM) SE Runtime Environment (build 1.7.0_80-b15)</span><br><span class="line">Java HotSpot(TM) 64-Bit Server VM (build 24.80-b11, mixed mode)</span><br><span class="line">[root@layne ~]<span class="comment"># jps</span></span><br><span class="line">1423 Jps</span><br></pre></td></tr></table></div></figure>
+<p>出现以上信息，说明配置成功</p>
+<p>rpm安装：</p>
+<ul>
+<li>redhat提供了rpm管理系统</li>
+<li>已经编译的软件包：针对不同的平台系统编译目标软件包</li>
+<li>操作系统维护安装信息</li>
+<li>软件包包含依赖检查，这是人需要参与处理的。<strong>你得下载它需要的所有依赖包并安装，才能安装一个rpm软件</strong>。</li>
+</ul>
+
+        <h3 id="rpm查询"   >
+          <a href="#rpm查询" class="heading-link"><i class="fas fa-link"></i></a>rpm查询</h3>
+      
+<p>简单原理：rpm在查询的时候,其实查询的地方是在/var/lib/rpm/ 这个目录下的数据库文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># ll /var/lib/rpm/</span></span><br><span class="line">total 28752</span><br><span class="line">-rw-r--r--. 1 root root  1523712 Feb  9 10:40 Basenames</span><br><span class="line">-rw-r--r--. 1 root root    12288 Feb  5 16:46 Conflictname</span><br><span class="line">-rw-r--r--  1 root root    24576 Feb  9 10:40 __db.001</span><br><span class="line">-rw-r--r--  1 root root   229376 Feb  9 10:40 __db.002</span><br><span class="line">-rw-r--r--  1 root root  1318912 Feb  9 10:40 __db.003</span><br><span class="line">-rw-r--r--  1 root root   753664 Feb  9 10:40 __db.004</span><br><span class="line">-rw-r--r--. 1 root root   331776 Feb  9 10:40 Dirnames</span><br><span class="line">...</span><br></pre></td></tr></table></div></figure>
+<p><strong>rpm查询已安装软件，选项与参数：</strong></p>
+<p>-q :仅查询,后面接的软件名称是否有安装</p>
+<p>-qa :列出所有的,已经安装在本机Linux系统上面的所有软件名称 ！！！</p>
+<p>-qi :列出该软件的详细信息,包含开发商、版本和说明等 !!</p>
+<p>-ql :列出该软件所有的文件与目录所在完整文件名 !!</p>
+<p>-qc :列出该软件的所有配置文件 !</p>
+<p>-qd :列出该软件的所有说明文件</p>
+<p>-qR :列出和该软件有关的相依软件所含的文件</p>
+<p>-qf :由后面接的文件名,找出该文件属于哪一个已安装的软件 、</p>
+<p>查询某个 RPM 文件内含有的信息:  <code>-qp[icdlR]</code></p>
+<p>注意 -qp 后面接的所有参数以上面的说明一致。但用途仅在于找出 某个 RPM 文件内的信息,而非已安装的软件信息</p>
+<p>案例1：查找是否安装jdk</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># rpm -qa |grep jdk</span></span><br><span class="line">jdk-1.7.0_80-fcs.x86_64</span><br></pre></td></tr></table></div></figure>
+<p>注意：<code>grep jdk</code> 本来就是模糊查询，不用加<code>*</code>。</p>
+<p>案例2：查询jdk所包含的文件及目录</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># rpm -ql jdk</span></span><br></pre></td></tr></table></div></figure>
+<p>案例3：查看jdk包的相关说明</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># rpm -qi jdk</span></span><br><span class="line">Name        : jdk                          Relocations: /usr/java </span><br><span class="line">Version     : 1.7.0_80                          Vendor: Oracle Corporation</span><br><span class="line">Release     : fcs                           Build Date: Sat 11 Apr 2015 11:15:36 AM CST</span><br><span class="line">Install Date: Fri 05 Feb 2021 07:29:53 PM CST      Build Host: sca00efd.us.oracle.com</span><br><span class="line">Group       : Development/Tools             Source RPM: jdk-1.7.0_80-fcs.src.rpm</span><br><span class="line">Size        : 219404663                        License: http://java.com/license</span><br><span class="line">Signature   : (none)</span><br><span class="line">Packager    : Java Software &lt;jre-comments@java.sun.com&gt;</span><br><span class="line">URL         : URL_REF</span><br><span class="line">Summary     : Java Platform Standard Edition Development Kit</span><br><span class="line">Description :</span><br><span class="line">The Java Platform Standard Edition Development Kit (JDK) includes both</span><br><span class="line">the runtime environment (Java virtual machine, the Java platform classes</span><br><span class="line">and supporting files) and development tools (compilers, debuggers,</span><br><span class="line">tool libraries and other tools).</span><br><span class="line"></span><br><span class="line">The JDK is a development environment <span class="keyword">for</span> building applications, applets</span><br><span class="line">and components that can be deployed with the Java Platform Standard</span><br><span class="line">Edition Runtime Environment.</span><br></pre></td></tr></table></div></figure>
+<p>案例4：列出iptables的配置文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># rpm -qc iptables</span></span><br><span class="line">/etc/sysconfig/iptables-config</span><br></pre></td></tr></table></div></figure>
+<p>案例5：查看apr需要的依赖</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># yum install apr</span></span><br><span class="line">[root@layne ~]<span class="comment"># rpm -qR apr</span></span><br></pre></td></tr></table></div></figure>
+<p>温馨提示：<strong>大改动之前一定要拍快照</strong></p>
+
+        <h3 id="rpm安装mysql"   >
+          <a href="#rpm安装mysql" class="heading-link"><i class="fas fa-link"></i></a>rpm安装MySQL</h3>
+      
+<ol>
+<li>查找当前系统中安装的MySQL:</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># rpm -qa | grep mysql</span></span><br><span class="line">mysql-libs-5.1.71-1.el6.x86_64</span><br></pre></td></tr></table></div></figure>
+<p>上面是CentOS6.5自带的mysql，但是版本有点低</p>
+<ol start="2">
+<li>将上一步找到的mysql相关的包都删除（<code>-e</code>是erase的意思）</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># rpm -e mysql-libs-5.1.71-1.el6.x86_64</span></span><br><span class="line">error: Failed dependencies:</span><br><span class="line">	libmysqlclient.so.16()(64bit) is needed by (installed) postfix-2:2.6.6-2.2.el6_1.x86_64</span><br><span class="line">	libmysqlclient.so.16(libmysqlclient_16)(64bit) is needed by (installed) postfix-2:2.6.6-2.2.el6_1.x86_64</span><br><span class="line">	mysql-libs is needed by (installed) postfix-2:2.6.6-2.2.el6_1.x86_64</span><br></pre></td></tr></table></div></figure>
+<p>会发现mysql5.1.7被postfix-2:2.6.6-2.2.el6_1.x86_64依赖：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209121603.png"  alt="" />
+      </p>
+<p>加上<code>--nodeps</code> 不检查依赖直接删除</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># rpm -e --nodeps mysql-libs-5.1.71-1.el6.x86_64</span></span><br><span class="line">[root@layne ~]<span class="comment"># rpm -qa | grep mysql</span></span><br></pre></td></tr></table></div></figure>
+<ol start="3">
+<li>检查并删除老版本mysql的开发头文件和库(如果有的话)</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># find / -name "mysql*"</span></span><br><span class="line">rm -fr /usr/lib/mysql</span><br><span class="line">rm -fr /usr/include/mysql</span><br><span class="line">rm -f /etc/my.cnf</span><br><span class="line">rm -fr /var/lib/mysql</span><br><span class="line">rm -fr /usr/share/mysql</span><br></pre></td></tr></table></div></figure>
+<p>注意：卸载后/var/lib/mysql中的数据及<code>/etc/my.cnf</code>不会删除（可以先备份，后删除），如果确定没用后就手工删除。</p>
+<ol start="4">
+<li>安装perl</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># yum install perl -y</span></span><br></pre></td></tr></table></div></figure>
+<ol start="5">
+<li>下载numactl-2.0.9-2.el6.x86_64.rpm并安装</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne apps]<span class="comment"># cd /opt/apps/rpm_mysql</span></span><br><span class="line">[root@layne rpm_mysql]<span class="comment"># ls</span></span><br><span class="line">mysql-community-client-5.7.19-1.el6.x86_64.rpm  mysql-community-server-5.7.19-1.el6.x86_64.rpm</span><br><span class="line">mysql-community-common-5.7.19-1.el6.x86_64.rpm  numactl-2.0.9-2.el6.x86_64.rpm</span><br><span class="line">mysql-community-libs-5.7.19-1.el6.x86_64.rpm    rpm??װmysql.txt</span><br><span class="line">[root@layne rpm_mysql]<span class="comment"># rpm -ivh numactl-2.0.9-2.el6.x86_64.rpm</span></span><br></pre></td></tr></table></div></figure>
+<p>numactl-2.0.9-2.el6.x86_64.rpm为Mysql依赖的包</p>
+<ol start="6">
+<li>安装mysql（有顺序要求）</li>
+</ol>
+<p>方法1：依次安装如下软件包</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rpm -ivh mysql-community-common-5.7.19-1.el6.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-libs-5.7.19-1.el6.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-client-5.7.19-1.el6.x86_64.rpm</span><br><span class="line">rpm -ivh mysql-community-server-5.7.19-1.el6.x86_64.rpm</span><br></pre></td></tr></table></div></figure>
+<p>方法2：执行<code>rpm -ivh mysql-community-*</code>，<strong>让系统自己判断rpm安装顺序</strong></p>
+<ol start="7">
+<li>修改/etc/my.cnf文件，设置数据库的编码方式</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[client]</span><br><span class="line">default-character-set=utf8</span><br><span class="line">[mysql]</span><br><span class="line">default-character-set=utf8</span><br><span class="line">[mysqld]</span><br><span class="line">character_set_server=utf8</span><br></pre></td></tr></table></div></figure>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209122724.png"  alt="" />
+      </p>
+<ol start="8">
+<li>如果出现错误，请查看/etc/my.cnf文件中指定的错误log日志的文件</li>
+</ol>
+<p>错误log的存放位置为<code>log-error=/var/log/mysqld.log</code></p>
+<p>这里可能会出现找不到文件的情况，如果找不到这个文件，就先执行第9步再尝试，如果再不行就重启系统。</p>
+<ol start="9">
+<li>
+<p>启动MySQL：<code>service mysqld start</code></p>
+</li>
+<li>
+<p>找到随机密码</p>
+</li>
+</ol>
+<p>在<code>/var/log/mysqld.log</code>中有一行：A temporary password is generated for root@localhost，后面就是随机密码</p>
+<p>然后使用随机密码登陆：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -p<span class="string">"yAe7QGVJ;HlR"</span></span><br></pre></td></tr></table></div></figure>
+<ol start="11">
+<li>修改模式密码</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; <span class="built_in">set</span> global validate_password_policy=0;</span><br><span class="line">mysql&gt; <span class="built_in">set</span> global validate_password_length=6;</span><br><span class="line">mysql&gt; <span class="built_in">set</span> password <span class="keyword">for</span> <span class="string">'root'</span>@<span class="string">'localhost'</span>=password(<span class="string">'123456'</span>);</span><br></pre></td></tr></table></div></figure>
+<ol start="12">
+<li>登陆mysql查看编码方式</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show variables like <span class="string">'%character%'</span>;</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| Variable_name            | Value                      |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">| character_set_client     | utf8                       |</span><br><span class="line">| character_set_connection | utf8                       |</span><br><span class="line">| character_set_database   | utf8                       |</span><br><span class="line">| character_set_filesystem | binary                     |</span><br><span class="line">| character_set_results    | utf8                       |</span><br><span class="line">| character_set_server     | utf8                       |</span><br><span class="line">| character_set_system     | utf8                       |</span><br><span class="line">| character_sets_dir       | /usr/share/mysql/charsets/ |</span><br><span class="line">+--------------------------+----------------------------+</span><br><span class="line">8 rows <span class="keyword">in</span> <span class="built_in">set</span> (0.09 sec)</span><br></pre></td></tr></table></div></figure>
+<ol start="13">
+<li>给root设置远程登录权限</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; GRANT ALL PRIVILEGES ON *.* TO <span class="string">'root'</span>@<span class="string">'%'</span> IDENTIFIED BY <span class="string">'123456'</span> WITH GRANT OPTION;</span><br><span class="line">mysql&gt; FLUSH PRIVILEGES;</span><br></pre></td></tr></table></div></figure>
+<blockquote>
+<p>ALL PRIVILEGES指所有的权限</p>
+<p>‘root’@’%’ 指root用户除了localhost，也支持其他的远程登录</p>
+</blockquote>
+<ol start="14">
+<li>设置msyql开机启动</li>
+</ol>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; <span class="built_in">exit</span></span><br><span class="line">Bye</span><br><span class="line">[root@layne rpm_mysql]<span class="comment"># chkconfig mysqld on</span></span><br></pre></td></tr></table></div></figure>
+<p>到这里就安装完毕，如果安装失败，就把第6步安装的4个包删了重新来。</p>
+
+        <h3 id="rpm卸载"   >
+          <a href="#rpm卸载" class="heading-link"><i class="fas fa-link"></i></a>rpm卸载</h3>
+      
+<p>找出与apr有关的软件名称，并尝试移除apr这个软件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># rpm -qa|grep apr</span></span><br><span class="line">apr-1.3.9-5.el6_9.1.x86_64</span><br><span class="line">[root@layne ~]<span class="comment"># rpm -e apr-1.3.9-5.el6_9.1.x86_64</span></span><br><span class="line">[root@layne ~]<span class="comment"># rpm -qa|grep apr</span></span><br><span class="line">[root@layne ~]<span class="comment">#</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="yum安装软件"   >
+          <a href="#yum安装软件" class="heading-link"><i class="fas fa-link"></i></a>yum安装软件</h2>
+      
+
+        <h3 id="了解epl"   >
+          <a href="#了解epl" class="heading-link"><i class="fas fa-link"></i></a>了解epl</h3>
+      
+<p>全称：Extra Packages for Enterprise Linux，企业版Linux的<strong>额外软件包</strong>。它是Fedora小组维护的一个软件仓库项目，为RHEL/CentOS提供他们默认不提供的软件包。这个源兼容RHEL及像CentOS和Scientific Linux这样的衍生版本。</p>
+<p>我们可以很容易地通过yum命令从EPEL源上获取上万个在CentOS自带源上没有的软件。EPEL提供的软件包大多基于其对应的Fedora软件包，不会与企业版Linux发行版本的软件发生冲突或替换其文件。更多关于EPEL 项目的细节可以到以下网站获取：<span class="exturl"><a class="exturl__link"   href="https://fedoraproject.org/wiki/EPEL%E3%80%82"  target="_blank" rel="noopener">https://fedoraproject.org/wiki/EPEL。</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>RHEL/CentOS系统有许多第三方源，比较流行的比如RpmForge，RpmFusion，EPEL，Remi等等。然而需要引起注意的是，如果系统添加了多个第三方源，可能会因此产生冲突——一个软件包可以从多个源获取，一些源会替换系统的基础软件包，从而可能会产生意想不到的错误。已知的就有Rpmforge与EPEL会产生冲突。<strong>对于这些问题我们建议，调整源的优先权或者有选择性的安装源，但是这需要复杂的操作，如果你不确定如何操作，我们推荐你只安装一个第三方源。</strong></p>
+
+        <h3 id="yum命令"   >
+          <a href="#yum命令" class="heading-link"><i class="fas fa-link"></i></a>yum命令</h3>
+      
+<p>yum的源在<code>/etc/yum.repos.d/</code> 目录下，<strong>以.repo结尾的</strong>的文件都是yum源配置文件，yum<strong>可以同时有多个镜像</strong>，名字无所谓，只要文件以.repo结尾就可以使用。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># ls /etc/yum.repos.d/</span></span><br><span class="line">CentOS-Base-Neu.repo          CentOS-Base.repo      CentOS-Base-Sohu.repo.bak     CentOS-Debuginfo.repo  CentOS-Vault.repo</span><br><span class="line">CentOS-Base-QingHua.repo.bak  CentOS-Base.repo.bak  CentOS-Base-YuanShi.repo.bak  CentOS-Media.repo</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，我启用了三个源，分别是CentOS-Base-Neu.repo、CentOS-Base.repo、 CentOS-Media.repo</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209125236.png"  alt="" />
+      </p>
+<p><strong>yum命令：</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yum repolist  <span class="comment">#查看yum源</span></span><br><span class="line">yum clean all  <span class="comment"># 清除缓存</span></span><br><span class="line">yum makecache   <span class="comment"># 重新生成缓存（生成软件花名册）</span></span><br><span class="line">yum update  <span class="comment">#更新系统使用该命令（更新系统已经存在的软件）</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>查询：</strong></p>
+<p><code>yum list</code> 列出系统中已经安装的和可以安装的包</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum list | grep mysql</span><br></pre></td></tr></table></div></figure>
+<p><code>yum search</code> 在yum源搜索指定的包</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum search mysql</span><br></pre></td></tr></table></div></figure>
+<p><code>yum info</code> 打印指定包的描述信息</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum info mysql</span><br></pre></td></tr></table></div></figure>
+<p><strong>安装和卸载：</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum install xxx</span><br><span class="line">yum remove|erase xxx</span><br></pre></td></tr></table></div></figure>
+<p><strong>yum分组命令：</strong></p>
+<p>查询yum源中rpm包的组信息（一个group组包含多个软件包）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum grouplist</span><br></pre></td></tr></table></div></figure>
+<p>查看指定组的信息</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum groupinfo <span class="string">"Chinese Support"</span></span><br></pre></td></tr></table></div></figure>
+<p>安装指定的组（即安装该组下的所有软件包）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum groupinstall <span class="string">"Chinese Support"</span></span><br></pre></td></tr></table></div></figure>
+<p>删除指定软件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum groupremove <span class="string">"Chinese Support"</span></span><br></pre></td></tr></table></div></figure>
+<p>更新指定软件组</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum groupupdate <span class="string">"Chinese Support"</span></span><br></pre></td></tr></table></div></figure>
+<p>其它命令（了解）</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">Usage: yum [options] COMMAND</span><br><span class="line"></span><br><span class="line">List of Commands:</span><br><span class="line"></span><br><span class="line">check          Check for problems in the rpmdb</span><br><span class="line">check-update   Check for available package updates</span><br><span class="line">clean          移除缓存的数据</span><br><span class="line">deplist        列出包的依赖</span><br><span class="line">distribution-synchronization Synchronize installed packages to the latest available versions</span><br><span class="line">downgrade      downgrade a package</span><br><span class="line">erase          从系统中移除一个或几个包</span><br><span class="line">groupinfo      打印软件组的细节信息</span><br><span class="line">groupinstall   在系统中安装一组软件包</span><br><span class="line">grouplist      列出可用的软件包</span><br><span class="line">groupremove   从系统中移除一组软件包</span><br><span class="line">help           Display a helpful usage message</span><br><span class="line">history        Display, or use, the transaction history</span><br><span class="line">info           Display details about a package or group of packages</span><br><span class="line">install        在系统中安装一个或几个软件包</span><br><span class="line">list           列出包信息或一组包的信息</span><br><span class="line">load-transaction load a saved transaction from filename</span><br><span class="line">makecache      生成元数据缓存</span><br><span class="line">provides       哪个包提供了指定的值。</span><br><span class="line">reinstall      重新安装一个软件包</span><br><span class="line">repolist       打印配置的软件源</span><br><span class="line">resolvedep     Determine which package provides the given dependency</span><br><span class="line">search         搜索指定的包</span><br><span class="line">shell          Run an interactive yum shell</span><br><span class="line">update         Update a package or packages on your system</span><br><span class="line">upgrade        Update packages taking obsoletes into account</span><br><span class="line">version        Display a version for the machine and/or available repos.</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="yum的三类源"   >
+          <a href="#yum的三类源" class="heading-link"><i class="fas fa-link"></i></a>yum的三类源</h3>
+      
+<p>（1）本地自定义源</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span>  /etc/yum.repos.d/</span><br><span class="line">cp  CentOS-Base.repo   localRepo.repo  <span class="comment">#先备份文件</span></span><br><span class="line">mkdir  old</span><br><span class="line">mv  CentOS-*  old     <span class="comment">#将原来的文件备份到一个位置</span></span><br><span class="line"></span><br><span class="line">vim   localRepo.repo</span><br></pre></td></tr></table></div></figure>
+<p>localRepo.repo中base那一部分改为</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">...</span><br><span class="line">[base]</span><br><span class="line">  name=CentOS-<span class="formula">$releasever - Base</span></span><br><span class="line"><span class="formula">  #mirrorlist=http://mirrorlist.centos.org/?release=$</span>releasever&amp;arch=<span class="formula">$basearch&amp;repo=os</span></span><br><span class="line"><span class="formula">  baseurl=file:///mnt</span></span><br><span class="line"><span class="formula">  gpgcheck=0</span></span><br><span class="line"><span class="formula">  gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6</span></span><br><span class="line"><span class="formula">...</span></span><br></pre></td></tr></table></div></figure>
+<p>插入DVD的ISO镜像文件(CentOS-6.8-x86_64-bin-DVD1.iso)，挂载到/mnt目录</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130451.png"  alt="" />
+      </p>
+<p>挂载设备</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mount  /dev/cdrom  /mnt</span><br><span class="line"><span class="built_in">cd</span>  /mnt    <span class="comment"># 查看其中的内容</span></span><br><span class="line"><span class="built_in">cd</span>  /mnt/Packages</span><br><span class="line">ls  -l  |  wc  -l</span><br></pre></td></tr></table></div></figure>
+<p>统计出该目录有多少个rpm包</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130649.png"  alt="" />
+      </p>
+<p>然后清缓存，再生成数据缓存</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">yum  clean  all    <span class="comment">#清空本地元数据缓存</span></span><br><span class="line">yum  makecache    <span class="comment">#创建本地元数据缓存</span></span><br><span class="line">yum  repolist  <span class="comment">#查看元数据的具体信息</span></span><br></pre></td></tr></table></div></figure>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130756.png"  alt="" />
+      </p>
+<p>至此，本地yum源配置完成。</p>
+<p>（2）发布局域网yum源</p>
+<p>tomcat发布自定义的yum源</p>
+<p>解压tomcat的tar包：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxf apache-tomcat-7.0.68.tar.gz</span><br></pre></td></tr></table></div></figure>
+<p>首先将dvd1和dvd2的内容从node2主机的/mnt目录拷贝到tomcat的webapps/ROOT/目录</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130927.png"  alt="" />
+      </p>
+<p>输入<code>./startup.sh</code>启动tomcat</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209130958.png"  alt="" />
+      </p>
+<p>在node1的tomcat.repo中进行配置：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209131043.png"  alt="" />
+      </p>
+<p>配置tomcat.repo:</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[base]</span><br><span class="line">name=CentOS-<span class="variable">$releasever</span> - Base - tomcat</span><br><span class="line">baseurl=http://node2:8080</span><br><span class="line">gpgcheck=0</span><br><span class="line">gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-CentOS-6</span><br></pre></td></tr></table></div></figure>
+<p>然后清缓存，再生成数据缓存</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">yum  clean  all    <span class="comment">#清空本地元数据缓存</span></span><br><span class="line">yum  makecache    <span class="comment">#创建本地元数据缓存</span></span><br></pre></td></tr></table></div></figure>
+<p>这样就可以了</p>
+<p><strong>（3）CentOS使用其他源</strong></p>
+<p>这个可以参考我的博客<span class="exturl"><a class="exturl__link"   href="https://wxler.github.io/2021/02/04/211126/"  target="_blank" rel="noopener">把Linux系统中的yum替换为清华源，速度瞬间从5KB/s变到3.5MB/s</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/02/10/112210/">https://wxler.gitee.io/2021/02/10/112210/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/Linux/">Linux</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/02/10/115802/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Linux进程管理命令nohup、&amp;、jobs、fg、bg、ps、kill</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/02/10/111843/"><span class="paginator-prev__text">Linux中的用户、用户组的管理</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#源码编译安装"><span class="toc-text">
+          源码编译安装</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#src-build概述"><span class="toc-text">
+          src-build概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#src-build安装nginx"><span class="toc-text">
+          src-build安装Nginx</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rpm安装软件"><span class="toc-text">
+          rpm安装软件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#rpm概述"><span class="toc-text">
+          rpm概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rpm安装jdk"><span class="toc-text">
+          rpm安装jdk</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rpm查询"><span class="toc-text">
+          rpm查询</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rpm安装mysql"><span class="toc-text">
+          rpm安装MySQL</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#rpm卸载"><span class="toc-text">
+          rpm卸载</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#yum安装软件"><span class="toc-text">
+          yum安装软件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#了解epl"><span class="toc-text">
+          了解epl</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#yum命令"><span class="toc-text">
+          yum命令</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#yum的三类源"><span class="toc-text">
+          yum的三类源</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">81</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">13</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">41</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

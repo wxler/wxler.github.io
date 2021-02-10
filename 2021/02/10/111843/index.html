@@ -1,0 +1,741 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="接下来，我将介绍以下四个内容：  用户 用户组 其他人的概念 Linux用户身份与用户组记录的文件">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux中的用户、用户组的管理">
+<meta property="og:url" content="https://wxler.gitee.io/2021/02/10/111843/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="接下来，我将介绍以下四个内容：  用户 用户组 其他人的概念 Linux用户身份与用户组记录的文件">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208170430.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208180903.png">
+<meta property="article:published_time" content="2021-02-10T03:18:43.000Z">
+<meta property="article:modified_time" content="2021-02-10T03:21:55.275Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208170430.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Linux中的用户、用户组的管理 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/02/10/111843/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Linux中的用户、用户组的管理</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">7.1k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">44分</span></span></div></header><div class="post-body"><p>接下来，我将介绍以下四个内容：</p>
+<ol>
+<li>用户</li>
+<li>用户组</li>
+<li>其他人的概念</li>
+<li>Linux用户身份与用户组记录的文件</li>
+</ol>
+<a id="more"></a>
+<p><strong>文章目录如下：</strong></p>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-%E7%94%A8%E6%88%B7">1. 用户</a></li>
+<li><a href="#2-%E7%94%A8%E6%88%B7%E7%BB%84">2. 用户组</a></li>
+<li><a href="#3-%E5%85%B6%E4%BB%96%E4%BA%BAothers">3. 其他人(others)</a></li>
+<li><a href="#4-linux%E7%94%A8%E6%88%B7%E8%BA%AB%E4%BB%BD%E4%B8%8E%E7%94%A8%E6%88%B7%E7%BB%84%E8%AE%B0%E5%BD%95%E7%9A%84%E6%96%87%E4%BB%B6">4. Linux用户身份与用户组记录的文件</a></li>
+<li><a href="#5-linux%E7%B3%BB%E7%BB%9F%E7%94%A8%E6%88%B7%E8%B4%A6%E5%8F%B7%E7%9A%84%E7%AE%A1%E7%90%86">5. Linux系统用户账号的管理</a>
+<ul>
+<li><a href="#51-%E6%96%B0%E5%BB%BA%E7%94%A8%E6%88%B7">5.1 新建用户</a></li>
+<li><a href="#52-%E4%BF%AE%E6%94%B9%E5%B8%90%E5%8F%B7">5.2 修改帐号</a></li>
+<li><a href="#53-%E5%88%A0%E9%99%A4%E8%B4%A6%E5%8F%B7">5.3 删除账号</a></li>
+<li><a href="#54-%E7%94%A8%E6%88%B7%E5%8F%A3%E4%BB%A4%E7%9A%84%E7%AE%A1%E7%90%86">5.4 用户口令的管理</a></li>
+</ul>
+</li>
+<li><a href="#6-%E7%B3%BB%E7%BB%9F%E7%94%A8%E6%88%B7%E7%BB%84%E7%9A%84%E7%AE%A1%E7%90%86">6. 系统用户组的管理</a>
+<ul>
+<li><a href="#61-%E5%A2%9E%E5%8A%A0%E7%94%A8%E6%88%B7%E7%BB%84">6.1 增加用户组</a></li>
+<li><a href="#62-%E4%BF%AE%E6%94%B9%E7%94%A8%E6%88%B7%E7%BB%84">6.2 修改用户组</a></li>
+<li><a href="#63-%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7%E7%BB%84">6.3 删除用户组</a></li>
+<li><a href="#64-%E7%94%A8%E6%88%B7%E7%BB%84%E7%9A%84%E5%88%87%E6%8D%A2">6.4 用户组的切换</a></li>
+</ul>
+</li>
+<li><a href="#7-%E4%B8%8E%E7%94%A8%E6%88%B7%E8%B4%A6%E5%8F%B7%E6%9C%89%E5%85%B3%E7%9A%84%E7%B3%BB%E7%BB%9F%E6%96%87%E4%BB%B6">7. 与用户账号有关的系统文件</a>
+<ul>
+<li><a href="#71-etcpasswd%E6%96%87%E4%BB%B6">7.1 /etc/passwd文件</a></li>
+<li><a href="#72-etcshadow%E6%96%87%E4%BB%B6">7.2 /etc/shadow文件</a></li>
+<li><a href="#73-etcgroup%E6%96%87%E4%BB%B6">7.3 /etc/group文件</a></li>
+</ul>
+</li>
+</ul>
+</p>
+
+        <h2 id="1-用户"   >
+          <a href="#1-用户" class="heading-link"><i class="fas fa-link"></i></a>1. 用户</h2>
+      
+<p>案例：假如当你把给你心意的女神写了封Email情书转存成了文件之后，放在你自己的主文件夹中，你总不希望被其他人看见自己的情书吧？这个时候你就可以把该文件设置成只有所有者才能查看和修改该文件的内容，那么即使其他人知道你这个相当有趣的文件，不过由于你设置适当权限，所以其他人自然不知道该文件的具体内容。</p>
+<p>由于Linux是多用户,多任务的操作系统，为此，会经常有多个用户同时使用某一台主机。为了考虑每个用户的隐私安全以及每个用户特殊的工作环境，设计了文件所有者这个概念。</p>
+<p><strong>而文件所有者就是文件所属的用户。</strong></p>
+<p>Linux系统是一个多用户多任务的分时操作系统，任何一个要使用系统资源的用户，都必须首先向系统管理员申请一个账号，然后以这个账号的身份进入系统。</p>
+<p>用户的账号一方面可以帮助系统管理员对使用系统的用户进行跟踪，并控制他们对系统资源的访问；另一方面也可以帮助用户组织文件，并为用户提供安全性保护。</p>
+<p>每个用户账号都拥有一个惟一的用户名和各自的口令。用户在登录时键入正确的用户名和口令后，就能够进入系统和自己的主目录。</p>
+
+        <h2 id="2-用户组"   >
+          <a href="#2-用户组" class="heading-link"><i class="fas fa-link"></i></a>2. 用户组</h2>
+      
+<p>那么用户组呢？为何要配置文件所属的用户组呢？</p>
+<p>用户组是为了团队开发资源而设计的。举例来说：某一台主机上的资源有两个团队共同使用，team A（曹操、许褚、夏侯渊）和teamB（刘备、关羽、诸葛亮）。</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-rwxrwx--- caocao teamA wei.doc        </span><br><span class="line">-rwxrwx--- liubei teamB   shu.doc</span><br><span class="line">-rwx------  zhugeliang  teamB qingshu.txt</span><br></pre></td></tr></table></div></figure>
+<p>这两个团队之间是竞争关系，但却要提交同一份报告《如何获得天下》，每个团队的成员需要有权修改该团队其他成员的数据，而另一个团队的成员无权查看本组自己的文件内容，此时用户组就起到了关键作用。</p>
+<p>在Linux下我们可以进行简单的文件权限设置，就能限制非自己团队的用户权限。同时，我们还可以设置个人私密文件，使团队内其他成员无法获取私人的文件内容。除此之外，若是有项目主管想监督这两个团队的开发进度，需要查看两个团队文件的权限，你便可以设置主管账号，同时支持这两个用户组。换句话说：每个账号都可以有多个用户组的支持。</p>
+<p>用户组和用户关系分析案例：</p>
+<p>可以使用“家庭”和家庭成员的关系进行分析，比如王大毛家的三兄弟：大毛、二毛、三毛，而家庭登记的王大毛的名下，他们分别有自己的房间。所以“王大毛家”（用户组）有3个人（用户）：大毛、二毛、三毛；而且这三个人分别有自己的房间，并且共同拥有一个客厅。</p>
+<p><strong>用户的意义</strong>：由于王家3个人拥有自己的房间，所以二毛虽然可以进入三毛的房间，但是二毛不能随便翻三毛的抽屉，因为抽屉里可能有三毛的私有物品，比如情书、日记等；这是私人空间，所以不能让二毛随便动。</p>
+<p>**用户组的意义：**由于共同拥有客厅，所以王家三兄弟可以在客厅看电视、看杂志、或望着天花板发呆等，总之只要是客厅的东西，三兄弟都可以使用，大家一家人嘛。</p>
+<p>王大毛家-&gt;用户组；大毛、二毛、三毛-&gt;分别对应一个用户。</p>
+<p>他们三个人在同一个用户组中，可以通过设置他们文件的权限，将一些文件设置为“私有的”（只能他自己访问和使用），同用户组的其他用户无法访问和使用。而通过设置用户组共享的，则可让大家共同分享。</p>
+
+        <h2 id="3-其他人others"   >
+          <a href="#3-其他人others" class="heading-link"><i class="fas fa-link"></i></a>3. 其他人(others)</h2>
+      
+<p>Linux系统中任何一个文件都具有“User、Group、Other”三种身份的个别权限。</p>
+<p>我们仍然以上述案例分析，文件所有者、用户组与其他人的示意图如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208170430.png"  alt="" />
+      </p>
+<p>有个人叫张小猪，他是张小猪家的人，和王大毛家没有关系，此时无法进入王大毛家；如果张小猪和王三毛成了好朋友，他就可以通过王三毛进入王家，那么这个张小猪就是王家所谓的其他人（Others）</p>
+<p>若某一用户对于一个与他毫无关系的用户组而言，就可以被视作其他用户。</p>
+<p>在这有一个特殊用户需要提及一下。Linux中的root用户（上图中的天神）,在整个Linux系统中拥有最大的权限，理论上能干任何事情。</p>
+
+        <h2 id="4-linux用户身份与用户组记录的文件"   >
+          <a href="#4-linux用户身份与用户组记录的文件" class="heading-link"><i class="fas fa-link"></i></a>4. Linux用户身份与用户组记录的文件</h2>
+      
+<p>在Linux系统当中，默认情况下所有的系统上的账号信息都记录在<code>/etc/passwd</code>这个文件内(包括root用户)，而个人密码记录在<code>/etc/shadow</code>这个文件内。所有Linux的组名都记录在<code>/etc/group</code>内。这三个文件非常重要，不要轻易做变动。</p>
+<p>综上，用户身份与用户组的概念，能够帮助我们的Linux多任务环境变得更为容易管理。</p>
+<p>实现用户账号的管理，要完成的工作主要有如下几个方面：</p>
+<ul>
+<li>用户账号的添加、删除与修改。</li>
+<li>用户口令的管理。</li>
+<li>用户组的管理。</li>
+</ul>
+
+        <h2 id="5-linux系统用户账号的管理"   >
+          <a href="#5-linux系统用户账号的管理" class="heading-link"><i class="fas fa-link"></i></a>5. Linux系统用户账号的管理</h2>
+      
+
+        <h3 id="51-新建用户"   >
+          <a href="#51-新建用户" class="heading-link"><i class="fas fa-link"></i></a>5.1 新建用户</h3>
+      
+<p>用户账号的管理工作主要涉及到用户账号的添加、修改和删除。</p>
+<p>添加用户账号就是在系统中创建一个新账号，然后为新账号分配用户号、用户组、主目录和登录Shell等资源。刚添加的账号是被锁定的，无法使用。</p>
+<p>（1）<strong>添加新的用户账号使用useradd命令</strong>，其语法如下：</p>
+<p>参数说明</p>
+<ul>
+<li>
+<p>选项：</p>
+<ul>
+<li>-c comment 指定一段注释性描述。</li>
+<li>-d 目录 指定用户主目录，如果此目录不存在，<strong>则同时使用-m选项，可以创建主目录</strong>。</li>
+<li>-g 用户组 指定用户所属的用户组。</li>
+<li>-G 用户组，用户组 指定用户所属的附加组。</li>
+<li>-s Shell文件 指定用户的登录Shell。</li>
+<li>-u 用户号 指定用户的用户号，如果同时有-o选项，则可以重复使用其他用户的标识号。</li>
+</ul>
+</li>
+<li>
+<p>用户名：</p>
+<ul>
+<li>指定新账号的登录名。</li>
+</ul>
+</li>
+</ul>
+<p><strong>补充：</strong></p>
+<p>①<code>-d</code> 为用户指定一个主目录，home下的用户目录默认为用户的家目录，如果在添加用户时不指定<code>-d</code> ,则用户的家目录放在/home下，<strong>所以创建文件时，一般不指定<code>-d</code>选项。</strong></p>
+<p>②<code>- g</code> 当你创建用户的时候，<strong>没有指定用户组的话，默认给你创建一个同名的用户组</strong>。</p>
+<p>一个用户可以有多个用户组，即一个主用户组（主组），多个附加组（用-G选项创建）</p>
+<p>一个用户处于其主用户组下，可以使用用户组的权限，但处于附加组下，不能直接使用附加组的权限，只有切换到附加组，才可以使用。</p>
+<p>③<code>-s</code> 是该用户登录之后，执行的应用程序是谁，如果不指定，默认是/bin/bash（root的shell也是/bin/bash），可以输入vim /etc/passwd 查看</p>
+<p><strong>实例1：添加用户lucy，并设置他的个人主目录练习</strong></p>
+<p><code>useradd -d /usr/lucy -m lucy</code></p>
+<p>此命令创建了一个用户lucy，其中-d和-m选项用来为登录名lucy产生一个主目录/usr/lucy。如果不指定<code>-d</code>设置主目录，则该用户的主目录为<code>/home/lucy</code>。</p>
+<p>此时可进入<code>vim /etc/passwd</code> 查看用户的相关信息</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208180903.png"  alt="" />
+      </p>
+<p>所谓的shell就是，你登录完之后，会马上启动一个/bin/bash进程（root也是/bin/bash）。</p>
+<p>上图的<code>/sbin/nologin</code> 是伪用户进程，即什么也做不了</p>
+<p>输入<code>id lucy</code>查看lucy的信息：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># id lucy</span></span><br><span class="line">uid=502(lucy) gid=502(lucy) groups=502(lucy)</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，用户lucy的id位502，其用户组为lucy，用户组id为502</p>
+<p><strong>实例2：创建用户gem，指定它属于主用户组“sys”，附加组“adm、root”，已经登录的Shell是/bin/sh</strong></p>
+<p><code>useradd -s /bin/sh -g sys -G adm,root gem</code></p>
+<p>此命令新建了一个用户gem，该用户的登录Shell是 <code>/bin/sh</code>，它属于sys用户组，同时又属于adm和root用户组，其中sys用户组是其<strong>主组</strong>。</p>
+<p>此时，输入<code>id gem</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># id gem</span></span><br><span class="line">uid=503(gem) gid=3(sys) groups=3(sys),0(root),4(adm)</span><br></pre></td></tr></table></div></figure>
+<p>查看/etc/passwd中gem的那一条记录：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]# cat /etc/passwd | grep gem</span><br><span class="line">gem:x:503:3::/home/gem:/bin/sh</span><br></pre></td></tr></table></div></figure>
+<p>增加用户账号就是在/etc/passwd文件中为新用户增加一条记录，同时更新其他系统文件如/etc/shadow, /etc/group等。</p>
+
+        <h3 id="52-修改帐号"   >
+          <a href="#52-修改帐号" class="heading-link"><i class="fas fa-link"></i></a>5.2 修改帐号</h3>
+      
+<p>修改用户账号就是根据实际情况更改用户的有关属性，如用户号、主目录、用户组、登录Shell等。</p>
+<p>修改已有用户的信息使用<code>usermod</code>命令，其格式：<code>usermod 选项用户名</code></p>
+<p>常用的选项包括<code>-c, -d, -m, -g, -G, -s, -u以及-o等</code>，这些选项的意义与<code>useradd</code>命令中的选项一样，可以为用户指定新的资源值。</p>
+<p>另外，有些系统可以使用选项：<code>-l</code> 新用户名，这个选项指定一个新的账号，即将原来的用户名改为新的用户名。 格式为：<code>usermod -l 新用户 旧用户</code>。 这只会更改用户名，而其他的东西，比如用户组、家目录、ID 等都保持不变。</p>
+<p><strong>将用户gem的用户名修改为gemda</strong></p>
+<p><code>usermod -l gemda gem</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># usermod -l gemda gem</span></span><br><span class="line">[root@layne ~]<span class="comment"># id gemda</span></span><br><span class="line">uid=503(gemda) gid=3(sys) groups=3(sys),0(root),4(adm)</span><br><span class="line">[root@layne ~]<span class="comment"># id gem</span></span><br><span class="line">id: gem: No such user</span><br></pre></td></tr></table></div></figure>
+<p><strong>修改家目录</strong></p>
+<p><code>usermod -d 目录 -m 用户名</code></p>
+<p>将用户gemda的家目录修改为<code>/usr/gemda</code> ，命令为：<code>usermod -d /usr/gemda/ -m gemda</code></p>
+<p><strong>修改UID</strong></p>
+<p><code>usermod -u newuid 用户名</code></p>
+<p>比如，将用户gemda的uid改为550，命令为：<code>usermod -u 550 gemda</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># usermod -u 550 gemda</span></span><br><span class="line">[root@layne ~]<span class="comment"># id gemda</span></span><br><span class="line">uid=550(gemda) gid=3(sys) groups=3(sys),0(root),4(adm)</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="53-删除账号"   >
+          <a href="#53-删除账号" class="heading-link"><i class="fas fa-link"></i></a>5.3 删除账号</h3>
+      
+<p>如果一个用户的账号不再使用，可以从系统中删除。删除用户账号就是要将/etc/passwd等系统文件中的该用户记录删除，必要时还删除用户的主目录。</p>
+<p>删除一个已有的用户账号使用<code>userdel</code>命令，其格式如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">userdel 选项 用户名</span><br></pre></td></tr></table></div></figure>
+<p>常用的选项是<code>-r</code>，它的作用是把用户的主目录一起删除。</p>
+<p>例如：<code>userdel -r liubei</code></p>
+<p>此命令删除用户liubei在系统文件中（主要是/etc/passwd, /etc/shadow, /etc/group等）的记录，同时删除用户的主目录。</p>
+
+        <h3 id="54-用户口令的管理"   >
+          <a href="#54-用户口令的管理" class="heading-link"><i class="fas fa-link"></i></a>5.4 用户口令的管理</h3>
+      
+<p>用户管理的一项重要内容是用户口令的管理。<strong>用户账号刚创建时没有口令，并且被系统锁定，因此利用这个用户登录系统，是登录不了的，必须为其指定口令后才可以使用，即使是指定空口令</strong>。</p>
+<p>指定和修改用户口令的Shell命令是<code>passwd</code>。超级用户可以为自己和其他用户指定口令，普通用户只能用它修改自己的口令。</p>
+<p>命令的格式为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">passwd 选项 用户名</span><br></pre></td></tr></table></div></figure>
+<p>可使用的选项：</p>
+<ul>
+<li>-l（lock）     锁定口令，即禁用账号。</li>
+<li>-u（unlock）     口令解锁。</li>
+<li>-d（HOME_DIR） 使账号无口令。</li>
+<li>-f 强迫用户下次登录时修改口令。</li>
+<li>-S 查看用户口令状态</li>
+</ul>
+<p>如果是超级用户，可以用下列形式指定任何用户的口令：</p>
+<p>比如，为gemda设置密码（或修改密码）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># passwd gemda</span></span><br><span class="line">Changing password <span class="keyword">for</span> user gemda.</span><br><span class="line">New password: </span><br><span class="line">BAD PASSWORD: it is too simplistic/systematic</span><br><span class="line">BAD PASSWORD: is too simple</span><br><span class="line">Retype new password: </span><br><span class="line">passwd: all authentication tokens updated successfully.</span><br></pre></td></tr></table></div></figure>
+<p>查看用户gemda口令状态</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># passwd -S gemda</span></span><br><span class="line">gemda PS 2021-02-08 0 99999 7 -1 (Password <span class="built_in">set</span>, SHA512 crypt.)</span><br></pre></td></tr></table></div></figure>
+<p>用户锁定</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># passwd -l gemda</span></span><br><span class="line">Locking password <span class="keyword">for</span> user gemda.</span><br><span class="line">passwd: Success</span><br><span class="line">[root@layne ~]<span class="comment"># passwd -S gemda</span></span><br><span class="line">gemda LK 2021-02-08 0 99999 7 -1 (Password locked.)</span><br></pre></td></tr></table></div></figure>
+<p>用户解锁</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># passwd -u gemda</span></span><br><span class="line">Unlocking password <span class="keyword">for</span> user gemda.</span><br><span class="line">passwd: Success</span><br><span class="line">[root@layne ~]<span class="comment"># passwd -S gemda</span></span><br><span class="line">gemda PS 2021-02-08 0 99999 7 -1 (Password <span class="built_in">set</span>, SHA512 crypt.)</span><br></pre></td></tr></table></div></figure>
+<p>假设当前用户是gemda（当前的登陆用户），则下面的命令修改该用户自己的口令：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ passwd </span><br><span class="line">Old password:******</span><br><span class="line">New password:*******</span><br><span class="line">Re-enter new password:*******</span><br></pre></td></tr></table></div></figure>
+<p>普通用户修改自己的口令时，passwd命令会先询问原口令，验证后再要求用户输入两遍新口令，如果两次输入的口令一致，则将这个口令指定给用户；而超级用户为用户指定口令时，就不需要知道原口令。</p>
+<p>为了系统安全起见，用户应该选择比较复杂的口令，例如最好使用8位长的口令，口令中包含有大写、小写字母和数字，并且应该与姓名、生日等不相同。</p>
+<p>为用户指定空口令时，执行下列形式的命令：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">passwd -d gemda</span><br><span class="line">[root@layne ~]<span class="comment"># passwd -S gemda</span></span><br><span class="line">gemda NP 2021-02-08 0 99999 7 -1 (Empty password.)</span><br></pre></td></tr></table></div></figure>
+<p>此命令将用户gemda的口令删除，这样用户gemda下一次登录时，系统就不再询问口令。</p>
+
+        <h2 id="6-系统用户组的管理"   >
+          <a href="#6-系统用户组的管理" class="heading-link"><i class="fas fa-link"></i></a>6. 系统用户组的管理</h2>
+      
+<p>每个用户都有一个用户组，系统可以对一个用户组中的所有用户进行集中管理。不同Linux 系统对用户组的规定有所不同，比如Linux下的用户属于与它同名的用户组，这个用户组在创建用户时同时创建。</p>
+<p>用户组的管理涉及用户组的添加、删除和修改。组的增加、删除和修改实际上就是对/etc/group文件的更新。</p>
+
+        <h3 id="61-增加用户组"   >
+          <a href="#61-增加用户组" class="heading-link"><i class="fas fa-link"></i></a>6.1 增加用户组</h3>
+      
+<p>增加一个新的用户组使用groupadd命令。</p>
+<p>其格式如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupadd 选项 用户组</span><br></pre></td></tr></table></div></figure>
+<p>可以使用的选项有：</p>
+<ul>
+<li>-g GID 指定新用户组的组标识号（GID）。<strong>（不指定也可以自动生成）</strong></li>
+<li>-o 一般与-g选项同时使用，表示新用户组的GID可以与系统已有用户组的GID相同。</li>
+</ul>
+<p>cat /etc/group 查看用户组。</p>
+<p><strong>实例1：添加用户组group1</strong></p>
+<figure class="highlight plain"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupadd group1</span><br></pre></td></tr></table></div></figure>
+<p>此命令向系统中增加了一个新组group1，新组的组标识号是在当前已有的最大组标识号的基础上加1。</p>
+<p><strong>实例2：向系统中增加了一个新组group2，同时指定新组的组标识号是101</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupadd -g 101 group2</span><br></pre></td></tr></table></div></figure>
+<p>此命令向系统中增加了一个新组group2，同时指定新组的组标识号是101。</p>
+
+        <h3 id="62-修改用户组"   >
+          <a href="#62-修改用户组" class="heading-link"><i class="fas fa-link"></i></a>6.2 修改用户组</h3>
+      
+<p>修改用户组语法如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupmod 选项 用户组</span><br></pre></td></tr></table></div></figure>
+<p>常用的选项有：</p>
+<ul>
+<li>-g GID 为用户组指定新的组标识号。</li>
+<li>-o 与-g选项同时使用，用户组的新GID可以与系统已有用户组的GID相同。</li>
+<li>-n新用户组 将用户组的名字改为新名字</li>
+</ul>
+<p><strong>实例1：将组group2的组标识号修改为102</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupmod -g 102 group2</span><br></pre></td></tr></table></div></figure>
+<p>实例2：将组group2的标识号改为10000，组名修改为group3</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupmod -g 10000 -n group3 group2</span><br></pre></td></tr></table></div></figure>
+<p>将一个用户组改名后，<strong>该用户组下所有的用户都将使用改名后的组名</strong></p>
+
+        <h3 id="63-删除用户组"   >
+          <a href="#63-删除用户组" class="heading-link"><i class="fas fa-link"></i></a>6.3 删除用户组</h3>
+      
+<p>删除用户组用<code>groupdel 用户组</code></p>
+<p>从系统中删除组group1，命令为</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">groupdel group1</span><br></pre></td></tr></table></div></figure>
+<p><strong>当一个用户组下有用户的时候不能删除该用户组</strong></p>
+
+        <h3 id="64-用户组的切换"   >
+          <a href="#64-用户组的切换" class="heading-link"><i class="fas fa-link"></i></a>6.4 用户组的切换</h3>
+      
+<p><strong>用户可以在登录后</strong>，使用命令<code>newgrp</code>切换到其他用户组，这个命令的参数就是目的用户组。例如：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">newgrp root</span><br></pre></td></tr></table></div></figure>
+<p>这条命令将当前用户切换到root用户组，<strong>前提条件是root用户组确实是该用户的主组或附加组</strong>。类似于用户账号的管理，用户组的管理也可以通过集成的系统管理工具来完成。</p>
+
+        <h2 id="7-与用户账号有关的系统文件"   >
+          <a href="#7-与用户账号有关的系统文件" class="heading-link"><i class="fas fa-link"></i></a>7. 与用户账号有关的系统文件</h2>
+      
+<p>完成用户管理的工作有许多种方法，但是每一种方法实际上都是对有关的系统文件进行修改。</p>
+<p>与用户和用户组相关的信息都存放在一些系统文件中，这些文件包括/etc/passwd, /etc/shadow, /etc/group等。</p>
+<p>下面分别介绍这些文件的内容。</p>
+
+        <h3 id="71-etcpasswd文件"   >
+          <a href="#71-etcpasswd文件" class="heading-link"><i class="fas fa-link"></i></a>7.1 /etc/passwd文件</h3>
+      
+<p>Linux系统中的每个用户都在/etc/passwd文件中有一个对应的记录行，它记录了这个用户的一些基本属性。</p>
+<p>这个文件对所有用户都是可读的。它的内容类似下面的例子：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># cat /etc/passwd</span></span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">bin:x:1:1:bin:/bin:/sbin/nologin</span><br><span class="line">daemon:x:2:2:daemon:/sbin:/sbin/nologin</span><br><span class="line">adm:x:3:4:adm:/var/adm:/sbin/nologin</span><br><span class="line">lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin</span><br><span class="line">sync:x:5:0:sync:/sbin:/bin/sync</span><br><span class="line">shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown</span><br><span class="line">halt:x:7:0:halt:/sbin:/sbin/halt</span><br><span class="line">mail:x:8:12:mail:/var/spool/mail:/sbin/nologin</span><br><span class="line">uucp:x:10:14:uucp:/var/spool/uucp:/sbin/nologin</span><br><span class="line">operator:x:11:0:operator:/root:/sbin/nologin</span><br><span class="line">games:x:12:100:games:/usr/games:/sbin/nologin</span><br><span class="line">gopher:x:13:30:gopher:/var/gopher:/sbin/nologin</span><br><span class="line">ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin</span><br><span class="line">nobody:x:99:99:Nobody:/:/sbin/nologin</span><br><span class="line">vcsa:x:69:69:virtual console memory owner:/dev:/sbin/nologin</span><br><span class="line">saslauth:x:499:76:<span class="string">"Saslauthd user"</span>:/var/empty/saslauth:/sbin/nologin</span><br><span class="line">postfix:x:89:89::/var/spool/postfix:/sbin/nologin</span><br><span class="line">sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin</span><br><span class="line">ntp:x:38:38::/etc/ntp:/sbin/nologin</span><br><span class="line">mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/<span class="literal">false</span></span><br><span class="line">lucy:x:502:502::/usr/lucy:/bin/bash</span><br><span class="line">gemda:x:550:3::/usr/gemda/:/bin/sh</span><br></pre></td></tr></table></div></figure>
+<p>从上面的例子我们可以看到，/etc/passwd中一行记录对应着一个用户，每行记录又被冒号(:)分隔为7个字段，其格式和具体含义如下：</p>
+<p><strong>用户名:口令:用户标识号:组标识号:注释性描述:主目录:登录Shell</strong></p>
+<p><strong>1）&quot;用户名&quot;是代表用户账号的字符串。</strong></p>
+<p>通常长度不超过8个字符，并且由大小写字母和/或数字组成。登录名中不能有冒号(😃，因为冒号在这里是分隔符。</p>
+<p>为了兼容起见，登录名中最好不要包含点字符(.)，并且不使用连字符(-)和加号(+)打头。</p>
+<p><strong>2）“口令”一些系统中，存放着加密后的用户口令字。</strong></p>
+<p>虽然这个字段存放的只是用户口令的加密串，不是明文，但是由于/etc/passwd文件对所有用户都可读，所以这仍是一个安全隐患。因此，现在许多Linux 系统（如SVR4）都使用了shadow技术，<strong>把真正的加密后的用户口令字存放到/etc/shadow文件中</strong>，而在/etc/passwd文件的口令字段中只存放一个特殊的字符，例如“x”或者“*”。</p>
+<p><strong>3）“用户标识号”是一个整数，系统内部用它来标识用户。</strong></p>
+<p>一般情况下它与用户名是一一对应的。如果几个用户名对应的用户标识号是一样的，系统内部将把它们视为同一个用户，但是它们可以有不同的口令、不同的主目录以及不同的登录Shell等。</p>
+<p>通常用户标识号的取值范围是0～65535。0是超级用户root的标识号，1～99由系统保留，作为管理账号，普通用户的标识号从100开始。在Linux系统中，这个界限是500。</p>
+<p><strong>4）“组标识号”字段记录的是用户所属的用户组。</strong></p>
+<p>它对应着/etc/group文件中的一条记录。（<strong>记录的是用户主用户组的ID，不是附加组的ID</strong>）</p>
+<p><strong>5)“注释性描述”字段记录着用户的一些个人情况。</strong></p>
+<p>例如用户的真实姓名、电话、地址等，这个字段并没有什么实际的用途。在不同的Linux 系统中，这个字段的格式并没有统一。在许多Linux系统中，这个字段存放的是一段任意的注释性描述文字，用做finger命令的输出。</p>
+<p><strong>6)“主目录”，也就是用户的起始工作目录。</strong></p>
+<p>它是用户在登录到系统之后所处的目录。在大多数系统中，各用户的主目录都被组织在同一个特定的目录下，而用户主目录的名称就是该用户的登录名。各用户对自己的主目录有读、写、执行（搜索）权限，其他用户对此目录的访问权限则根据具体情况设置。</p>
+<p><strong>7)用户登录后，要启动一个进程，负责将用户的操作传给内核，这个进程是用户登录到系统后运行的命令解释器或某个特定的程序，即Shell。</strong></p>
+<p>如果指定某一个进程（程序），那么该用户登录后只能操作这个进程（程序），其他的操作不了。</p>
+<p>Shell是用户与Linux系统之间的接口。Linux的Shell有许多种，每种都有不同的特点。常用的有sh(Bourne Shell), csh(C Shell), ksh(Korn Shell), tcsh(TENEX/TOPS-20 type C Shell), bash(Bourne Again Shell)等。</p>
+<p>系统管理员可以根据系统情况和用户习惯为用户指定某个Shell。如果不指定Shell，那么系统使用sh(或bash)为默认的登录Shell，即这个字段的值为/bin/sh（或/bin/bash）。</p>
+<p>用户的登录Shell也可以指定为某个特定的程序（<strong>此程序不是一个命令解释器</strong>）。</p>
+<p>利用这一特点，我们可以限制用户只能运行指定的应用程序，在该应用程序运行结束后，用户就自动退出了系统。有些Linux 系统要求只有那些在系统中登记了的程序才能出现在这个字段中。</p>
+<p><strong>8)系统中有一类用户称为伪用户（psuedo users）。</strong></p>
+<p>这些用户在/etc/passwd文件中也占有一条记录，<strong>但是不能登录，因为它们的登录Shell为空</strong>。它们的存在主要是方便系统管理，满足相应的系统进程对文件属主的要求。</p>
+<p>常见的伪用户如下所示：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">伪用户含义</span><br><span class="line">bin 拥有可执行的用户命令文件</span><br><span class="line">sys 拥有系统文件</span><br><span class="line">adm 拥有帐户文件</span><br><span class="line">uucp UUCP使用</span><br><span class="line">lp lp或lpd子系统使用</span><br><span class="line">nobody NFS使用</span><br></pre></td></tr></table></div></figure>
+<p>由于/etc/passwd文件是所有用户都可读的，如果用户的密码太简单或规律比较明显的话，一台普通的计算机就能够很容易地将它破解，因此对安全性要求较高的Linux系统都把加密后的口令字分离出来，单独存放在一个文件中，这个文件是/etc/shadow文件。 有超级用户才拥有该文件读权限，这就保证了用户密码的安全性。</p>
+
+        <h3 id="72-etcshadow文件"   >
+          <a href="#72-etcshadow文件" class="heading-link"><i class="fas fa-link"></i></a>7.2 /etc/shadow文件</h3>
+      
+<p>/etc/shadow中的记录行与/etc/passwd中的一一对应，它由pwconv命令根据/etc/passwd中的数据自动产生。</p>
+<p>它的文件格式与/etc/passwd类似，由若干个字段组成，字段之间用&quot;:&quot;隔开。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># cat /etc/shadow</span></span><br><span class="line">root:<span class="variable">$6</span><span class="variable">$6f</span>.vksV8ywQJhXse<span class="variable">$L7xDLlGQ3VZDw3YphDxw36XqsJC6</span>/HzYQvudRT5JP5aO7zGXOgHz2LPLr6UZbWmRbqMcnEz26h.UpS36jy/nu1:18660:0:99999:7:::</span><br><span class="line">bin:*:15980:0:99999:7:::</span><br><span class="line">daemon:*:15980:0:99999:7:::</span><br><span class="line">adm:*:15980:0:99999:7:::</span><br><span class="line">lp:*:15980:0:99999:7:::</span><br><span class="line">sync:*:15980:0:99999:7:::</span><br><span class="line">shutdown:*:15980:0:99999:7:::</span><br><span class="line">halt:*:15980:0:99999:7:::</span><br><span class="line">mail:*:15980:0:99999:7:::</span><br><span class="line">uucp:*:15980:0:99999:7:::</span><br><span class="line">operator:*:15980:0:99999:7:::</span><br><span class="line">games:*:15980:0:99999:7:::</span><br><span class="line">gopher:*:15980:0:99999:7:::</span><br><span class="line">ftp:*:15980:0:99999:7:::</span><br><span class="line">nobody:*:15980:0:99999:7:::</span><br><span class="line">vcsa:!!:18660::::::</span><br><span class="line">saslauth:!!:18660::::::</span><br><span class="line">postfix:!!:18660::::::</span><br><span class="line">sshd:!!:18660::::::</span><br><span class="line">ntp:!!:18661::::::</span><br><span class="line">mysql:!!:18663::::::</span><br><span class="line">lucy:!!:18666:0:99999:7:::</span><br><span class="line">gemda::18666:0:99999:7:::</span><br></pre></td></tr></table></div></figure>
+<p>这些字段是：<strong>登录名:加密口令:最后一次修改时间:最小时间间隔:最大时间间隔:警告时间:不活动时间:失效时间:标志</strong></p>
+<ol>
+<li>&quot;登录名&quot;是与/etc/passwd文件中的登录名相一致的用户账号</li>
+<li>&quot;口令&quot;字段存放的是加密后的用户口令字，长度为13个字符。如果为空，则对应用户没有口令，登录时不需要口令；如果含有不属于集合     { ./0-9A-Za-z }中的字符，则对应的用户不能登录。</li>
+<li>&quot;最后一次修改时间&quot;表示的是从某个时刻起，到用户最后一次修改口令时的天数。时间起点对不同的系统可能不一样。例如在SCO Linux 中，这个时间起点是1970年1月1日。</li>
+<li>&quot;最小时间间隔&quot;指的是两次修改口令之间所需的最小天数。</li>
+<li>&quot;最大时间间隔&quot;指的是口令保持有效的最大天数。</li>
+<li>&quot;警告时间&quot;字段表示的是从系统开始警告用户到用户密码正式失效之间的天数。</li>
+<li>&quot;不活动时间&quot;表示的是用户没有登录活动但账号仍能保持有效的最大天数。</li>
+<li>&quot;失效时间&quot;字段给出的是一个绝对的天数，如果使用了这个字段，那么就给出相应账号的生存期。期满后，该账号就不再是一个合法的账号，也就不能再用来登录了。</li>
+</ol>
+
+        <h3 id="73-etcgroup文件"   >
+          <a href="#73-etcgroup文件" class="heading-link"><i class="fas fa-link"></i></a>7.3 /etc/group文件</h3>
+      
+<p>用户组的所有信息都存放在/etc/group文件中。</p>
+<p>将用户分组是Linux 系统中对用户进行管理及控制访问权限的一种手段。</p>
+<p>每个用户都属于某个用户组；一个组中可以有多个用户，一个用户也可以属于不同的组。<strong>当一个用户同时是多个组中的成员时，在/etc/passwd文件中记录的是用户所属的主组，也就是登录时所属的默认组，而其他组称为附加组。</strong></p>
+<p><strong>用户要访问属于附加组的文件时，必须首先使用newgrp命令使自己成为所要访问的组中的成员。</strong></p>
+<p>用户组的所有信息都存放在/etc/group文件中。此文件的格式也类似于/etc/passwd文件，由冒号(:)隔开若干个字段</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># cat /etc/group</span></span><br><span class="line">root:x:0:gemda</span><br><span class="line">bin:x:1:bin,daemon</span><br><span class="line">daemon:x:2:bin,daemon</span><br><span class="line">sys:x:3:bin,adm</span><br><span class="line">adm:x:4:adm,daemon,gemda</span><br><span class="line">tty:x:5:</span><br><span class="line">disk:x:6:</span><br><span class="line">lp:x:7:daemon</span><br><span class="line">mem:x:8:</span><br><span class="line">kmem:x:9:</span><br><span class="line">wheel:x:10:</span><br><span class="line">mail:x:12:mail,postfix</span><br><span class="line">uucp:x:14:</span><br><span class="line">man:x:15:</span><br><span class="line">games:x:20:</span><br><span class="line">gopher:x:30:</span><br><span class="line">video:x:39:</span><br><span class="line">dip:x:40:</span><br><span class="line">ftp:x:50:</span><br><span class="line">lock:x:54:</span><br><span class="line">audio:x:63:</span><br><span class="line">nobody:x:99:</span><br><span class="line">users:x:100:</span><br><span class="line">floppy:x:19:</span><br><span class="line">vcsa:x:69:</span><br><span class="line">utmp:x:22:</span><br><span class="line">utempter:x:35:</span><br><span class="line">cdrom:x:11:</span><br><span class="line">tape:x:33:</span><br><span class="line">dialout:x:18:</span><br><span class="line">saslauth:x:76:</span><br><span class="line">postdrop:x:90:</span><br><span class="line">postfix:x:89:</span><br><span class="line">fuse:x:499:</span><br><span class="line">sshd:x:74:</span><br><span class="line">ntp:x:38:</span><br><span class="line">lucy_new:x:500:</span><br><span class="line">mysql:x:27:</span><br><span class="line">lucy:x:502:</span><br><span class="line">group3:x:10000:</span><br></pre></td></tr></table></div></figure>
+<p>这些字段有：<strong>组名:口令:组标识号:组内用户列表</strong></p>
+<ol>
+<li>&quot;组名&quot;是用户组的名称，由字母或数字构成。与/etc/passwd中的登录名一样，组名不应重复。</li>
+<li>&quot;口令&quot;字段存放的是用户组加密后的口令字。一般Linux 系统的用户组都没有口令，即这个字段一般为空，或者是。</li>
+<li>&quot;组标识号&quot;与用户标识号类似，也是一个整数，被系统内部用来标识组。</li>
+<li>&quot;组内用户列表&quot;是属于这个组的所有用户的列表/b]，不同用户之间用逗号(,)分隔。这个用户组可能是用户的主组，也可能是附加组。<strong>（有多个用户，都可以列出来）</strong></li>
+</ol>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/02/10/111843/">https://wxler.gitee.io/2021/02/10/111843/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/Linux/">Linux</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/02/10/112210/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Linux中软件的三种安装方式</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/02/10/111447/"><span class="paginator-prev__text">Linux中的bash语法详解</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-用户"><span class="toc-text">
+          1. 用户</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-用户组"><span class="toc-text">
+          2. 用户组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-其他人others"><span class="toc-text">
+          3. 其他人(others)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-linux用户身份与用户组记录的文件"><span class="toc-text">
+          4. Linux用户身份与用户组记录的文件</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-linux系统用户账号的管理"><span class="toc-text">
+          5. Linux系统用户账号的管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#51-新建用户"><span class="toc-text">
+          5.1 新建用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#52-修改帐号"><span class="toc-text">
+          5.2 修改帐号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#53-删除账号"><span class="toc-text">
+          5.3 删除账号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#54-用户口令的管理"><span class="toc-text">
+          5.4 用户口令的管理</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-系统用户组的管理"><span class="toc-text">
+          6. 系统用户组的管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#61-增加用户组"><span class="toc-text">
+          6.1 增加用户组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#62-修改用户组"><span class="toc-text">
+          6.2 修改用户组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#63-删除用户组"><span class="toc-text">
+          6.3 删除用户组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#64-用户组的切换"><span class="toc-text">
+          6.4 用户组的切换</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-与用户账号有关的系统文件"><span class="toc-text">
+          7. 与用户账号有关的系统文件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#71-etcpasswd文件"><span class="toc-text">
+          7.1 &#x2F;etc&#x2F;passwd文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#72-etcshadow文件"><span class="toc-text">
+          7.2 &#x2F;etc&#x2F;shadow文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#73-etcgroup文件"><span class="toc-text">
+          7.3 &#x2F;etc&#x2F;group文件</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">81</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">13</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">41</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

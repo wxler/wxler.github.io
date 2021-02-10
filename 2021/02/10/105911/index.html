@@ -1,0 +1,589 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="1. Linux文件属性与权限的含义        首先我们以root用户的身份登陆Linux,执行ls -al查看文件：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux文件属性与权限的管理">
+<meta property="og:url" content="https://wxler.gitee.io/2021/02/10/105911/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="1. Linux文件属性与权限的含义        首先我们以root用户的身份登陆Linux,执行ls -al查看文件：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208195542.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208195618.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208205322.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208210508.png">
+<meta property="article:published_time" content="2021-02-10T02:59:11.000Z">
+<meta property="article:modified_time" content="2021-02-10T03:05:48.511Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208195542.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Linux文件属性与权限的管理 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/02/10/105911/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Linux文件属性与权限的管理</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">3.5k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">25分</span></span></div></header><div class="post-body">
+        <h2 id="1-linux文件属性与权限的含义"   >
+          <a href="#1-linux文件属性与权限的含义" class="heading-link"><i class="fas fa-link"></i></a>1. Linux文件属性与权限的含义</h2>
+      
+<p>首先我们以root用户的身份登陆Linux,执行<code>ls -al</code>查看文件：</p>
+<a id="more"></a>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># ls -al</span></span><br><span class="line">total 2104</span><br><span class="line">dr-xr-x---.  8 root root    4096 Feb  8 18:17 .</span><br><span class="line">dr-xr-xr-x. 22 root root    4096 Feb  8 11:13 ..</span><br><span class="line">-rw-r--r--   1 root root   39974 Jan 28 15:36 1611819376845.png</span><br><span class="line">-rw-------.  1 root root     903 Feb  3 03:44 anaconda-ks.cfg</span><br><span class="line">drwxr-xr-x   4 root root    4096 Feb  6 18:25 b7</span><br><span class="line">-rw-------.  1 root root   13726 Feb  7 21:39 .bash_history</span><br><span class="line">-rw-r--r--.  1 root root      18 May 20  2009 .bash_logout</span><br><span class="line">-rw-r--r--.  1 root root     176 May 20  2009 .bash_profile</span><br><span class="line">-rw-r--r--   1 root root     229 Feb  3 23:59 .bashrc</span><br><span class="line">-rw-r--r--.  1 root root     100 Sep 23  2004 .cshrc</span><br><span class="line">...</span><br></pre></td></tr></table></div></figure>
+<p>ls是list的缩写，能显示文件的文件名和相关属性。而<code>-al</code>表示列出所有的文件详细的权限与属性(包含隐藏文件，诸如文件名以“.”开头的文件)。显示信息详细含义如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208195542.png"  alt="" />
+      </p>
+<p><strong>（1）第一列</strong></p>
+<p>第一列代表这个文件的类型与权限(permission)，仔细看可以发现其中总共有10个字符。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208195618.png"  alt="" />
+      </p>
+<p>任何设备在Linux下都是文件。上述10个字符的第一个字符表示文件的类型，文件的类型有：</p>
+<ul>
+<li>
+<p>若是[d]则是目录（directory）</p>
+</li>
+<li>
+<p>若是[-]则是文件</p>
+</li>
+<li>
+<p>若是[l]则是链接文件（link）, 类似window系统下的快捷方式。</p>
+</li>
+<li>
+<p>块设备文件[b]</p>
+</li>
+<li>
+<p>字符设备文件[c]</p>
+</li>
+<li>
+<p>数据接口文件（sockets）[s]</p>
+</li>
+<li>
+<p>数据输送文件（FIFO，pipe）[p]</p>
+<p><strong>与系统外设和存储等相关的一些文件，通常都集中在/dev这个目录中。分为两种：</strong></p>
+</li>
+</ul>
+<p>A. 块（block）设备文件[b]：就是一些存储数据，以提供系统随机访问的接口设备，例如硬盘、软盘等。你可以随机的在硬盘的不同块读写，这种设备就是成组设备。</p>
+<p>例如：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># ls -al /dev | grep sda</span></span><br><span class="line">lrwxrwxrwx   1 root root           4 Feb  8 11:13 root -&gt; sda3</span><br><span class="line">brw-rw----   1 root disk      8,   0 Feb  8 11:13 sda</span><br><span class="line">brw-rw----   1 root disk      8,   1 Feb  8 11:13 sda1</span><br><span class="line">brw-rw----   1 root disk      8,   2 Feb  8 11:13 sda2</span><br><span class="line">brw-rw----   1 root disk      8,   3 Feb  8 11:13 sda3</span><br></pre></td></tr></table></div></figure>
+<p>B. 字符（character）设备文件[c]：是一些串行端口的接口设备,例如键盘,鼠标。这些设备的特征就是“一次性读取”的，不能够截断输出。</p>
+<p>例如：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># ls -al /dev | grep vcs</span></span><br><span class="line">crw-rw----   1 vcsa tty       7,   0 Feb  8 11:13 vcs</span><br><span class="line">crw-rw----   1 vcsa tty       7,   1 Feb  8 11:13 vcs1</span><br><span class="line">crw-rw----   1 vcsa tty       7,   2 Feb  8 11:14 vcs2</span><br><span class="line">crw-rw----   1 vcsa tty       7,   3 Feb  8 11:14 vcs3</span><br><span class="line">crw-rw----   1 vcsa tty       7,   4 Feb  8 11:14 vcs4</span><br><span class="line">crw-rw----   1 vcsa tty       7,   5 Feb  8 11:14 vcs5</span><br><span class="line">crw-rw----   1 vcsa tty       7,   6 Feb  8 11:14 vcs6</span><br><span class="line">crw-rw----   1 vcsa tty       7, 128 Feb  8 11:13 vcsa</span><br><span class="line">crw-rw----   1 vcsa tty       7, 129 Feb  8 11:13 vcsa1</span><br><span class="line">crw-rw----   1 vcsa tty       7, 130 Feb  8 11:14 vcsa2</span><br><span class="line">crw-rw----   1 vcsa tty       7, 131 Feb  8 11:14 vcsa3</span><br><span class="line">crw-rw----   1 vcsa tty       7, 132 Feb  8 11:14 vcsa4</span><br><span class="line">crw-rw----   1 vcsa tty       7, 133 Feb  8 11:14 vcsa5</span><br><span class="line">crw-rw----   1 vcsa tty       7, 134 Feb  8 11:14 vcsa6</span><br></pre></td></tr></table></div></figure>
+<p><strong>总结：设备文件是我们系统很重要的文件，最好不要随意修改之外（通常它也不会让你修改的）；另外一个比较有趣的文件就是链接文件，类似window的桌面快捷方式，同样可以将linux下的连接文件简单的视为一个文件或目录的快捷方式。</strong></p>
+<p>数据接口文件（sockets）：</p>
+<p>既然被称为数据接口文件，这种类型ss的文件通常被用在网络上的数据承接了。我们可以启动一个程序来监听客户端的要求，而客户端就可以透过这个socket来进行数据的沟通了。第一个属性为[ s ]，最常在/var/run目录中看到这种文件类型了。</p>
+<p>数据输送文件（FIFO，pipe）：</p>
+<p>FIFO也是一种特殊的文件类型，他主要的目的在解决多个程序同时存取一个文件所造成的错误问题。FIFO是first-in-first-out的缩写（先进先出）。第一个属性为[p]。</p>
+<p>上述10个字符的后9个字符，三个一组,且均为[rwx]的3个参数组合。</p>
+<p><strong>其中[r]代表可读(read),[w]代表可写(write),[x]代表可执行(excute)。</strong></p>
+<p>这三个参数的出现顺序不会改变，<strong>若没有某个权限，则会以[-]代替</strong>。这三组参数中，第一组是文件所有者的权限；第二组是同用户组的权限；第三组是其他用户的权限。这三组权限均是针对某些账号而言的权限。另外，文件权限和目录权限意义不同，这是因为文件与目录记录的数据内容不相同，后面我们会详细叙述。</p>
+<p><strong>（2）第二列</strong></p>
+<p>第二列表示有多少文件名链接到此节点(i-node)。</p>
+<p>每个文件都会将他的权限与属性记录到文件系统的i-node中，但是Linux所使用的目录树却是使用文件名来记录，因此每个文件名就会链接到一个i-node。<strong>这个属性记录的就是有多少不同的文件名链接到相同的一个i-node号码</strong>。</p>
+<p><strong>（3）第三列</strong></p>
+<p>第三列表示这个文件(或目录)的所有者账号</p>
+<p><strong>（4）第四列</strong></p>
+<p>第四列表示这个文件的所属用户组。</p>
+<p>在Linux系统下，每个账号会附属于一个或多个用户组中（一个主组，多个附加组）。</p>
+<p><strong>（5）第五列</strong></p>
+<p>第五列表述这个文件的容量大小，默认单位为bytes 。目录前面的数字都是4096，不是表示整个目录的大小。而文件前面的数字表示该文件的大小。</p>
+<p><strong>（6）第六列</strong></p>
+<p>第六列为这个文件的创建文件日期或者是最近的修改日期</p>
+<p>如果想要显示完整的时间格式，可以使用ls参数，即”ls -l --full-time”，这样做就可以显示出完整的时间格式。</p>
+<p><strong>（7）第七列</strong></p>
+<p>第七列为该文件名</p>
+<p>注意，前缀为”.”的是隐藏文件。</p>
+<p>Linux文件权限最大的用途实在数据安全性上，它能根据不同用户的不同权限实现对不同文件的操作。为此，在我们设置Linux文件与目录的属性之前，需要弄清到底什么数据是可变的，什么数据是不可变的。</p>
+
+        <h2 id="2-linux文件属性与权限的管理"   >
+          <a href="#2-linux文件属性与权限的管理" class="heading-link"><i class="fas fa-link"></i></a>2. Linux文件属性与权限的管理</h2>
+      
+<p>接下来,我们介绍几个常用于用户组，所有者，各种身份的权限的修改的命令：</p>
+<p>​    chgrp：改变文件所属用户组  （chgrp 即 change group）</p>
+<p>​    chown：改变文件所有者   （chang owner）</p>
+<p>​    chmod：改变文件的权限  (change mode)</p>
+
+        <h3 id="21-改变文件所属用户组"   >
+          <a href="#21-改变文件所属用户组" class="heading-link"><i class="fas fa-link"></i></a>2.1 改变文件所属用户组</h3>
+      
+<p>语法：<code>chgrp [-R] 用户组 dirname/filename</code></p>
+<p>参数：-R 表示如果为目录则递归修改组（该目录下的文件和目录都可以改）。</p>
+<p>**作用：**使用chgrp命令可以改变一个文件的用户组，它是changegroup的简称。</p>
+<p>**注意：**需要注意的是，要被改的组名必须要在/etc/group文件内存在才行，否则会报错。</p>
+<p>**案例：**将a.txt和b.txt所属用户组改为lucy</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@layne testdir]<span class="comment"># ll</span></span><br><span class="line">total 8</span><br><span class="line">-rw-r--r-- 1 root root   33 Feb  8 15:59 a.txt</span><br><span class="line">-rw-r--r-- 1 root root    0 Feb  7 18:35 b.txt</span><br><span class="line">drwxr-xr-x 2 root root 4096 Feb  8 20:28 dir</span><br><span class="line">[root@layne testdir]<span class="comment"># chgrp lucy a.txt b.txt</span></span><br><span class="line">[root@layne testdir]<span class="comment"># ll</span></span><br><span class="line">total 8</span><br><span class="line">-rw-r--r-- 1 root lucy   33 Feb  8 15:59 a.txt</span><br><span class="line">-rw-r--r-- 1 root lucy    0 Feb  7 18:35 b.txt</span><br><span class="line">drwxr-xr-x 2 root root 4096 Feb  8 20:28 dir</span><br></pre></td></tr></table></div></figure>
+<p>将dir目录及该目录下所有的文件所属用户组改为lucy</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[root@layne testdir]<span class="comment"># ll</span></span><br><span class="line">total 8</span><br><span class="line">-rw-r--r-- 1 root lucy   33 Feb  8 15:59 a.txt</span><br><span class="line">-rw-r--r-- 1 root lucy    0 Feb  7 18:35 b.txt</span><br><span class="line">drwxr-xr-x 2 root root 4096 Feb  8 20:28 dir</span><br><span class="line">[root@layne testdir]<span class="comment"># ll dir</span></span><br><span class="line">total 8</span><br><span class="line">-rw-r--r-- 1 root root 204 Feb  8 20:28 sed.txt</span><br><span class="line">-rw-r--r-- 1 root root 989 Feb  8 20:28 succ.log</span><br><span class="line">[root@layne testdir]<span class="comment"># chgrp -R lucy dir</span></span><br><span class="line">[root@layne testdir]<span class="comment"># ll dir</span></span><br><span class="line">total 8</span><br><span class="line">-rw-r--r-- 1 root lucy 204 Feb  8 20:28 sed.txt</span><br><span class="line">-rw-r--r-- 1 root lucy 989 Feb  8 20:28 succ.log</span><br><span class="line">[root@layne testdir]<span class="comment"># ll</span></span><br><span class="line">total 8</span><br><span class="line">-rw-r--r-- 1 root lucy   33 Feb  8 15:59 a.txt</span><br><span class="line">-rw-r--r-- 1 root lucy    0 Feb  7 18:35 b.txt</span><br><span class="line">drwxr-xr-x 2 root lucy 4096 Feb  8 20:28 dir</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="22-改变文件所有者"   >
+          <a href="#22-改变文件所有者" class="heading-link"><i class="fas fa-link"></i></a>2.2 改变文件所有者</h3>
+      
+<p><strong>语法</strong>：<code>chown [-R] 用户账号 dirname/filename</code></p>
+<p><strong>或</strong></p>
+<p><code>chown [-R] 用户账号：用户组名 dirname/filename</code></p>
+<p>**作用：**使用chown命令可以改变一个文件的所有者，还可以直接修改群组的名称；它是changeowner的缩写。</p>
+<p>**注意：**用户必须是已经存在于系统中的账号，也就是在/etc/passwd这个文件中有记录的用户名称才能改变。如果要将目录下的所有子文件或目录同时改变文件所有者，加-R参数即可。</p>
+<p>案例：</p>
+<p><code>chown -R root:root etc</code>  <strong>将etc目录及目录下所有的目录和文件 的所有者和所属用户组改为root</strong></p>
+<p><code>chown lucy install.log</code>  将install.log的所有者改为lucy用户</p>
+<p>通过实例我们可以修改文件的用户组和所有者，那么什么时候使用chown，什么时候使用chgrp呢？我们举个例子:复制文件给其他用户，我们使用cp命令:</p>
+<p>假设我们要将profile这个文件复制成为profile_test文件名，并且要将他给lucy这个用户使用，做法如下:</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne tdir]<span class="comment"># ll</span></span><br><span class="line">total 4</span><br><span class="line">-rw-r--r-- 1 root root 1896 Feb  8 20:39 profile</span><br><span class="line">[root@layne tdir]<span class="comment"># cp profile profile_test</span></span><br><span class="line">[root@layne tdir]<span class="comment"># ll</span></span><br><span class="line">total 8</span><br><span class="line">-rw-r--r-- 1 root root 1896 Feb  8 20:39 profile</span><br><span class="line">-rw-r--r-- 1 root root 1896 Feb  8 20:40 profile_test</span><br></pre></td></tr></table></div></figure>
+<p>不难发现，cp命令会复制执行者的属性与权限，profile_test还是归root所有。因此，lucy拿到该文件是无权进行操作的。所以你需要修改这个文件的所有者和用户组。</p>
+
+        <h3 id="23-改变文件权限"   >
+          <a href="#23-改变文件权限" class="heading-link"><i class="fas fa-link"></i></a>2.3 改变文件权限</h3>
+      
+<p><strong>语法</strong>：<code>chmod [-R] mode dirname/filename</code></p>
+<p>**作用：**文件或目录权限的改变使用的是chmod(change file mode bits)这个命令。</p>
+<p>**注意：**权限的设置方法分两种，可以通过数字或符号进行修改。<code>-R</code>含义同上</p>
+<p><strong>（1）数字类型改变文件权限</strong></p>
+<p>Linux的基本权限有9个，分别是owner,group,others三种身份各自的read,write,excute权限,各个权限对应的数字如下:</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">r:4、w:2、x:1</span><br></pre></td></tr></table></div></figure>
+<p>为此每种身份各自的三个权限数字相加即可得出数字表示的权限。</p>
+<p>例如，<code>-rwxrwx</code>可以表示为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">owner = rwx = 4+2+1 = 7</span><br><span class="line">group = r-x = 4+1 = 5</span><br><span class="line">others= --- = 0+0+0 = 0</span><br></pre></td></tr></table></div></figure>
+<p>最终得到的数字肯定是唯一的。</p>
+<p>数字分别表示为：</p>
+<ul>
+<li>7代表rwx</li>
+<li>6代表rw-</li>
+<li>5代表r-x</li>
+<li>4代表r–</li>
+<li>3代表-wx</li>
+<li>1代表–x</li>
+<li>0代表—</li>
+</ul>
+<p>范例：将文件a.txt的用户组权限改为r-x，所有者和other的权限不变</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@layne testdir]<span class="comment"># ll a.txt</span></span><br><span class="line">-rw-r--r-- 1 root lucy 33 Feb  8 15:59 a.txt</span><br><span class="line">[root@layne testdir]<span class="comment"># chmod 654 a.txt</span></span><br><span class="line">[root@layne testdir]<span class="comment"># ll a.txt</span></span><br><span class="line">-rw-r-xr-- 1 root lucy 33 Feb  8 15:59 a.txt</span><br></pre></td></tr></table></div></figure>
+<p><strong>（2）符号类型改变文件权限</strong></p>
+<p>另一种改变权限的方法就是通过符号了。上文提到，Linux总共9种权限，对应着三种身份，为此我们可以通过u,g,o代表三种身份，另外a代表全部身份。对应的权限可以写为r,w,x,如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208205322.png"  alt="" />
+      </p>
+<p>u是user，g是group，o是others，a是all</p>
+<p>+是加一个权限，等号是设定最终的结果，-是在原来的基础上减一个。</p>
+<ul>
+<li><code>chmod g+w test.sh</code> 给该文件的用户组加一个w权限</li>
+<li><code>chmod u=rwx,go=rx a.txt</code> 给该文件所有者设定rwx权限，用户组和其它人设定rx权限。</li>
+<li><code>chmod u=rwx,g=rx,o=r b.txt</code>  给该文件分别设定权限</li>
+</ul>
+<p><strong>a-x等于 -x，a+等于+x</strong></p>
+<ul>
+<li><code>chmod a-x a.txt</code> 或 <code>chmod -x a.txt</code>  给该文件的所有者、用户组、其他人减去一个x权限</li>
+<li><code>chmod a+r a.txt</code> 或 <code>chmod +r a.txt</code>  给该文件的所有者、用户组、其他人加上一个r权限</li>
+</ul>
+
+        <h2 id="3-目录与文件的权限意义"   >
+          <a href="#3-目录与文件的权限意义" class="heading-link"><i class="fas fa-link"></i></a>3. 目录与文件的权限意义</h2>
+      
+
+        <h3 id="31-权限对文件的重要性"   >
+          <a href="#31-权限对文件的重要性" class="heading-link"><i class="fas fa-link"></i></a>3.1 权限对文件的重要性</h3>
+      
+<p>文件是实际含有数据的地方，包括一般文本文件，数据库内容文件，二进制可执行文件(binary program)等等，因此，文件权限有如下意义：</p>
+<ul>
+<li>r（read）：可读取此文件的<strong>实际内容</strong>，如读取文本文件的文字内容等；</li>
+<li>w（write）：可以编辑、新增或者是修改该文件的内容</li>
+<li>x（execute）：该文件具有可以被系统执行的权限。</li>
+</ul>
+<p><strong>注意：在Linux中，文件是否能被执行是由是否具有”x”这个权限来决定，与拓展名无关。</strong></p>
+
+        <h3 id="32-权限对目录的重要性"   >
+          <a href="#32-权限对目录的重要性" class="heading-link"><i class="fas fa-link"></i></a>3.2 权限对目录的重要性</h3>
+      
+<ul>
+<li>
+<p>r（read contents in directory）：表示具有读取目录结构清单的权限，所以当你具有读取（r）一个目录的权限时，表示你可以查询该目录下的文件名数据。<strong>所以你就可以利用ls这个指令将该目录的内容列表显示出来。</strong></p>
+</li>
+<li>
+<p>w（modify contents of directory）：这个可写入的权限对目录来说，<strong>表示你具有改变目录结构清单的权限</strong>，也就是底下这些权限：</p>
+<ul>
+<li>建立新的文件或子目录</li>
+<li>删除已经存在的文件或子目录（<strong>不论该文件的权限</strong>）</li>
+<li>将已存在的文件或目录进行重命名；</li>
+<li>移动该目录内的文件、目录位置。</li>
+</ul>
+</li>
+<li>
+<p>x（access directory）：在Linux中，目录不可以被执行，目录的x代表的是使用者能否进入该目录成为工作目录的用途。所谓的工作目录（work directory）就是你目前所在的目录。举例来说，当你登入Linux时，你所在的Home目录就是你当下的工作目录。</p>
+</li>
+</ul>
+<p><strong>如果你对一个目录用rw权限，没有x权限，即不能作为工作目录，则你可以在目录外面对目录里面的文件进行创建和删除，但是不能cd到里面里面操作。</strong></p>
+<p>综上：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208210508.png"  alt="" />
+      </p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/02/10/105911/">https://wxler.gitee.io/2021/02/10/105911/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/Linux/">Linux</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/02/10/105922/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Linux文件系统相关操作</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/02/10/105900/"><span class="paginator-prev__text">Linux文本操作相关命令</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-linux文件属性与权限的含义"><span class="toc-text">
+          1. Linux文件属性与权限的含义</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-linux文件属性与权限的管理"><span class="toc-text">
+          2. Linux文件属性与权限的管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-改变文件所属用户组"><span class="toc-text">
+          2.1 改变文件所属用户组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-改变文件所有者"><span class="toc-text">
+          2.2 改变文件所有者</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-改变文件权限"><span class="toc-text">
+          2.3 改变文件权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-目录与文件的权限意义"><span class="toc-text">
+          3. 目录与文件的权限意义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-权限对文件的重要性"><span class="toc-text">
+          3.1 权限对文件的重要性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-权限对目录的重要性"><span class="toc-text">
+          3.2 权限对目录的重要性</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">81</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">13</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">41</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

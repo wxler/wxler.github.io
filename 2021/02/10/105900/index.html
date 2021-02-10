@@ -1,0 +1,740 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="本文带来Linux文本文件操作和文本内容操作常用方法。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux文本操作相关命令">
+<meta property="og:url" content="https://wxler.gitee.io/2021/02/10/105900/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="本文带来Linux文本文件操作和文本内容操作常用方法。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207194052.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207194351.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208140020.png">
+<meta property="article:published_time" content="2021-02-10T02:59:00.000Z">
+<meta property="article:modified_time" content="2021-02-10T03:03:31.981Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207194052.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Linux文本操作相关命令 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/02/10/105900/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Linux文本操作相关命令</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">5.5k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">48分</span></span></div></header><div class="post-body"><p>本文带来Linux文本文件操作和文本内容操作常用方法。</p>
+<a id="more"></a>
+
+        <h2 id="一-文本文件操作"   >
+          <a href="#一-文本文件操作" class="heading-link"><i class="fas fa-link"></i></a>一、文本文件操作</h2>
+      
+
+        <h2 id="11-cattac"   >
+          <a href="#11-cattac" class="heading-link"><i class="fas fa-link"></i></a>1.1 cat&amp;&amp;tac</h2>
+      
+<p>直接查看一个文件的内容可以使用cat,tac,nl这几个指令</p>
+<p>cat(concatenate)参数：</p>
+<p><strong>-n 或 --number</strong>：由 1 开始对所有输出的行数编号。</p>
+<p><strong>-b 或 --number-nonblank</strong>：和 -n 相似，只不过对于空白行不编号。</p>
+<p><strong>-s 或 --squeeze-blank</strong>：当遇到有连续两行以上的空白行，就代换为一行的空白行。</p>
+<p><strong>-v 或 --show-nonprinting</strong>：使用 ^ 和 M- 符号，除了 LFD 和 TAB 之外。</p>
+<p><strong>-E 或 --show-ends</strong> : 在每行结束处显示 $。</p>
+<p><strong>-T 或 --show-tabs</strong>: 将 TAB 字符显示为 ^I。</p>
+<p><strong>-A, --show-all</strong>：等价于 -vET。</p>
+<p>**-e：**等价于&quot;-vE&quot;选项；</p>
+<p>**-t：**等价于&quot;-vT&quot;选项；</p>
+<p>cat是concatenate的缩写，其功能时间一个文件的内容连续的输出。该命令适合看行数较少的文件。另外，需要查看一般DOS文件时，可以通过-A选项来显示换行符和[tab]<strong>（及特殊符号）</strong>。</p>
+<p>**tac(**反向输出)：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cat a.txt</span></span><br><span class="line">141232afsg</span><br><span class="line">zfghahhh</span><br><span class="line">aaaaa</span><br><span class="line">[root@layne laydir]<span class="comment"># tac a.txt</span></span><br><span class="line">aaaaa</span><br><span class="line">zfghahhh</span><br><span class="line">141232afsg</span><br></pre></td></tr></table></div></figure>
+<p>与上面的cat命令进行比较，是由最后一行先显示。</p>
+<p>tac功能与cat类似，但是是由文件最后一行反向连续输出到屏幕上。</p>
+
+        <h2 id="12-moreless"   >
+          <a href="#12-moreless" class="heading-link"><i class="fas fa-link"></i></a>1.2 more&amp;less</h2>
+      
+<p>more会在<strong>最后一行输出目前按显示内容的所占百分比</strong>，在现实过程中我们还可以输入以下命令进行进一步操作：</p>
+<ul>
+<li>向下翻页<code>ctrl+f</code>，向上翻页<code>ctrl+b</code></li>
+<li>空格(space):向下翻页</li>
+<li>回车(Enter):向下翻一行</li>
+<li>“/字符串”:在当前显示内容中线下查询字符串内容</li>
+<li>“:f”:立即显示出文件名以及目前显示的行数</li>
+<li>“q”:离开显示内容</li>
+<li>“b”或[ctrl]-b:代表回翻,该操作仅对文件有效</li>
+</ul>
+<p>例如：<code>more /etc/profile</code></p>
+<p><strong>less</strong> 与 more 类似，但使用 less 可以随意浏览文件，而 more 仅能向前移动，却不能向后移动，而且 less 在查看之前不会加载整个文件。(<strong>在查看大文件时或内存不够时，可用less命令)</strong></p>
+
+        <h2 id="13-head"   >
+          <a href="#13-head" class="heading-link"><i class="fas fa-link"></i></a>1.3 head</h2>
+      
+<p>取出前面几行</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207194052.png"  alt="" />
+      </p>
+
+        <h2 id="14-tail"   >
+          <a href="#14-tail" class="heading-link"><i class="fas fa-link"></i></a>1.4 tail</h2>
+      
+<p>tail可以监控一个文件，<strong>默认显示后10行</strong></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207194351.png"  alt="" />
+      </p>
+<p><strong>-f 表示持续监测，这个功能可以用来监控日志或进行调试</strong></p>
+
+        <h2 id="15-管道"   >
+          <a href="#15-管道" class="heading-link"><i class="fas fa-link"></i></a>1.5 管道</h2>
+      
+<p>“|”管道符，意思为管道左侧的输出作为右侧的输入，常和<code>grep</code>搭配使用</p>
+<p>grep一般用作过滤。</p>
+<p>比如：</p>
+<ul>
+<li><code>ps -ef | grep vim</code> 显示带有vim的进程信息</li>
+<li><code>ps aux | head -n 10</code>显示前10个进程</li>
+</ul>
+<p>管道可以有多个，作用以此类推。</p>
+<p><code>echo &quot;/&quot; | ls -l</code> 会显示当前目录下的内容，不会显示根目录下的内容</p>
+
+        <h2 id="16-xargs"   >
+          <a href="#16-xargs" class="heading-link"><i class="fas fa-link"></i></a>1.6 Xargs</h2>
+      
+<p><strong>将前面输出作为后面命令的参数</strong></p>
+<p>xargs 是一个强有力的命令，它能够捕获一个命令的输出，然后传递给另外一个命令。</p>
+<p>之所以能用到这个命令，<strong>关键是由于很多命令不支持|管道来传递参数</strong>，而日常工作中有有这个必要，所以就有了 xargs 命令，例如：</p>
+<p><code>echo &quot;/&quot; | xargs ls -l</code> 就可以输出根目录下的内容，而<code>echo &quot;/&quot; | ls -l</code>  则不行</p>
+<p><code>echo &quot;a.txt&quot;|vim</code> 可以进入a.txt编辑，而<code>echo &quot;a.txt&quot;|vim</code>则不行</p>
+
+        <h2 id="17-数据重定向"   >
+          <a href="#17-数据重定向" class="heading-link"><i class="fas fa-link"></i></a>1.7 数据重定向</h2>
+      
+<p>标准输入（stdin）:编号为0</p>
+<p>标准输出（stdout）:编号为1</p>
+<p>标准错误输出（stderr）:编号为2</p>
+<p>1&gt;:以覆盖的方法,将正确的数据输出到文件; </p>
+<p>1&gt;&gt;:以累加的方法,将正确的数据输出到文件; </p>
+<p>2&gt;:以覆盖的方法,将错误输出的数据输出到文件; </p>
+<p>2&gt;&gt;:以累加的方法,将错误输出的数据输出到文件; </p>
+<p><strong>只有单独的&gt; 和 &gt;&gt; 也是只能输出正确的信息</strong></p>
+<p>可自己尝试以下命令：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ls  -l  &gt;&gt;  ok1.log</span><br><span class="line">ls  -l  &gt;  ok2.log</span><br><span class="line">ls  hello 2&gt;/root/err.log</span><br><span class="line">ls  hello / 1&gt;/root/log.log 2&gt;/root/err.log</span><br><span class="line">ls 1&gt;/dev/null</span><br><span class="line">ls  2&gt;/tmp/err.log</span><br></pre></td></tr></table></div></figure>
+<p>既向控制台输出，也向文件写入</p>
+<p><code>ls -l / | tee ok2.log</code></p>
+<p>tee命令，将输入分成两个输出</p>
+<p>tee只能把<strong>正确的数据</strong>放入文件里面</p>
+<p>tee 把原来的数据清空，把最新的数据写到里面。</p>
+
+        <h2 id="二-文本内容操作"   >
+          <a href="#二-文本内容操作" class="heading-link"><i class="fas fa-link"></i></a>二、文本内容操作</h2>
+      
+
+        <h3 id="21-cut"   >
+          <a href="#21-cut" class="heading-link"><i class="fas fa-link"></i></a>2.1 cut</h3>
+      
+<p>cut：显示切割的行数据</p>
+<ul>
+<li>-s：不显示没有分隔符的行（过滤脏数据）</li>
+<li>-d：<strong>指定分隔符</strong>对源文件的行进行分割</li>
+<li>-f：选定显示哪些列
+<ul>
+<li>m-n： m列到n列</li>
+<li>-n ：第一列到n列</li>
+<li>m- ：第m列到最后列</li>
+<li>n ：第n列</li>
+</ul>
+</li>
+</ul>
+<p>例如（默认列数是从1开始）：</p>
+<ul>
+<li><code>cut -d &quot;:&quot; -f 1 passwd</code> 对passwd用<code>:</code>分割，然后获取第一列</li>
+<li><code>cut -s -d &quot;:&quot; -f 1 passwd</code> 对passwd用<code>:</code>分割，然后获取第一列，且不显示没有分隔符的行（如果有的行没有分隔符，不加-s会输出会包含脏数据，加了-s后就不会打印没有分隔符的行）</li>
+<li><code>cut -sd &quot;:&quot; -f 1 passwd</code> 同 <code>cut -s -d &quot;:&quot; -f 1 passwd</code></li>
+<li>不能为<code>cut -ds &quot;:&quot; -f 1 passwd</code>，因为d后面要跟分隔符</li>
+<li><code>cut -d &quot;:&quot; -f 3-5 passwd</code> 以<code>:</code>作为分隔符切割passwd，输出从第3列到第5列</li>
+<li><code>cut -d &quot;:&quot; -f 1,3,5 passwd</code> 以<code>:</code>作为分隔符切割passwd，输出1、3、5列</li>
+<li><code>cut -d &quot;:&quot; -f -2 passwd</code> 以<code>:</code>作为分隔符切割passwd，输出前两列</li>
+<li><code>cut -d &quot;:&quot; -f 3- passwd</code> 以<code>:</code>作为分隔符切割passwd，输出第三列到最后一列</li>
+<li><code>cut -d &quot;:&quot; -f 3- --output-delimiter=&quot;..&quot; passwd</code> <strong>指定输出的分隔符</strong></li>
+</ul>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cp /etc/passwd ./</span></span><br><span class="line">[root@layne laydir]<span class="comment"># cut -d ":" -f 1 passwd</span></span><br><span class="line">root</span><br><span class="line">bin</span><br><span class="line">daemon</span><br><span class="line">adm</span><br><span class="line">lp</span><br><span class="line">sync</span><br><span class="line">shutdown</span><br><span class="line">halt</span><br><span class="line">mail</span><br><span class="line">uucp</span><br><span class="line">operator</span><br><span class="line">games</span><br><span class="line">gopher</span><br><span class="line">ftp</span><br><span class="line">nobody</span><br><span class="line">vcsa</span><br><span class="line">saslauth</span><br><span class="line">postfix</span><br><span class="line">sshd</span><br><span class="line">ntp</span><br><span class="line">lucy</span><br><span class="line">liubei</span><br><span class="line">gem</span><br><span class="line">mysql</span><br><span class="line">[root@layne laydir]<span class="comment"># cut -d ":" -f 3- --output-delimiter=".." passwd</span></span><br><span class="line">0..0..root../root../bin/bash</span><br><span class="line">1..1..bin../bin../sbin/nologin</span><br><span class="line">2..2..daemon../sbin../sbin/nologin</span><br><span class="line">3..4..adm../var/adm../sbin/nologin</span><br><span class="line">4..7..lp../var/spool/lpd../sbin/nologin</span><br><span class="line">5..0..sync../sbin../bin/sync</span><br><span class="line">6..0..shutdown../sbin../sbin/shutdown</span><br><span class="line">7..0..halt../sbin../sbin/halt</span><br><span class="line">8..12..mail../var/spool/mail../sbin/nologin</span><br><span class="line">10..14..uucp../var/spool/uucp../sbin/nologin</span><br><span class="line">11..0..operator../root../sbin/nologin</span><br><span class="line">12..100..games../usr/games../sbin/nologin</span><br><span class="line">13..30..gopher../var/gopher../sbin/nologin</span><br><span class="line">14..50..FTP User../var/ftp../sbin/nologin</span><br><span class="line">99..99..Nobody../../sbin/nologin</span><br><span class="line">69..69..virtual console memory owner../dev../sbin/nologin</span><br><span class="line">499..76..<span class="string">"Saslauthd user"</span>../var/empty/saslauth../sbin/nologin</span><br><span class="line">89..89..../var/spool/postfix../sbin/nologin</span><br><span class="line">74..74..Privilege-separated SSH../var/empty/sshd../sbin/nologin</span><br><span class="line">38..38..../etc/ntp../sbin/nologin</span><br><span class="line">500..500..../usr/lucy../bin/bash</span><br><span class="line">501..501..../home/liubei../bin/bash</span><br><span class="line">502..0..../home/gem../bin/bash</span><br><span class="line">27..27..MySQL Server../var/lib/mysql../bin/<span class="literal">false</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="22-sort"   >
+          <a href="#22-sort" class="heading-link"><i class="fas fa-link"></i></a>2.2 sort</h3>
+      
+<p>排序：<strong>字典序和数值序</strong></p>
+<p>sort：<strong>排序文件的行</strong></p>
+<p>可选参数如下：</p>
+<p>-   n：按数值排序</p>
+<p>-   r：倒序  reverse</p>
+<p>-   t：自定义分隔符</p>
+<p>-   k：选择排序列</p>
+<p>-   f：忽略大小写</p>
+<p>现在，我们创建一个sort.txt，文件内容如下：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a b 1</span><br><span class="line">dfdsa fdsa 15</span><br><span class="line">fds fds 6</span><br><span class="line">fdsa fdsa 8</span><br><span class="line">fda s 9</span><br><span class="line">aa dd 10</span><br><span class="line">h h 11</span><br></pre></td></tr></table></div></figure>
+<p><code>sort sort.txt</code>是默认按字典排序：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sort sort.txt</span></span><br><span class="line">aa dd 10</span><br><span class="line">a b 1</span><br><span class="line">dfdsa fdsa 15</span><br><span class="line">fda s 9</span><br><span class="line">fdsa fdsa 8</span><br><span class="line">fds fds 6</span><br><span class="line">h h 11</span><br></pre></td></tr></table></div></figure>
+<p>指定字段分隔符，按照第2个字段的字典序排序：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sort -t ' ' -k 2 sort.txt</span></span><br><span class="line">a b 1</span><br><span class="line">aa dd 10</span><br><span class="line">fds fds 6</span><br><span class="line">dfdsa fdsa 15</span><br><span class="line">fdsa fdsa 8</span><br><span class="line">h h 11</span><br><span class="line">fda s 9</span><br></pre></td></tr></table></div></figure>
+<p>指定字段分隔符，按照第3个字段的值<strong>数值</strong>序排序：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sort -t ' ' -k 3 -n sort.txt</span></span><br><span class="line">a b 1</span><br><span class="line">fds fds 6</span><br><span class="line">fdsa fdsa 8</span><br><span class="line">fda s 9</span><br><span class="line">aa dd 10</span><br><span class="line">h h 11</span><br><span class="line">dfdsa fdsa 15</span><br></pre></td></tr></table></div></figure>
+<p>指定字段分隔符，按照第3个字段的值数值倒序</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sort -t ' ' -k 3 -nr sort.txt</span></span><br><span class="line">dfdsa fdsa 15</span><br><span class="line">h h 11</span><br><span class="line">aa dd 10</span><br><span class="line">fda s 9</span><br><span class="line">fdsa fdsa 8</span><br><span class="line">fds fds 6</span><br><span class="line">a b 1</span><br></pre></td></tr></table></div></figure>
+<p>将结果写入到新的文件中：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sort -t " " -k 3 -nr sort.txt &gt;&gt; test1.txt</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="23-wc"   >
+          <a href="#23-wc" class="heading-link"><i class="fas fa-link"></i></a>2.3 wc</h3>
+      
+<p>格式：wc [选项列表]… [文件名列表]…</p>
+<p>DESCRIPTION 描述：</p>
+<p>对每个文件<strong>输出行、单词、和字节统计数</strong>，若不指定文件名称、或是所给予的文件名为&quot;-&quot;，则wc指令会从标准输入设备读取数据。</p>
+<p>​    <strong>-c</strong>, --bytes, --chars 输出字节统计数。</p>
+<p>​    <strong>-l</strong>, --lines 输出换行符统计数。</p>
+<p>​    -L, --max-line-length 输出最长的行的长度。</p>
+<p>​    <strong>-w</strong>, --words 输出单词统计数。</p>
+<p>例如：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cp sort.txt wc.txt</span></span><br><span class="line">[root@layne laydir]<span class="comment"># cat wc.txt</span></span><br><span class="line">a b 1</span><br><span class="line">dfdsa fdsa 15</span><br><span class="line">fds fds 6</span><br><span class="line">fdsa fdsa 8</span><br><span class="line">fda s 9</span><br><span class="line">aa dd 10</span><br><span class="line">h h 11</span><br><span class="line">[root@layne laydir]<span class="comment"># wc wc.txt</span></span><br><span class="line"> 7 21 66 wc.txt</span><br></pre></td></tr></table></div></figure>
+<p>上面命令，输出结果为<code>7 21 66 wc.txt</code>，其中，7是行数，21是单词数，66是字节数</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># wc -l wc.txt</span></span><br><span class="line">7 wc.txt</span><br><span class="line">[root@layne laydir]<span class="comment"># cat wc.txt | wc -l</span></span><br><span class="line">7</span><br><span class="line">[root@layne laydir]<span class="comment"># wc -w wc.txt</span></span><br><span class="line">21 wc.txt</span><br><span class="line">[root@layne laydir]<span class="comment"># wc -c wc.txt</span></span><br><span class="line">66 wc.txt</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="24-sed"   >
+          <a href="#24-sed" class="heading-link"><i class="fas fa-link"></i></a>2.4 sed</h3>
+      
+<p>sed 在不打开文件的情况下执行交互，来修改文件。</p>
+<p>sed即行编辑器</p>
+<p>sed [选项] 如下：</p>
+<ul>
+<li>-n：静默模式，不再默认显示模式空间的内容（看例子理解）</li>
+<li><code>-i</code>：<strong>直接修改源文件</strong></li>
+<li><code>-e</code> Script -e Script：可以同时执行多个脚本</li>
+<li><code>-f</code> /path/to/sed_script：执行文件中的sed脚本</li>
+<li><code>-r</code>：表示使用扩展正则表达式</li>
+<li><code>a\string</code>：在指定的行后追加新行，内容为string</li>
+</ul>
+<p>n \n：用于换行</p>
+<ul>
+<li><code>i\string</code>：在指定行<strong>前</strong>添加新行，内容是string</li>
+<li><code>r file</code>：将指定的文件内容添加到符合条件的行的位置</li>
+<li><code>w file</code>：将地址指定的范围内的行另存至指定文件</li>
+<li><code>s/string1/string2/</code>：查找并替换，<strong>默认只替换每行第一次模式匹配到的字符串</strong></li>
+</ul>
+<p>n <code>g</code>：行内全局替换 （看例子）</p>
+<p>n <code>i</code>：忽略大小写</p>
+<p>n s///，s###，s@@@：用于避免字符冲突</p>
+<p>n () \1\2</p>
+<p><strong>动作说明</strong>：</p>
+<ul>
+<li>a ：新增， a 的后面可以接字串，而这些字串会在新的一行出现(<strong>目前的下一行</strong>)</li>
+<li>c ：取代， c 的后面可以接字串，这些字串可以取代 n1,n2 之间的行</li>
+<li>d ：删除， <strong>d 后面不接任何字符串</strong>；</li>
+<li>i ：插入， i 的后面可以接字串，而这些字串会在新的一行出现(目前的上一行)；</li>
+<li>p ：<strong>打印</strong>，亦即将某个选择的数据印出。通常 p 会与参数 sed -n 一起运行</li>
+<li>s ：取代，可以直接进行取代的工作！通常这个 s 的动作可以搭配正规表示法！例如 1,20s/old/new/g 就是啦！</li>
+</ul>
+<p>让我们来尝试一下吧</p>
+<p>创建sed.txt，内容如下：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Authentication improvements when using an HTTP proxy server.</span><br><span class="line">Support for POSIX-style filesystem extended attributes.</span><br><span class="line">YARN's REST APIs now support write/modify operations.</span><br></pre></td></tr></table></div></figure>
+<p><strong>第一行下插入一行 <code>sed &quot;1a\hello world&quot; sed.txt</code></strong>（没有修改源文件）：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cat sed.txt</span></span><br><span class="line">Authentication improvements when using an HTTP proxy server.</span><br><span class="line">Support <span class="keyword">for</span> POSIX-style filesystem extended attributes.</span><br><span class="line">YARN<span class="string">'s REST APIs now support write/modify operations.</span></span><br><span class="line"><span class="string">[root@layne laydir]# sed  "1a\hello world" sed.txt</span></span><br><span class="line"><span class="string">Authentication improvements when using an HTTP proxy server.</span></span><br><span class="line"><span class="string">hello world</span></span><br><span class="line"><span class="string">Support for POSIX-style filesystem extended attributes.</span></span><br><span class="line"><span class="string">YARN'</span>s REST APIs now support write/modify operations.</span><br></pre></td></tr></table></div></figure>
+<p>加上<code>-i</code><strong>直接修改源文件</strong>：<code>sed -i &quot;1a\hello world&quot; sed.txt</code></p>
+<p><strong>删除第2行</strong><code>sed -i &quot;2d&quot; sed.txt</code> ：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cat sed.txt</span></span><br><span class="line">Authentication improvements when using an HTTP proxy server.</span><br><span class="line">hello world</span><br><span class="line">Support <span class="keyword">for</span> POSIX-style filesystem extended attributes.</span><br><span class="line">YARN<span class="string">'s REST APIs now support write/modify operations.</span></span><br><span class="line"><span class="string">[root@layne laydir]# sed -i "2d" sed.txt</span></span><br><span class="line"><span class="string">[root@layne laydir]# cat sed.txt</span></span><br><span class="line"><span class="string">Authentication improvements when using an HTTP proxy server.</span></span><br><span class="line"><span class="string">Support for POSIX-style filesystem extended attributes.</span></span><br><span class="line"><span class="string">YARN'</span>s REST APIs now support write/modify operations.</span><br></pre></td></tr></table></div></figure>
+<p>删除文档中的<strong>所有内容</strong><code>sed &quot;d&quot; sed.txt</code> （不修改原文件）</p>
+<p>匹配行中包含0-9任意一个字符的行，<strong>默认匹配的行打印（匹配的行打印两次），没匹配的行也打印（匹配的行打印一次</strong>），命令为<code>sed &quot;/[0-9]/p&quot; sed.txt</code> ：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cat sed.txt</span></span><br><span class="line">uthentication improvements when using an HTTP proxy server.</span><br><span class="line">Support <span class="keyword">for</span> POSIX-style filesystem extended attributes.</span><br><span class="line">hello2world</span><br><span class="line">YARN<span class="string">'s REST APIs now support write/modify operations.</span></span><br><span class="line"><span class="string">[root@layne laydir]# sed "/[0-9]/p"  sed.txt</span></span><br><span class="line"><span class="string">uthentication improvements when using an HTTP proxy server.</span></span><br><span class="line"><span class="string">Support for POSIX-style filesystem extended attributes.</span></span><br><span class="line"><span class="string">hello2world</span></span><br><span class="line"><span class="string">hello2world</span></span><br><span class="line"><span class="string">YARN'</span>s REST APIs now support write/modify operations.</span><br></pre></td></tr></table></div></figure>
+<p>匹配行中包含0-9任意一个字符的行，<strong>只打印找到的行</strong>，加<code>-n</code> 实现<code>sed -n &quot;/[0-9]/p&quot; sed.txt</code> ：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cat sed.txt</span></span><br><span class="line">uthentication improvements when using an HTTP proxy server.</span><br><span class="line">Support <span class="keyword">for</span> POSIX-style filesystem extended attributes.</span><br><span class="line">hello2world</span><br><span class="line">YARN<span class="string">'s REST APIs now support write/modify operations.</span></span><br><span class="line"><span class="string">[root@layne laydir]# sed -n "/[0-9]/p"  sed.txt</span></span><br><span class="line"><span class="string">hello2world</span></span><br></pre></td></tr></table></div></figure>
+<p>将filesystem替换为FS命令为<code>sed &quot;s/filesystem/FS/&quot; sed.txt</code> （默认区分大小写，且只替换每一行匹配到的第一个）：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cat sed.txt</span></span><br><span class="line">uthentication improvements when using an HTTP proxy server.</span><br><span class="line">Support FILESysTem <span class="keyword">for</span> POSIX-style filesystem extended filesystem  attributes.</span><br><span class="line">YARN<span class="string">'s REST APIs now filesystem support write/modify operations.</span></span><br><span class="line"><span class="string">[root@layne laydir]# sed "s/filesystem/FS/" sed.txt</span></span><br><span class="line"><span class="string">uthentication improvements when using an HTTP proxy server.</span></span><br><span class="line"><span class="string">Support FILESysTem for POSIX-style FS extended filesystem  attributes.</span></span><br><span class="line"><span class="string">YARN'</span>s REST APIs now FS support write/modify operations.</span><br></pre></td></tr></table></div></figure>
+<p>将filesystem替换为FS，忽略大小写<code>sed &quot;s/filesystem/FS/i&quot; sed.txt</code> ：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cat sed.txt</span></span><br><span class="line">uthentication improvements when using an HTTP proxy server.</span><br><span class="line">Support FILESysTem <span class="keyword">for</span> POSIX-style filesystem extended filesystem  attributes.</span><br><span class="line">YARN<span class="string">'s REST APIs now filesystem support write/modify operations.</span></span><br><span class="line"><span class="string">[root@layne laydir]# sed "s/filesystem/FS/i" sed.txt</span></span><br><span class="line"><span class="string">uthentication improvements when using an HTTP proxy server.</span></span><br><span class="line"><span class="string">Support FS for POSIX-style filesystem extended filesystem  attributes.</span></span><br><span class="line"><span class="string">YARN'</span>s REST APIs now FS support write/modify operations.</span><br></pre></td></tr></table></div></figure>
+<p>将filesystem替换为FS，不仅忽略大小写还要行内全局替换<code>sed &quot;s/filesystem/FS/gi&quot; sed.txt</code> ：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cat sed.txt</span></span><br><span class="line">uthentication improvements when using an HTTP proxy server.</span><br><span class="line">Support FILESysTem <span class="keyword">for</span> POSIX-style filesystem extended filesystem  attributes.</span><br><span class="line">YARN<span class="string">'s REST APIs now filesystem support write/modify operations.</span></span><br><span class="line"><span class="string">[root@layne laydir]# sed "s/filesystem/FS/gi" sed.txt</span></span><br><span class="line"><span class="string">uthentication improvements when using an HTTP proxy server.</span></span><br><span class="line"><span class="string">Support FS for POSIX-style FS extended FS  attributes.</span></span><br><span class="line"><span class="string">YARN'</span>s REST APIs now FS support write/modify operations.</span><br></pre></td></tr></table></div></figure>
+<p>新建一个文件sed1.txt，输入以下内容：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hello world,hahha,This is hiaccy2 ideas</span><br><span class="line">I am 24 years old,lalala</span><br></pre></td></tr></table></div></figure>
+<p>将sed1.txt的所有数字替换为5，<code>sed &quot;s/[0-9]/5/g&quot; sed1.txt</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sed "s/[0-9]/5/g" sed1.txt</span></span><br><span class="line">hello world,hahha,This is hiaccy5 ideas</span><br><span class="line">I am 55 years old,lalala</span><br></pre></td></tr></table></div></figure>
+<p>将hiaccy2改为hiaccy9，先看下面的命令：</p>
+<figure class="highlight plain"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]# sed  &quot;s&#x2F;2&#x2F;9&#x2F;&quot;  sed1.txt</span><br><span class="line">hello world,hahha,This is hiaccy9 ideas</span><br><span class="line">I am 94 years old,lalala</span><br></pre></td></tr></table></div></figure>
+<p>会发现，发现将所有匹配的都修改了（注意并未修改原文件），第二行的24被替换为了94。</p>
+<p>更精确匹配方案的写法应该为如下命令：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sed  "s/hiaccy[0-4]/9/"  sed1.txt</span></span><br><span class="line">hello world,hahha,This is 9 ideas</span><br><span class="line">I am 24 years old,lalala</span><br></pre></td></tr></table></div></figure>
+<p>**但是还存在问题，匹配后被修改内容问匹配出的部分，范围过大。**解决办法：<strong>反向引用</strong></p>
+<p>用命令<code>sed &quot;s/\(hiaccy\)[0-6]/\19/&quot; sed1.txt</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sed "s/\(hiaccy\)[0-6]/\19/" sed1.txt</span></span><br><span class="line">hello world,hahha,This is hiaccy9 ideas</span><br><span class="line">I am 24 years old,lalala</span><br></pre></td></tr></table></div></figure>
+<p>分析：</p>
+<p><code>sed &quot;s/\(hiaccy\)[0-6]/\19/&quot; sed1.txt</code> 的结构划分为：</p>
+<ul>
+<li><code>sed</code> 命令</li>
+<li><code>s/</code> <strong>替换的前缀</strong>（第一个分割标志）</li>
+<li><code>\(hiaccy\)</code> 其实就是hiaccy，括号用<code>\(</code>和<code>\)</code>，就是转义字符，查找的还是hiaccy</li>
+<li><code>[0-6]</code> 通配符数字1~6</li>
+<li><code>/</code> <strong>替换的第二个分割标志</strong></li>
+<li><code>\1</code> 表示前面的第一个转义内容，即<code>\(hiaccy\)</code></li>
+<li><code>9</code> 把在第一个分割标志和第二个分割标志中间 ，<strong>除了<code>\1</code>表示的之外的内容</strong>，替换为9</li>
+<li><code>/</code>第三个分割标志</li>
+</ul>
+<p>再看一个例子，把sed1.txt的中的world替换为woABCld：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sed "s/\(wo\)r\(ld\)/\1ABC\2/" sed1.txt</span></span><br><span class="line">hello woABCld,hahha,This is hiaccy2 ideas</span><br><span class="line">I am 24 years old,lalala</span><br></pre></td></tr></table></div></figure>
+<p>如果加上<code>-r</code>，就不用转义字符了：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># sed -r "s/(wo)r(ld)/\1ABC\2/" sed1.txt</span></span><br><span class="line">hello woABCld,hahha,This is hiaccy2 ideas</span><br><span class="line">I am 24 years old,lalala</span><br></pre></td></tr></table></div></figure>
+<p><strong>查找/etc/profile中包含PATH的行，将这些行写到指定的文件：hello.log中</strong> ：<code>sed -n &quot;/PATH/w hello.log&quot; /etc/profile</code></p>
+
+        <h3 id="25-awk"   >
+          <a href="#25-awk" class="heading-link"><i class="fas fa-link"></i></a>2.5 awk</h3>
+      
+<p>awk是一个强大的文本分析工具，相对于grep查找，sed编辑，awk在对数据分析并生成报告时更为强大。</p>
+<p><strong>awk把文件逐行读入，以空格和制表符作为默认分隔符将每行切片</strong>，切开的部分再进行各种分析处理。</p>
+<p><strong>awk -F ‘{pattern + action}’ {filenames}</strong></p>
+<ul>
+<li>
+<p>支持自定义分隔符</p>
+</li>
+<li>
+<p>支持正则表达式匹配</p>
+</li>
+<li>
+<p>支持自定义变量，数组 a[1] a[tom] map(key)</p>
+</li>
+<li>
+<p>支持内置变量</p>
+<ul>
+<li>ARGC        命令行参数个数</li>
+<li>ARGV        命令行参数排列</li>
+<li>ENVIRON       支持队列中系统环境变量的使用</li>
+<li>FILENAME      awk浏览的文件名</li>
+<li>FNR        浏览文件的记录数</li>
+<li>FS         设置输入域分隔符，等价于命令行 -F选项</li>
+<li>NF         浏览记录的域的个数</li>
+<li>NR         已读的记录数</li>
+<li>OFS        输出域分隔符</li>
+<li>ORS        输出记录分隔符</li>
+<li>RS         控制记录分隔符</li>
+</ul>
+</li>
+<li>
+<p>支持函数</p>
+<ul>
+<li>print、split、substr、sub、gsub（注意：关键字不要写在“”里面）</li>
+</ul>
+</li>
+<li>
+<p>支持流程控制语句，类C语言</p>
+<ul>
+<li>if、while、do/while、for、break、continue</li>
+</ul>
+</li>
+</ul>
+<p>现在，让我们尝试一下吧！</p>
+<p>显示全部内容，<code>awk -F ':' '{print $0}' passwd</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cp /etc/passwd ./</span></span><br><span class="line">[root@layne laydir]<span class="comment"># awk -F ':' '&#123;print $0&#125;' passwd</span></span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">bin:x:1:1:bin:/bin:/sbin/nologin</span><br><span class="line">daemon:x:2:2:daemon:/sbin:/sbin/nologin</span><br><span class="line">adm:x:3:4:adm:/var/adm:/sbin/nologin</span><br><span class="line">lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin</span><br><span class="line">sync:x:5:0:sync:/sbin:/bin/sync</span><br><span class="line">shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown</span><br><span class="line">halt:x:7:0:halt:/sbin:/sbin/halt</span><br><span class="line">mail:x:8:12:mail:/var/spool/mail:/sbin/nologin</span><br><span class="line">uucp:x:10:14:uucp:/var/spool/uucp:/sbin/nologin</span><br><span class="line">operator:x:11:0:operator:/root:/sbin/nologin</span><br><span class="line">games:x:12:100:games:/usr/games:/sbin/nologin</span><br><span class="line">gopher:x:13:30:gopher:/var/gopher:/sbin/nologin</span><br><span class="line">ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin</span><br><span class="line">nobody:x:99:99:Nobody:/:/sbin/nologin</span><br><span class="line">vcsa:x:69:69:virtual console memory owner:/dev:/sbin/nologin</span><br><span class="line">saslauth:x:499:76:<span class="string">"Saslauthd user"</span>:/var/empty/saslauth:/sbin/nologin</span><br><span class="line">postfix:x:89:89::/var/spool/postfix:/sbin/nologin</span><br><span class="line">sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin</span><br><span class="line">ntp:x:38:38::/etc/ntp:/sbin/nologin</span><br><span class="line">lucy:x:500:500::/usr/lucy:/bin/bash</span><br><span class="line">liubei:x:501:501::/home/liubei:/bin/bash</span><br><span class="line">gem:x:502:0::/home/gem:/bin/bash</span><br><span class="line">mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/<span class="literal">false</span></span><br></pre></td></tr></table></div></figure>
+<p>只显示第一列<code>awk -F ':' '{print $1}' passwd</code></p>
+<p>显示第一列与第5列<code>awk -F ':' '{print $1,$5}' passwd</code></p>
+<p>显示第一列与第5列，中间用逗号隔开<code>awk -F ':' '{print $1 &quot;,&quot; $5}' passwd</code></p>
+  <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># awk -F ':' '&#123;print $1 "," $5&#125;' passwd</span></span><br><span class="line">root,root</span><br><span class="line">bin,bin</span><br><span class="line">daemon,daemon</span><br><span class="line">adm,adm</span><br><span class="line">lp,lp</span><br><span class="line">sync,sync</span><br><span class="line">shutdown,shutdown</span><br><span class="line">halt,halt</span><br><span class="line">mail,mail</span><br><span class="line">uucp,uucp</span><br><span class="line">operator,operator</span><br><span class="line">games,games</span><br><span class="line">gopher,gopher</span><br><span class="line">ftp,FTP User</span><br><span class="line">nobody,Nobody</span><br><span class="line">vcsa,virtual console memory owner</span><br><span class="line">saslauth,<span class="string">"Saslauthd user"</span></span><br><span class="line">postfix,</span><br><span class="line">sshd,Privilege-separated SSH</span><br><span class="line">ntp,</span><br><span class="line">lucy,</span><br><span class="line">liubei,</span><br><span class="line">gem,</span><br><span class="line">mysql,MySQL Server</span><br></pre></td></tr></table></div></figure>
+<p>制表符拼接字段<code>awk -F':' ' { print $1&quot;\t&quot; $7} ' passwd</code></p>
+<p>在所有行开始前添加列名name,shell,在最后一行添加&quot;shell,end&quot; ：<code>awk -F ':' 'BEGIN{print &quot;name,shell&quot;} {print $1 &quot;,&quot; $7} END{print &quot;shell,end&quot;}' passwd</code></p>
+  <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># awk -F ':' 'BEGIN&#123;print "name,shell"&#125; &#123;print $1 "," $7&#125; END&#123;print "shell,end"&#125;' passwd</span></span><br><span class="line">name,shell</span><br><span class="line">root,/bin/bash</span><br><span class="line">bin,/sbin/nologin</span><br><span class="line">daemon,/sbin/nologin</span><br><span class="line">adm,/sbin/nologin</span><br><span class="line">lp,/sbin/nologin</span><br><span class="line">sync,/bin/sync</span><br><span class="line">shutdown,/sbin/shutdown</span><br><span class="line">halt,/sbin/halt</span><br><span class="line">mail,/sbin/nologin</span><br><span class="line">uucp,/sbin/nologin</span><br><span class="line">operator,/sbin/nologin</span><br><span class="line">games,/sbin/nologin</span><br><span class="line">gopher,/sbin/nologin</span><br><span class="line">ftp,/sbin/nologin</span><br><span class="line">nobody,/sbin/nologin</span><br><span class="line">vcsa,/sbin/nologin</span><br><span class="line">saslauth,/sbin/nologin</span><br><span class="line">postfix,/sbin/nologin</span><br><span class="line">sshd,/sbin/nologin</span><br><span class="line">ntp,/sbin/nologin</span><br><span class="line">lucy,/bin/bash</span><br><span class="line">liubei,/bin/bash</span><br><span class="line">gem,/bin/bash</span><br><span class="line">mysql,/bin/<span class="literal">false</span></span><br><span class="line">shell,end</span><br></pre></td></tr></table></div></figure>
+<p>可以先在txt文本上写出来，再粘贴进去</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210208140020.png"  alt="" />
+      </p>
+<p><strong>模板</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">awk `BEGIN &#123;</span><br><span class="line">		...</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br><span class="line">END &#123;</span><br><span class="line">	...</span><br><span class="line">&#125;`</span><br><span class="line">filename</span><br></pre></td></tr></table></div></figure>
+<p><strong>搜索passwd有root关键字的所有行</strong> <code>awk '/root/ {print $0}' passwd</code></p>
+<p><strong>搜索passwd有root关键字的所有行</strong>，并在后面打印<code>ok</code>，再打印passwd所有的内容</p>
+<p><code>awk ' /root/ {print $0,&quot;ok&quot;} {print $0}' passwd</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># awk  ' /root/  &#123;print $0,"ok"&#125;  &#123;print $0&#125;'  passwd</span></span><br><span class="line">root:x:0:0:root:/root:/bin/bash ok</span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">bin:x:1:1:bin:/bin:/sbin/nologin</span><br><span class="line">daemon:x:2:2:daemon:/sbin:/sbin/nologin</span><br><span class="line">adm:x:3:4:adm:/var/adm:/sbin/nologin</span><br><span class="line">lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin</span><br><span class="line">sync:x:5:0:sync:/sbin:/bin/sync</span><br><span class="line">shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown</span><br><span class="line">halt:x:7:0:halt:/sbin:/sbin/halt</span><br><span class="line">mail:x:8:12:mail:/var/spool/mail:/sbin/nologin</span><br><span class="line">uucp:x:10:14:uucp:/var/spool/uucp:/sbin/nologin</span><br><span class="line">operator:x:11:0:operator:/root:/sbin/nologin ok</span><br><span class="line">operator:x:11:0:operator:/root:/sbin/nologin</span><br><span class="line">games:x:12:100:games:/usr/games:/sbin/nologin</span><br><span class="line">gopher:x:13:30:gopher:/var/gopher:/sbin/nologin</span><br><span class="line">ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin</span><br><span class="line">nobody:x:99:99:Nobody:/:/sbin/nologin</span><br><span class="line">vcsa:x:69:69:virtual console memory owner:/dev:/sbin/nologin</span><br><span class="line">saslauth:x:499:76:<span class="string">"Saslauthd user"</span>:/var/empty/saslauth:/sbin/nologin</span><br><span class="line">postfix:x:89:89::/var/spool/postfix:/sbin/nologin</span><br><span class="line">sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin</span><br><span class="line">ntp:x:38:38::/etc/ntp:/sbin/nologin</span><br><span class="line">lucy:x:500:500::/usr/lucy:/bin/bash</span><br><span class="line">liubei:x:501:501::/home/liubei:/bin/bash</span><br><span class="line">gem:x:502:0::/home/gem:/bin/bash</span><br><span class="line">mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/<span class="literal">false</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>搜索passwd有root关键字的所有行的第一列</strong>，并在后面打印<code>ok</code>，再打印passwd所有的内容</p>
+<p><code>awk -F ':' ' /root/ {print $1,&quot;ok&quot;} {print $0}' passwd</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># awk -F ':'  ' /root/  &#123;print $1,"ok"&#125;  &#123;print $0&#125;'  passwd</span></span><br><span class="line">root ok</span><br><span class="line">root:x:0:0:root:/root:/bin/bash</span><br><span class="line">bin:x:1:1:bin:/bin:/sbin/nologin</span><br><span class="line">daemon:x:2:2:daemon:/sbin:/sbin/nologin</span><br><span class="line">adm:x:3:4:adm:/var/adm:/sbin/nologin</span><br><span class="line">lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin</span><br><span class="line">sync:x:5:0:sync:/sbin:/bin/sync</span><br><span class="line">shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown</span><br><span class="line">halt:x:7:0:halt:/sbin:/sbin/halt</span><br><span class="line">mail:x:8:12:mail:/var/spool/mail:/sbin/nologin</span><br><span class="line">uucp:x:10:14:uucp:/var/spool/uucp:/sbin/nologin</span><br><span class="line">operator ok</span><br><span class="line">operator:x:11:0:operator:/root:/sbin/nologin</span><br><span class="line">games:x:12:100:games:/usr/games:/sbin/nologin</span><br><span class="line">gopher:x:13:30:gopher:/var/gopher:/sbin/nologin</span><br><span class="line">ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin</span><br><span class="line">nobody:x:99:99:Nobody:/:/sbin/nologin</span><br><span class="line">vcsa:x:69:69:virtual console memory owner:/dev:/sbin/nologin</span><br><span class="line">saslauth:x:499:76:<span class="string">"Saslauthd user"</span>:/var/empty/saslauth:/sbin/nologin</span><br><span class="line">postfix:x:89:89::/var/spool/postfix:/sbin/nologin</span><br><span class="line">sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin</span><br><span class="line">ntp:x:38:38::/etc/ntp:/sbin/nologin</span><br><span class="line">lucy:x:500:500::/usr/lucy:/bin/bash</span><br><span class="line">liubei:x:501:501::/home/liubei:/bin/bash</span><br><span class="line">gem:x:502:0::/home/gem:/bin/bash</span><br><span class="line">mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/<span class="literal">false</span></span><br></pre></td></tr></table></div></figure>
+<p>统计passwd文件中，（按 “:” 分）每行的行号，每行的列数，对应的完整行内容（ $0对应完成的内容）</p>
+<p><code>awk -F ':' '{print NR &quot;-&quot; NF &quot;-&quot; $0}' passwd</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># awk -F ':' '&#123;print NR "-" NF "-" $0&#125;' passwd</span></span><br><span class="line">1-7-root:x:0:0:root:/root:/bin/bash</span><br><span class="line">2-7-bin:x:1:1:bin:/bin:/sbin/nologin</span><br><span class="line">3-7-daemon:x:2:2:daemon:/sbin:/sbin/nologin</span><br><span class="line">4-7-adm:x:3:4:adm:/var/adm:/sbin/nologin</span><br><span class="line">5-7-lp:x:4:7:lp:/var/spool/lpd:/sbin/nologin</span><br><span class="line">6-7-sync:x:5:0:sync:/sbin:/bin/sync</span><br><span class="line">7-7-shutdown:x:6:0:shutdown:/sbin:/sbin/shutdown</span><br><span class="line">8-7-halt:x:7:0:halt:/sbin:/sbin/halt</span><br><span class="line">9-7-mail:x:8:12:mail:/var/spool/mail:/sbin/nologin</span><br><span class="line">10-7-uucp:x:10:14:uucp:/var/spool/uucp:/sbin/nologin</span><br><span class="line">11-7-operator:x:11:0:operator:/root:/sbin/nologin</span><br><span class="line">12-7-games:x:12:100:games:/usr/games:/sbin/nologin</span><br><span class="line">13-7-gopher:x:13:30:gopher:/var/gopher:/sbin/nologin</span><br><span class="line">14-7-ftp:x:14:50:FTP User:/var/ftp:/sbin/nologin</span><br><span class="line">15-7-nobody:x:99:99:Nobody:/:/sbin/nologin</span><br><span class="line">16-7-vcsa:x:69:69:virtual console memory owner:/dev:/sbin/nologin</span><br><span class="line">17-7-saslauth:x:499:76:<span class="string">"Saslauthd user"</span>:/var/empty/saslauth:/sbin/nologin</span><br><span class="line">18-7-postfix:x:89:89::/var/spool/postfix:/sbin/nologin</span><br><span class="line">19-7-sshd:x:74:74:Privilege-separated SSH:/var/empty/sshd:/sbin/nologin</span><br><span class="line">20-7-ntp:x:38:38::/etc/ntp:/sbin/nologin</span><br><span class="line">21-7-lucy:x:500:500::/usr/lucy:/bin/bash</span><br><span class="line">22-7-liubei:x:501:501::/home/liubei:/bin/bash</span><br><span class="line">23-7-gem:x:502:0::/home/gem:/bin/bash</span><br><span class="line">24-7-mysql:x:27:27:MySQL Server:/var/lib/mysql:/bin/<span class="literal">false</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>案例：</strong></p>
+<p>统计报表：合计每人1月总消费，0：manager（管理员），1：worker（工人）</p>
+<p>emp.txt中的内容如下：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Tom	 0   2020-12-11      car     3000</span><br><span class="line">John	 1   2020-01-13      bike    1000</span><br><span class="line">vivi	 1   2020-01-18      car     2800</span><br><span class="line">Tom	 0   2020-01-20      car     2500</span><br><span class="line">John	 1   2020-01-28      bike    3500</span><br></pre></td></tr></table></div></figure>
+<p>解决方案：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">awk  <span class="string">'&#123;</span></span><br><span class="line"><span class="string">split($3, date, "-")</span></span><br><span class="line"><span class="string">if (date[2] == "01") &#123;</span></span><br><span class="line"><span class="string">map_name_sala[$1]+=$5 </span></span><br><span class="line"><span class="string">if($2=="0")&#123;</span></span><br><span class="line"><span class="string">map_name_role[$1]="Manager"</span></span><br><span class="line"><span class="string">&#125;else&#123;</span></span><br><span class="line"><span class="string">map_name_role[$1]="Worker"</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;  </span></span><br><span class="line"><span class="string">END&#123;</span></span><br><span class="line"><span class="string">for(name in map_name_sala)&#123;</span></span><br><span class="line"><span class="string">print name"\t"map_name_sala[name]"\t"map_name_role[name]</span></span><br><span class="line"><span class="string">&#125;</span></span><br><span class="line"><span class="string">&#125;'</span>  emp.txt</span><br></pre></td></tr></table></div></figure>
+<p>解释：</p>
+<p><code>split($3, date, &quot;-&quot;)</code> 意思是将第三列按照<code>-</code>分割，赋值给date数组，这样date[2]就是月份。</p>
+<p><code>map_name_sala</code> 和 <code>map_name_role</code> 都是map[key]类型。</p>
+<p>执行上述命令后，输出结果为：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">vivi	2800	Worker</span><br><span class="line">Tom	2500	Manager</span><br><span class="line">John	4500	Worker</span><br></pre></td></tr></table></div></figure>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/02/10/105900/">https://wxler.gitee.io/2021/02/10/105900/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/Linux/">Linux</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/02/10/105911/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Linux文件属性与权限的管理</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/02/04/212039/"><span class="paginator-prev__text">使用Xftp和lrzsz在Linux与Windows之间互传文件</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-文本文件操作"><span class="toc-text">
+          一、文本文件操作</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-cattac"><span class="toc-text">
+          1.1 cat&amp;&amp;tac</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-moreless"><span class="toc-text">
+          1.2 more&amp;less</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-head"><span class="toc-text">
+          1.3 head</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-tail"><span class="toc-text">
+          1.4 tail</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-管道"><span class="toc-text">
+          1.5 管道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-xargs"><span class="toc-text">
+          1.6 Xargs</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-数据重定向"><span class="toc-text">
+          1.7 数据重定向</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-文本内容操作"><span class="toc-text">
+          二、文本内容操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-cut"><span class="toc-text">
+          2.1 cut</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-sort"><span class="toc-text">
+          2.2 sort</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-wc"><span class="toc-text">
+          2.3 wc</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-sed"><span class="toc-text">
+          2.4 sed</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-awk"><span class="toc-text">
+          2.5 awk</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">81</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">13</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">41</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

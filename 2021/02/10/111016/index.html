@@ -1,0 +1,988 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="下面是经常使用到的Linux系统Shell基本命令，这里汇总一下，便于以后查阅。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux系统Shell基本命令">
+<meta property="og:url" content="https://wxler.gitee.io/2021/02/10/111016/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="下面是经常使用到的Linux系统Shell基本命令，这里汇总一下，便于以后查阅。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207115454.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207115627.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207120014.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207120053.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207120241.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207120549.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207165958.png">
+<meta property="article:published_time" content="2021-02-10T03:10:16.000Z">
+<meta property="article:modified_time" content="2021-02-10T03:13:17.707Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207115454.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Linux系统Shell基本命令 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/02/10/111016/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Linux系统Shell基本命令</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">6.9k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">50分</span></span></div></header><div class="post-body"><p>下面是经常使用到的Linux系统Shell基本命令，这里汇总一下，便于以后查阅。</p>
+<a id="more"></a>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-%E5%91%BD%E4%BB%A4%E5%85%A5%E9%97%A8">1. 命令入门</a></li>
+<li><a href="#2-help%E5%91%BD%E4%BB%A4">2. help命令</a>
+<ul>
+<li><a href="#21-help">2.1 help</a></li>
+<li><a href="#22-help">2.2 --help</a></li>
+</ul>
+</li>
+<li><a href="#3-man%E5%91%BD%E4%BB%A4">3. man命令</a></li>
+<li><a href="#4-echo">4. echo</a></li>
+<li><a href="#5-test">5. test</a></li>
+<li><a href="#6-type">6. type</a></li>
+<li><a href="#7-file">7. file</a></li>
+<li><a href="#8-ls">8. ls</a></li>
+<li><a href="#9-pwd%E5%92%8Chistory">9. pwd和history</a></li>
+<li><a href="#10-cd">10. cd</a></li>
+<li><a href="#11-ps">11. ps</a></li>
+<li><a href="#12-pstree">12. pstree</a></li>
+<li><a href="#13-mkdir">13. mkdir</a></li>
+<li><a href="#14-rm">14、rm</a></li>
+<li><a href="#15-cp">15. cp</a></li>
+<li><a href="#16-mv">16. mv</a></li>
+<li><a href="#17-ln">17. ln</a></li>
+<li><a href="#18-du">18. du</a></li>
+<li><a href="#19-stat">19. stat</a></li>
+<li><a href="#20-touch">20. touch</a></li>
+<li><a href="#21-kill">21. kill</a></li>
+<li><a href="#22-whereis">22. whereis</a></li>
+<li><a href="#23-locate">23. locate</a></li>
+<li><a href="#24-find">24. find</a></li>
+<li><a href="#25-pstree">25. pstree</a></li>
+<li><a href="#26-read">26. read</a></li>
+</ul>
+</p>
+
+        <h2 id="1-命令入门"   >
+          <a href="#1-命令入门" class="heading-link"><i class="fas fa-link"></i></a>1. 命令入门</h2>
+      
+<p><strong>命令提示符详解</strong></p>
+<p>进入Linux系统，通过root用户登录，会出现<code>[root@localhost ~]#</code>，含义为：</p>
+<ul>
+<li>用户名root</li>
+<li>主机名localhost</li>
+<li>当前用户目录<code>~</code></li>
+<li><code>#</code>为系统权限</li>
+</ul>
+<p>而普通用户<code>[lucy@localhost ~]$</code>中的<code>$</code>为普通权限。</p>
+<p><code>~</code>为当前用户目录，在别的目录下只会显示目录名。</p>
+<p>root为超级管理员，拥有一切系统权限，可通过<code>cd ~</code>进入root用户主目录下，普通用户lucy，可通过<code>~lucy</code>进入其主目录下。</p>
+<p><strong>命令格式</strong>：</p>
+<p><code>命令 选项 参数 (三者之间要有空格，区分大小写)</code>   即 <code>command [-options] [args]</code></p>
+<p><code>[args]</code>为参，多个参数之间用空格分隔。</p>
+
+        <h2 id="2-help命令"   >
+          <a href="#2-help命令" class="heading-link"><i class="fas fa-link"></i></a>2. help命令</h2>
+      
+
+        <h3 id="21-help"   >
+          <a href="#21-help" class="heading-link"><i class="fas fa-link"></i></a>2.1 help</h3>
+      
+<p>使用help查看内建命令的帮助(enable查看内建命令)</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># help -s cd</span></span><br><span class="line"><span class="built_in">cd</span>: <span class="built_in">cd</span> [-L|-P] [dir]</span><br><span class="line">[root@layne ~]<span class="comment"># help -d cd</span></span><br><span class="line"><span class="built_in">cd</span> - Change the shell working directory.</span><br><span class="line">[root@layne ~]<span class="comment"># help -m cd</span></span><br><span class="line">NAME</span><br><span class="line">    <span class="built_in">cd</span> - Change the shell working directory.</span><br><span class="line"></span><br><span class="line">SYNOPSIS</span><br><span class="line">    <span class="built_in">cd</span> [-L|-P] [dir]</span><br><span class="line"></span><br><span class="line">DESCRIPTION</span><br><span class="line">    Change the shell working directory.</span><br><span class="line">    </span><br><span class="line">    Change the current directory to DIR.  The default DIR is the value of the</span><br><span class="line">    HOME shell variable.</span><br><span class="line">    </span><br><span class="line">    The variable CDPATH defines the search path <span class="keyword">for</span> the directory containing</span><br><span class="line">    DIR.  Alternative directory names <span class="keyword">in</span> CDPATH are separated by a colon (:).</span><br><span class="line">    A null directory name is the same as the current directory.  If DIR begins</span><br><span class="line">    with a slash (/), <span class="keyword">then</span> CDPATH is not used.</span><br><span class="line">    ...</span><br></pre></td></tr></table></div></figure>
+<p>但是help只能查看内建命令，比如我想查看mv的帮助信息就不行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># help mv</span></span><br><span class="line">-bash: <span class="built_in">help</span>: no <span class="built_in">help</span> topics match `mv<span class="string">'.  Try `help help'</span> or `man -k mv<span class="string">' or `info mv'</span>.</span><br></pre></td></tr></table></div></figure>
+<p>那么我们怎么知道哪些是<strong>内建命令</strong>呢？</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># enable</span></span><br><span class="line"><span class="built_in">enable</span> .</span><br><span class="line"><span class="built_in">enable</span> :</span><br><span class="line"><span class="built_in">enable</span> [</span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">alias</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">bg</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">bind</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">break</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">builtin</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">caller</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">cd</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">command</span></span><br><span class="line"><span class="built_in">enable</span> compgen</span><br><span class="line"><span class="built_in">enable</span> complete</span><br><span class="line"><span class="built_in">enable</span> compopt</span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">continue</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">declare</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">dirs</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">disown</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">echo</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">enable</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">eval</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">exec</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">exit</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">export</span></span><br><span class="line"><span class="built_in">enable</span> <span class="literal">false</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">fc</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">fg</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">getopts</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">hash</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">help</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">history</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">jobs</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">kill</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">let</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">local</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">logout</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">mapfile</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">popd</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">printf</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">pushd</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">pwd</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">read</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">readarray</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">readonly</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">return</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">set</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">shift</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">shopt</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">source</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">suspend</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">test</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">times</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">trap</span></span><br><span class="line"><span class="built_in">enable</span> <span class="literal">true</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">type</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">typeset</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">ulimit</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">umask</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">unalias</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">unset</span></span><br><span class="line"><span class="built_in">enable</span> <span class="built_in">wait</span></span><br></pre></td></tr></table></div></figure>
+<p>enable也不用背，该方式比较费时间，help无法使用时，根据提示换其他帮助方式就ok了。</p>
+
+        <h3 id="22-help"   >
+          <a href="#22-help" class="heading-link"><i class="fas fa-link"></i></a>2.2 --help</h3>
+      
+<p>如输入<code>mv --help</code>可查看mv的命令介绍。</p>
+
+        <h2 id="3-man命令"   >
+          <a href="#3-man命令" class="heading-link"><i class="fas fa-link"></i></a>3. man命令</h2>
+      
+<p>操作快捷键：</p>
+<ul>
+<li>enter向下一行</li>
+<li>空格按页向下翻，b向上翻页 或 <strong><code>ctrl +f</code>向下翻页，<code>ctrl+b</code>向上翻页</strong></li>
+<li>p直接翻到首页</li>
+<li>查找按 /要查找的内容，查找 下一个/上一个：<strong>按n/N</strong>（即Shift +n）；</li>
+<li>退出按q</li>
+</ul>
+<p>man：</p>
+<ul>
+<li>1用户命令（/bin，/usr/bin，/usr/local/bin）</li>
+<li>2系统调用</li>
+<li>3库函数</li>
+<li>4特殊文件（设备文件）</li>
+<li>5文件格式（配置文件的语法）</li>
+<li>6游戏</li>
+<li>7杂项（Miscellaneous）</li>
+<li>8管理命令（/sbin，/usr/sbin，/usr/local/sbin）</li>
+</ul>
+<p>自己尝试以下 <code>man 2 read</code>和<code>man read</code>的区别。</p>
+
+        <h2 id="4-echo"   >
+          <a href="#4-echo" class="heading-link"><i class="fas fa-link"></i></a>4. echo</h2>
+      
+<ul>
+<li><code>echo $x</code>输出变量x</li>
+<li><code>echo &quot;hello&quot;</code>输出字符串</li>
+<li><code>echo &quot;hello layne&quot; &gt; log.txt</code> 将输出的内容写入到log.txt，如果文件不存在，则会直接创建文件并写入内容。</li>
+<li><code>echo &quot;hello layne123456&quot; &gt;&gt; log.txt</code>将输出的内容<strong>追加到</strong>log.txt。</li>
+<li><code>echo -n</code>表示不要另起新行，如输入<code>echo -n &quot;hello world&quot;</code><br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207115454.png"  alt="" />
+      </li>
+<li><code>-e</code>表示解释逃逸字符，如输入<code>echo -e &quot;hello \nworld&quot;</code><br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207115627.png"  alt="" />
+      </li>
+</ul>
+
+        <h2 id="5-test"   >
+          <a href="#5-test" class="heading-link"><i class="fas fa-link"></i></a>5. test</h2>
+      
+<p>几个算术运算符：</p>
+<ul>
+<li>gt表示greater than，即大于</li>
+<li>lt表示less than，即小于</li>
+<li>eq表示equal，即等于</li>
+<li>ge表示大于等于</li>
+<li>le表示小于等于</li>
+</ul>
+<p>命令：</p>
+<ul>
+<li><code>test 3 -gt 2</code> 测试3大于2</li>
+<li><code>echo $?</code> 返回上一条命令执行的结果（linux中0表示正确，1表示错误）<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207120014.png"  alt="" />
+      </li>
+<li><code>test 3 -ge 3 &amp;&amp; echo 'yes'</code>表示3大于等于3成立，然后执行逻辑与，输出yes<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207120053.png"  alt="" />
+      </li>
+<li><code>test 3 -ge 5 || echo 'no'</code> 表示3大于等于2不成立，然后执行逻辑或，输出no<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207120241.png"  alt="" />
+      </li>
+</ul>
+<p><strong>除了test，还可以用[ ]</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[root@node1 ~]<span class="comment"># [ 3 -gt 2 ]</span></span><br><span class="line">[root@node1 ~]<span class="comment"># echo $?</span></span><br><span class="line">0</span><br><span class="line">[root@node1 ~]<span class="comment"># [ 5 -lt 2 ]</span></span><br><span class="line">[root@node1 ~]<span class="comment"># echo $?</span></span><br><span class="line">1</span><br><span class="line">[root@node1 ~]<span class="comment"># [ 5 -lt 2]</span></span><br><span class="line">-bash: [: missing `]<span class="string">'</span></span><br><span class="line"><span class="string">[root@node1 ~]# [5 -lt 2 ]</span></span><br><span class="line"><span class="string">-bash: [5: command not found</span></span><br><span class="line"><span class="string">[root@layne ~]# [ 3 -gt 2 ] &amp;&amp; echo '</span>yes<span class="string">'</span></span><br><span class="line"><span class="string">yes</span></span><br><span class="line"><span class="string">[root@layne ~]# mydir=/root </span></span><br><span class="line"><span class="string">[root@layne ~]# [ -d $mydir ] &amp;&amp; echo "$mydir is dir"</span></span><br><span class="line"><span class="string">/root is dir</span></span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><strong>[]和内容之间一定要有空格，否则抛错。</strong></li>
+<li><code>[ -d $mydir ]</code> 测试mydir变量是否是一个目录</li>
+</ul>
+<p><strong>当在shell中执行命令的时候，默认到PATH指定的路径中查找可执行文件。</strong></p>
+<p><strong>如果在PATH中的多个目录都包含该可执行文件，则执行最先找到的。</strong></p>
+<p>输入<code>echo $PATH</code>可输出环境变量：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207120549.png"  alt="" />
+      </p>
+<p>如果执行命令的时候，识别不到任何一个path路径下的命令，会提示命令不识别。</p>
+
+        <h2 id="6-type"   >
+          <a href="#6-type" class="heading-link"><i class="fas fa-link"></i></a>6. type</h2>
+      
+<p>type打印一个字符串的类型，可能的值为：别名，内置命令，函数，关键字，可执行文件或者什么都不输出（不是前面的类型）。</p>
+<p>type命令可以识别外部命令和内部命令（内建命令）</p>
+<p>查看命令的type：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># type cd</span></span><br><span class="line"><span class="built_in">cd</span> is a shell <span class="built_in">builtin</span></span><br><span class="line">[root@layne ~]<span class="comment"># type cp</span></span><br><span class="line">cp is aliased to `cp -i<span class="string">'</span></span><br><span class="line"><span class="string">[root@layne ~]# type ls</span></span><br><span class="line"><span class="string">ls is aliased to `ls --color=auto'</span></span><br><span class="line">[root@layne ~]<span class="comment"># type ll</span></span><br><span class="line">ll is aliased to `ls -l --color=auto<span class="string">'</span></span><br></pre></td></tr></table></div></figure>
+<p>别名也可以用alias命令查看，如：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># alias ll</span></span><br><span class="line"><span class="built_in">alias</span> ll=<span class="string">'ls -l --color=auto'</span></span><br></pre></td></tr></table></div></figure>
+<p>查看yum命令的类型：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># type yum</span></span><br><span class="line">yum is hashed (/usr/bin/yum)</span><br></pre></td></tr></table></div></figure>
+<p><strong>yum是外部命令</strong></p>
+
+        <h2 id="7-file"   >
+          <a href="#7-file" class="heading-link"><i class="fas fa-link"></i></a>7. file</h2>
+      
+<p><strong>file命令：检查文件的类型。</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># file /usr/bin/yum</span></span><br><span class="line">/usr/bin/yum: a /usr/bin/python script text executable</span><br></pre></td></tr></table></div></figure>
+<p>yum命令是外部命令，它的文件是python脚本类型文件。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># file /bin/ls</span></span><br><span class="line">/bin/ls: ELF 64-bit LSB executable, x86-64, version 1 (SYSV), dynamically linked (uses shared libs), <span class="keyword">for</span> GNU/Linux 2.6.18, stripped</span><br></pre></td></tr></table></div></figure>
+<p>ls是二进制可执行文件（ELF）。</p>
+
+        <h2 id="8-ls"   >
+          <a href="#8-ls" class="heading-link"><i class="fas fa-link"></i></a>8. ls</h2>
+      
+<p>ls命令用于列出目录内容</p>
+<ul>
+<li><code>ls -a /</code> 显示根目录下所有文件</li>
+<li><code>ls -l /</code> 以格式化的形式显示文件</li>
+<li><code>ls -a -l</code> 以格式化形式显示根目录下所有文件</li>
+<li><code>ls -ali /</code> 列出文件和目录的<strong>inode信息</strong>（相当于c语言的指针）</li>
+<li><code>ls / /usr</code>可以后面跟多个目录，列出多个目录的内容</li>
+<li><code>ll</code>相当于<code>ls -l --color=auto</code></li>
+<li>ls 等于ls ./</li>
+</ul>
+<p>ls也支持通配符</p>
+<ul>
+<li><code>ls *log</code></li>
+<li><code>ls install*</code></li>
+<li><code>ls \*tall\*</code></li>
+</ul>
+
+        <h2 id="9-pwd和history"   >
+          <a href="#9-pwd和history" class="heading-link"><i class="fas fa-link"></i></a>9. pwd和history</h2>
+      
+<p><code>pwd</code>打印当前工作目录路径</p>
+<p><code>history</code>打印历史命令</p>
+
+        <h2 id="10-cd"   >
+          <a href="#10-cd" class="heading-link"><i class="fas fa-link"></i></a>10. cd</h2>
+      
+<p>cd用于更改shell工作目录，也就是切换目录，cd全称是<strong>change directory</strong></p>
+<p><strong>如果cd后什么都不写，表示直接回当前用户家目录</strong>，在root下相当于<code>cd ~</code>。</p>
+<p><strong>cd后也可以跟减号（-）用以表示回到最后一次切换之前的目录</strong>，多次使用减号在最近两个目录之间切换</p>
+<p>root用户可以直接通过绝对路径进到普通用户的家目录，也可以直接跟波浪线用户名表示直接进入到某个用户的家目录</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /home/god <span class="comment">#切换到god家目录</span></span><br><span class="line"><span class="built_in">cd</span> ~bjsxt <span class="comment">#到用户bjsxt家中去</span></span><br><span class="line"><span class="built_in">cd</span> ~ <span class="comment">#到root家目录</span></span><br></pre></td></tr></table></div></figure>
+<p>超级管理员root的家目录在根目录下，即/root，普通用户的家目录在home下。</p>
+
+        <h2 id="11-ps"   >
+          <a href="#11-ps" class="heading-link"><i class="fas fa-link"></i></a>11. ps</h2>
+      
+<p><strong>可以通过命令查看系统内进程信息</strong>（查看当前运行的进程信息）</p>
+<p>进程查看命令<code>ps</code>(process status) ：将某个时间点的程序运作情况截取下来</p>
+<p><strong>选项和参数 ：</strong></p>
+<ul>
+<li>a ： 显示所有程序</li>
+<li>x ：显示所有程序，不区分终端机</li>
+<li>u ：以用户为主的格式来显示</li>
+</ul>
+<p><strong>常用组合 :</strong></p>
+<p><code>ps aux</code> 观察系统所有的进程数据</p>
+<p><code>ps -ef</code> 显示所有进程基本信息（比<code>aux</code>较简略一些）</p>
+<p><code>ps -ef|grep mysql</code> 查看有关mysql的进程</p>
+<p>例如：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># ps aux</span></span><br><span class="line">USER        PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND</span><br><span class="line">root          1  0.0  0.1  19232  1496 ?        Ss   10:15   0:03 /sbin/init</span><br><span class="line">root          2  0.0  0.0      0     0 ?        S    10:15   0:00 [kthreadd]</span><br><span class="line">root          3  0.0  0.0      0     0 ?        S    10:15   0:00 [migration/0]</span><br><span class="line">root          4  0.0  0.0      0     0 ?        S    10:15   0:00 [ksoftirqd/0]</span><br><span class="line">root          5  0.0  0.0      0     0 ?        S    10:15   0:00 [migration/0]</span><br><span class="line">root          6  0.0  0.0      0     0 ?        S    10:15   0:00 [watchdog/0]</span><br><span class="line">root       1333  0.0  0.0   4064   592 tty1     Ss+  10:15   0:00 /sbin/mingetty /dev/tty1</span><br><span class="line">root       1335  0.0  0.0   4064   588 tty2     Ss+  10:15   0:00 /sbin/mingetty /dev/tty2</span><br><span class="line">root       1337  0.0  0.0   4064   592 tty3     Ss+  10:15   0:00 /sbin/mingetty /dev/tty3</span><br><span class="line">root       1339  0.0  0.0   4064   588 tty4     Ss+  10:15   0:00 /sbin/mingetty /dev/tty4</span><br><span class="line">root       1341  0.0  0.0   4064   584 tty5     Ss+  10:15   0:00 /sbin/mingetty /dev/tty5</span><br><span class="line">root       1343  0.0  0.0   4064   588 tty6     Ss+  10:15   0:00 /sbin/mingetty /dev/tty6</span><br><span class="line">root       1346  0.0  0.1  10944  1032 ?        S&lt;   10:15   0:00 /sbin/udevd -d</span><br><span class="line">root       1347  0.0  0.1  10944  1032 ?        S&lt;   10:15   0:00 /sbin/udevd -d</span><br><span class="line">root       1417  0.0  0.5 144452  5072 pts/1    T    11:07   0:00 vim .bashrc</span><br><span class="line">root       1751  0.0  0.1 110216  1092 pts/1    R+   13:35   0:00 ps aux</span><br></pre></td></tr></table></div></figure>
+<p>下为各选项的含义：</p>
+<ul>
+<li>USER：该 process 属于那个使用者</li>
+<li>PID ：该 process 的程序标识符。</li>
+<li>%CPU：该 process 使用掉的 CPU 资源百分比;</li>
+<li>%MEM：该 process 所占用的物理内存百分比;</li>
+<li>VSZ ：该 process 使用掉的虚拟内存量 (Kbytes)</li>
+<li>RSS ：该 process 占用的物理的内存量 (Kbytes)</li>
+<li>TTY ：该 process 是在那个终端机上面运作,若与终端机无关则显示 <code>?</code>。另外，tty1-tty6 是本机上面的登入者程序，若为 pts/0 等，<strong>则表示为由网络连接进主机的程序</strong>。</li>
+<li>STAT：该进程目前的状态，状态显示与<code>ps -l</code>的 S 旗标相同 (R/S/D/T/Z)</li>
+<li>START：该 process 被触发启动的时间</li>
+<li>TIME :该 process 实际使用 CPU 运作的时间。</li>
+<li>COMMAND:该程序的实际命令</li>
+</ul>
+<p>另外，输入<code>ps -ef</code>如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># ps -ef</span></span><br><span class="line">UID         PID   PPID  C STIME TTY          TIME CMD</span><br><span class="line">root          1      0  0 10:15 ?        00:00:03 /sbin/init</span><br><span class="line">root          2      0  0 10:15 ?        00:00:00 [kthreadd]</span><br><span class="line">root          3      2  0 10:15 ?        00:00:00 [migration/0]</span><br><span class="line">root          4      2  0 10:15 ?        00:00:00 [ksoftirqd/0]</span><br><span class="line">root          5      2  0 10:15 ?        00:00:00 [migration/0]</span><br><span class="line">root          6      2  0 10:15 ?        00:00:00 [watchdog/0]</span><br><span class="line">root          7      2  0 10:15 ?        00:00:11 [events/0]</span><br><span class="line">...</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li>STIME 该进程什么时候启动的</li>
+<li><strong>PPID 为进程的父进程ID</strong></li>
+</ul>
+
+        <h2 id="12-pstree"   >
+          <a href="#12-pstree" class="heading-link"><i class="fas fa-link"></i></a>12. pstree</h2>
+      
+<p>Linux pstree命令将所有行程以树状图显示</p>
+<ul>
+<li><code>ps</code>查看进程数</li>
+</ul>
+
+        <h2 id="13-mkdir"   >
+          <a href="#13-mkdir" class="heading-link"><i class="fas fa-link"></i></a>13. mkdir</h2>
+      
+<p>mkdir用于创建目录</p>
+<ul>
+<li><code>mkdir a1 a2 a3</code> 创建目录a1、a2、a3</li>
+<li><code>mkdir -p a/b/c</code> 可以添加**-p**选项，用以创建多层目录，因为系统发现某一级目录不存在的时候创建父目录</li>
+<li><code>mkdir ./abc/1dir ./abc/2dir ./abc/3dir</code> 用于一次性创建多个目录</li>
+</ul>
+<p>可以使用大括号高效创建相似的目录</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir ./abc/&#123;x,y,z&#125;dir  （不连续的） <span class="comment">#创建xdir、ydir、zdir目录</span></span><br><span class="line">mkdir ./abc/&#123;x..z&#125;dir    （连续的）  <span class="comment"># 创建xdir、ydir、zdir目录</span></span><br><span class="line">mkdir b&#123;1..3&#125;  <span class="comment">#创建b1、b2、b3目录</span></span><br></pre></td></tr></table></div></figure>
+<p>touch用于创建文件，如<code>torch a.txt</code>创建文件a.txt</p>
+<p><code>touch a.txt b.txt</code> 创建两个文件</p>
+
+        <h2 id="14-rm"   >
+          <a href="#14-rm" class="heading-link"><i class="fas fa-link"></i></a>14、rm</h2>
+      
+<p><strong>删除之前一定要备份，打包加日期。除非确定以后真的不用了</strong></p>
+<p>rm用于<strong>删除文件</strong></p>
+<ul>
+<li><code>rm a.txt</code> 删除文件a.txt，需要按y确认删除</li>
+<li><code>rm -f file</code>，删除文件，不需要确认强制删除</li>
+</ul>
+<p><strong>如果rm的参数是目录，则会提示需要迭代删除而不能成功</strong></p>
+<ul>
+<li><code>rm -r dira</code> 用于删除目录</li>
+<li><code>rm -rf dira</code> 删除目录，不要确认，<strong>此命令慎用</strong></li>
+</ul>
+<p>尤其是 <code>rm -rf /</code>，这个命令直接删除整个Linux操作系统</p>
+
+        <h2 id="15-cp"   >
+          <a href="#15-cp" class="heading-link"><i class="fas fa-link"></i></a>15. cp</h2>
+      
+<p>cp用于拷贝文件</p>
+<ul>
+<li><code>cp a.txt b.txt abc/</code> 拷贝两个文件到abc目录下</li>
+<li><code>cp /root/install.log /root/abc/xdir/</code> 也可以是绝对路径</li>
+<li><code>cp ~/install.log .</code> 拷贝用户目录下的文件到当前文件夹下</li>
+<li><code>cp a.txt zz.txt</code> <strong>将文件a.txt复制为zz.txt</strong></li>
+</ul>
+<p><strong><code>cp -r 目录 目标目录</code></strong> 用于拷贝整个目录</p>
+<ul>
+<li><code>cp -r efg/ abc/</code> 拷贝efg文件夹到abc文件夹下</li>
+</ul>
+<p>加上<code>-f</code> 表示覆盖已经存在的目标文件而不给出提示。<strong>但是，我试了还是提示我覆盖，哈哈，以后有时间再试试</strong></p>
+
+        <h2 id="16-mv"   >
+          <a href="#16-mv" class="heading-link"><i class="fas fa-link"></i></a>16. mv</h2>
+      
+<p>mv用于移动或重命名文件</p>
+<p><strong>既可以移动文件，也可以移动目录，即可为文件改变，也可以为目录改名。</strong></p>
+<ul>
+<li><code>mv a.txt b.txt x/y</code> 复制两个文件到x/y目录下</li>
+<li><code>mv abc/ x/y</code> <strong>复制目录abc到x/y目录下</strong></li>
+</ul>
+<p>Linux中没有专门改名的命令，mv兼职改名工作：</p>
+<ul>
+<li><code>mv zdir zzdir</code> 将zdir目录改名为zzdir</li>
+<li><code>mv zz.txt zk.txt</code> 将zz.txt文件改名为zk.txt</li>
+</ul>
+
+        <h2 id="17-ln"   >
+          <a href="#17-ln" class="heading-link"><i class="fas fa-link"></i></a>17. ln</h2>
+      
+<p>ln 用于创建硬链接或软链接</p>
+<p><strong>创建硬链接</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># cp /etc/profile ./</span></span><br><span class="line">[root@layne laydir]<span class="comment"># ln profile  ln1</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>创建软链接</strong></p>
+<p>让ln2指向profile， 给profile创建软链接</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># ln -s profile ln2</span></span><br></pre></td></tr></table></div></figure>
+<p>创建完两个链接后，修改ln1、ln2、profile任何一个文件的内容，都会导致这三个文件改变，说明确实实现了链接的功能。</p>
+<p>输入<code>ll -i</code></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210207165958.png"  alt="" />
+      </p>
+<blockquote>
+<p><strong>在 Linux 中，元数据中的 inode 号（inode 是文件元数据的一部分但其并不包含文件名，inode 号即索引节点号）才是文件的唯一标识而非文件名。文件名仅是为了方便人们的记忆和使用，系统或程序通过 inode 号寻找正确的文件数据块。</strong></p>
+</blockquote>
+<p><strong>文件的 inode 值，可以简单把它想成 C 语言中的指针，它指向了物理硬盘的一个区块。只要一个文件的inode存在，它就不会从硬盘上消失。</strong></p>
+<p>看上图，可以发现：</p>
+<ul>
+<li><strong>硬链接和原文件的inode信息一样，软链接和原文件的inode信息不一样。</strong></li>
+<li>软链接ln2的类型是<code>l</code>，说明是链接类型，而硬链接ln1和原文件的类型都是<code>-</code>，说明这两个都是文件类型。</li>
+<li>图片上也显示了l<code>ln2-&gt;profile</code>，说明ln2这个链接指向profile文件</li>
+</ul>
+<p>下面我试着删除 profile 文件，然后通过<code>cat</code>命令分别输出软硬链接的文件内容：</p>
+<p><strong>删除文件后，硬链接ln1输出了profile文件里面的内容，软链接ln2报错<code>cat: ln2: No such file or directory</code></strong></p>
+<p><strong>这说明，硬链接ln1没有丝毫地影响，因为它的 inode 所指向的区块由于有一个硬链接在指向它，所以这个区块仍然有效，并且可以访问到。然而软链接的 inode 所指向的内容实际上是保存了一个绝对路径，当用户访问这个文件时，系统会自动将其替换成其所指的文件路径，由于这个文件已经被删除了，所以自然就会显示无法找到该文件了。</strong></p>
+<p>接下来，我向这个软连接ln2写点东西，<strong>会发现刚才删除的profile文件竟然又出现了</strong>！<strong>这就说明，当我们写入访问软链接时，系统自动将其路径替换为其所代表的绝对路径，并直接访问那个路径了。</strong></p>
+<p>参考：<span class="exturl"><a class="exturl__link"   href="https://www.linuxprobe.com/soft-and-hard-links.html"  target="_blank" rel="noopener">“软链接”和“硬链接”的区别</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h2 id="18-du"   >
+          <a href="#18-du" class="heading-link"><i class="fas fa-link"></i></a>18. du</h2>
+      
+<p>du （英文全拼：disk usage）命令用于显示目录或文件的大小。</p>
+<p>du 会显示指定的目录或文件所占用的磁盘空间。</p>
+<ul>
+<li>a ：列出所有的文件与目录容量</li>
+<li>h ：<strong>以人们较易读的容量格式(G/M/K)显示</strong></li>
+<li>s ：summarize 仅显示总计。</li>
+<li>k ：以 KBytes 列出容量显示</li>
+<li>m :以 MBytes 列出容量显示</li>
+</ul>
+<p><code>du /root</code>统计/root下的目录或文件所占用的磁盘空间。（如果只输入<code>du</code>表示统计当前目录下的）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># du /root</span></span><br><span class="line">4	/root/b7/b3</span><br><span class="line">4	/root/b7/etc/cron.monthly</span><br><span class="line">4	/root/b7/etc/blkid</span><br><span class="line">160	/root/b7/etc/ssh</span><br><span class="line">8	/root/b7/etc/xdg/autostart</span><br><span class="line">12	/root/b7/etc/xdg</span><br><span class="line">316	/root/b7/etc/pki/ca-trust/extracted/openssl</span><br><span class="line">180	/root/b7/etc/pki/ca-trust/extracted/java</span><br><span class="line">604	/root/b7/etc/pki/ca-trust/extracted/pem</span><br><span class="line">1108	/root/b7/etc/pki/ca-trust/extracted</span><br><span class="line">4	/root/b7/etc/pki/ca-trust/<span class="built_in">source</span>/blacklist</span><br><span class="line">4	/root/b7/etc/pki/ca-trust/<span class="built_in">source</span>/anchors</span><br><span class="line">...</span><br></pre></td></tr></table></div></figure>
+<p>添加-s参数可以生成指定目录的汇总信息，也就是共占用多大的磁盘空间</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># du -s /root</span></span><br><span class="line">58384	/root</span><br></pre></td></tr></table></div></figure>
+<p>添加-h参数可以显示为人类可以读懂的格式</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># du -sh /root</span></span><br><span class="line">58M	/root</span><br></pre></td></tr></table></div></figure>
+<p>将路径写成<code>./*</code>统计当前目录下每项内容占用的磁盘空间信息</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># du -sh /root/*</span></span><br><span class="line">40K	/root/1611819376845.png</span><br><span class="line">4.0K	/root/anaconda-ks.cfg</span><br><span class="line">40M	/root/b7</span><br><span class="line">16K	/root/day5</span><br><span class="line">12K	/root/install.log</span><br><span class="line">4.0K	/root/install.log.syslog</span><br><span class="line">28K	/root/layne</span><br><span class="line">4.0K	/root/log.txt</span><br><span class="line">15M	/root/manpages-zh-1.5.1</span><br><span class="line">1.9M	/root/manpages-zh-1.5.1.tar.gz</span><br><span class="line">52K	/root/my</span><br><span class="line">4.0K	/root/profile</span><br><span class="line">4.0K	/root/test1.txt</span><br><span class="line">4.0K	/root/test.txt</span><br><span class="line">4.0K	/root/TRANS.TBL</span><br></pre></td></tr></table></div></figure>
+<p>查看/usr/local目录下共占用多大磁盘空间</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># du -sh /usr/local</span></span><br><span class="line">7.0M	/usr/<span class="built_in">local</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="19-stat"   >
+          <a href="#19-stat" class="heading-link"><i class="fas fa-link"></i></a>19. stat</h2>
+      
+<p>stat命令用于显示inode内容。</p>
+<p>stat以文字的格式来显示inode的内容。</p>
+<p>例如，查看 etc下的profile文件的inode内容内容，可以用以下命令：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne laydir]<span class="comment"># stat /etc/profile</span></span><br><span class="line">  File: `/etc/profile<span class="string">'</span></span><br><span class="line"><span class="string">  Size: 1896      	Blocks: 8          IO Block: 4096   regular file</span></span><br><span class="line"><span class="string">Device: 803h/2051d	Inode: 131623      Links: 1</span></span><br><span class="line"><span class="string">Access: (0644/-rw-r--r--)  Uid: (    0/    root)   Gid: (    0/    root)</span></span><br><span class="line"><span class="string">Access: 2021-02-07 10:15:36.277006386 +0800</span></span><br><span class="line"><span class="string">Modify: 2021-02-05 19:43:06.556412802 +0800</span></span><br><span class="line"><span class="string">Change: 2021-02-05 19:43:06.589413340 +0800</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="20-touch"   >
+          <a href="#20-touch" class="heading-link"><i class="fas fa-link"></i></a>20. touch</h2>
+      
+<p>用于创建文件</p>
+<p><code>touch a.txt b.txt</code> 创建a.txt和b.txt</p>
+<p>touch 对于已存在的文件，抹平各个时间（<strong>不会改变里面的内容</strong>）</p>
+<p>touch 对于不存在的文件，则创建文件</p>
+
+        <h2 id="21-kill"   >
+          <a href="#21-kill" class="heading-link"><i class="fas fa-link"></i></a>21. kill</h2>
+      
+<p>杀死进程</p>
+<p>kill -9 pid （见人就杀，不做善后工作）</p>
+<p>kill -15 pid （调用destory方法善后，）</p>
+<p><strong>优先使用 -15，因为-15温柔一些，会做一些善后的处理，不行再用-9</strong></p>
+
+        <h2 id="22-whereis"   >
+          <a href="#22-whereis" class="heading-link"><i class="fas fa-link"></i></a>22. whereis</h2>
+      
+<p>作用：locate the binary, source, and manual page files for a command.即：定位/返回与指定名字匹配的二进制文件（参数-b）、源文件（参数-s）和man帮助手册（参数-m）文件所在的路径。如果省略参数，则返回所有信息。</p>
+<p>和find相比，whereis查找的速度非常快，这是因为linux系统会将系统内的所有文件都记录在一个数据库文件中，当使用whereis和下面即将介绍的locate时，会从数据库中查找数据，而不是像find命令那样，通过遍历硬盘来查找，效率自然会很高。</p>
+<p>但是该数据库文件并不是实时更新，默认情况下时每天自动更新一次，因此，我们在用whereis和locate 查找文件时，有时会找到已经被删除的数据，或者刚刚建立文件，却无法查找到，原因就是因为数据库文件没有被更新。 可以通过<code>updatedb</code>去读取 /etc/updatedb.conf 这个配置文件的设定，更新整个数据库！因为 updatedb 会去查找硬盘，所以执行 updatedb ，可能会等待数分钟。</p>
+<p>原理：whereis命令首先会去掉filename中的前缀空格和以.开头的任何字符，然后再<strong>在数据库（var/lib/slocate/slocate.db）中</strong>查找与上述处理后的filename相匹配的二进制文件、源文件和帮助手册文件,使用之前可以使用updatedb命令手动更新数据库。</p>
+<p><strong>命令参数：</strong></p>
+<p>-b  定位可执行文件。</p>
+<p>-m  定位帮助文件。</p>
+<p>-s  定位源代码文件。</p>
+<p>-u  搜索默认路径下除可执行文件、源代码文件、帮助文件以外的其它文件。</p>
+<p>-B  指定搜索可执行文件的路径。</p>
+<p>-M  指定搜索帮助文件的路径。</p>
+<p>-S  指定搜索源代码文件的路径。</p>
+<p>适用场合：二进制文件、源文件和帮助手册文件路径的查找。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne apps]<span class="comment"># whereis java</span></span><br><span class="line">java: /usr/bin/java</span><br><span class="line">[root@layne apps]<span class="comment">#</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="23-locate"   >
+          <a href="#23-locate" class="heading-link"><i class="fas fa-link"></i></a>23. locate</h2>
+      
+<p>locate而且使用范围比whereis大的多，只需要部分文件名就可以进行模糊查询，同时locte还可以通过<code>-r</code>选项使用正则表达式，功能十分强大。与whereis一样 locate使用的索引数据库里的信息并不一定是实时有效的，可以使用updatedb命令更新索引数据库。</p>
+<p>原理：默认情况下(当filename中不包含通配符)，locate会给出所有与filename相匹配的文件的路径。</p>
+<p>适用场合：没有文件类型性质的模糊查找（你只记得某个文件的部分名称）。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne apps]<span class="comment"># locate java|head -n 5</span></span><br><span class="line">/etc/.java</span><br><span class="line">/etc/.java/.systemPrefs</span><br><span class="line">/etc/.java/.systemPrefs/.system.lock</span><br><span class="line">/etc/.java/.systemPrefs/.systemRootModFile</span><br><span class="line">/etc/pki/java</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="24-find"   >
+          <a href="#24-find" class="heading-link"><i class="fas fa-link"></i></a>24. find</h2>
+      
+<p>参数说明：</p>
+<p><strong>时间查找参数：</strong></p>
+<ul>
+<li>-atime  n: 在过去n天内被读取过的文件</li>
+<li>-cmin n : <strong>在过去 n 分钟内被创建的文件</strong> （按文件创建时间来查找文件）</li>
+<li>-mmin n：在过去 n 分钟内被修改过的文件（按文件更改时间来查找文件）</li>
+<li>-ctime  n: 在过去n天内被创建的文件（按文件创建时间来查找文件）</li>
+<li>-mtime  n: 在过去n天内被修改过的文件（按文件更改时间来查找文件）</li>
+<li>-newer file: 把比file还要新的文件列出来</li>
+</ul>
+<p><strong>名称查找参数：</strong></p>
+<ul>
+<li>-gid  n:  寻找群组ID为n的文件</li>
+<li>-group name: 寻找群组名称为name的文件</li>
+<li>-uid  n:  寻找拥有者ID为n的文件</li>
+<li>-user name:  寻找拥有者名称为name的文件</li>
+<li>-name file:   寻找文件名为file的文件（可以使用通配符）</li>
+</ul>
+<p><strong>其它参数：</strong></p>
+<ul>
+<li>-type c : 文件类型是 c 的文件。
+<ul>
+<li>d: 目录</li>
+<li>c: 字型装置文件</li>
+<li>b: 区块装置文件</li>
+<li>p: 具名贮列</li>
+<li>f: 一般文件</li>
+<li>l: 符号连结</li>
+<li>s: socket</li>
+</ul>
+</li>
+<li>-size   n[c]        #查长度为n块[或n字节]的文件</li>
+<li>-user  username       #按文件属主来查找</li>
+<li>-group groupname      #按组来查找</li>
+</ul>
+<p>作用：search for files in a directory hierarchy. 从当前目录递归的搜索文件（通过遍历硬盘来查找）。</p>
+<p>这里介绍一下<strong>时间查找参数的含义，以-mtime参数为例</strong></p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">-mtime n ：n 为数字，意义为在 n 天之前被更改过的文件； </span><br><span class="line">+n ：列出在 n 天（不含你、）之前被更改过的文</span><br><span class="line">-n ：列出在 n 天之内(包含 n 天本身)被更改过内容的文件。</span><br></pre></td></tr></table></div></figure>
+<p>比如</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+4代表&gt;=5天前的文件名：ex&gt; find /var -mtime +4 #查看/var目录下&gt;=5天前的文件名</span><br><span class="line">-4代表&lt;=4天内的文件名：ex&gt; find /var -mtime -4</span><br><span class="line"> 4则是代表4-5那一天的文件名：ex&gt; find /var -mtime 4</span><br></pre></td></tr></table></div></figure>
+<p>find的使用实例：</p>
+<ul>
+<li>
+<p><code>find . -name &quot;*.c&quot;</code> 将当前目录及其子目录下所有文件后缀为 <strong>.c</strong> 的文件列出来</p>
+</li>
+<li>
+<p><code>find . -type f</code>  将目前目录其其下子目录中所有一般文件列出</p>
+</li>
+<li>
+<p><code>find . -ctime -20</code>  将当前目录及其子目录下所有最近 20 天内更新过的文件列出</p>
+</li>
+<li>
+<p><code>find /var/log -type f -mtime +7 -ok rm {} \;</code> 查找 /var/log 目录中<strong>更改时间</strong>在 7 日以前的普通文件，并在删除之前询问它们</p>
+</li>
+<li>
+<p><code>find . -type f -mmin -10</code> 搜索当前目录中，所有过去10分钟中<strong>更新过</strong>的普通文件。如果不加-type f参数，则搜索普通文件+特殊文件+目录。</p>
+</li>
+<li>
+<p><code>find . -name &quot;my*&quot; -ls</code> 搜索当前目录中，所有文件名以my开头的文件，并显示它们的详细信息。</p>
+</li>
+<li>
+<p><code>find /home -size +512k</code>         查大于512k的文件</p>
+</li>
+<li>
+<p><code>find /home -size -512k</code>        查小于512k的文件</p>
+</li>
+<li>
+<p><code>find /home -user noas</code>  找到目下下所有该用户的文件</p>
+</li>
+<li>
+<p><code>find / -nouser</code> #找到不数据任何用户的文件</p>
+</li>
+</ul>
+
+        <h2 id="25-pstree"   >
+          <a href="#25-pstree" class="heading-link"><i class="fas fa-link"></i></a>25. pstree</h2>
+      
+<p><code>pstree</code> 打印进程树（有的子进程折叠）</p>
+<p><code>pstree -p</code>打印并展开所有的进程树，并显示每个进程的id</p>
+
+        <h2 id="26-read"   >
+          <a href="#26-read" class="heading-link"><i class="fas fa-link"></i></a>26. read</h2>
+      
+<p>read命令用于从标准输入读取数值。</p>
+<p>read 内部命令被用来从标准输入<strong>读取单行数据</strong>。这个命令可以用来读取键盘输入，当使用重定向的时候，可以读取文件中的一行数据。</p>
+<p>语法：<code>read [-ers] [-a aname] [-d delim] [-i text] [-n nchars] [-N nchars] [-p prompt] [-t timeout] [-u fd] [name ...]</code></p>
+<p><strong>参数说明:</strong></p>
+<ul>
+<li>-a 后跟一个变量，该变量会被认为是个数组，然后给其赋值，默认是以空格为分割符。</li>
+<li>-d 后面跟一个标志符，其实只有其后的第一个字符有用，作为结束的标志。</li>
+<li>-p <strong>后面跟提示信息</strong>，即在输入前打印提示信息。</li>
+<li>-e 在输入的时候可以使用命令补全功能。</li>
+<li>-n 后跟一个数字，定义输入文本的长度，很实用。</li>
+<li>-r 屏蔽\，如果没有该选项，则\作为一个转义字符，有的话 \就是个正常的字符了。</li>
+<li>-s 安静模式，<strong>在输入字符时不再屏幕上显示</strong>，例如login时输入密码。</li>
+<li>-t 后面跟秒数，定义输入字符的等待时间。</li>
+<li>-u 后面跟fd，从文件描述符中读入，该文件描述符可以是exec新开启的。</li>
+</ul>
+<p>现在来试试吧。</p>
+<p><strong>（1）简单读取</strong></p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--a-116ao4hu8su3h.sh"  target="_blank" rel="noopener">创建文件a.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#这里默认会换行  </span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"输入网站名: "</span>  </span><br><span class="line"><span class="comment">#读取从键盘的输入  </span></span><br><span class="line"><span class="built_in">read</span> website  </span><br><span class="line"><span class="built_in">echo</span> <span class="string">"你输入的网站名是 <span class="variable">$website</span>"</span>  </span><br><span class="line"><span class="built_in">exit</span> 0  <span class="comment">#退出</span></span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne rdir]<span class="comment"># chmod +x a.sh</span></span><br><span class="line">[root@layne rdir]<span class="comment"># ./a.sh </span></span><br><span class="line">输入网站名: </span><br><span class="line">layne</span><br><span class="line">你输入的网站名是 layne</span><br><span class="line">[root@layne rdir]<span class="comment">#</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>（2）<code>-p</code> 参数，允许在 read 命令行中直接指定一个提示。</strong></p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--b-116ao4hu8su3h.sh"  target="_blank" rel="noopener">创建文件b.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">read</span> -p <span class="string">"输入网站名:"</span> website</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"你输入的网站名是 <span class="variable">$website</span>"</span> </span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne rdir]<span class="comment"># chmod +x b.sh</span></span><br><span class="line">[root@layne rdir]<span class="comment"># ./b.sh</span></span><br><span class="line">输入网站名:layne</span><br><span class="line">你输入的网站名是 layne</span><br></pre></td></tr></table></div></figure>
+<p><strong>（3）<code>-t</code> 参数指定 read 命令等待输入的秒数，当计时满时，read命令返回一个非零退出状态。</strong></p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--c-1d8a980b.sh"  target="_blank" rel="noopener">创建c.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> <span class="built_in">read</span> -t 5 -p <span class="string">"输入网站名:"</span> website</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"你输入的网站名是 <span class="variable">$website</span>"</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"\n抱歉，你输入超时了。"</span></span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></div></figure>
+<p>执行（不输入，等待 5 秒后）：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne rdir]<span class="comment"># chmod +x c.sh</span></span><br><span class="line">[root@layne rdir]<span class="comment"># ./c.sh  </span></span><br><span class="line">输入网站名:\n抱歉，你输入超时了。</span><br></pre></td></tr></table></div></figure>
+<p>（4）除了输入时间计时，还可以使用 <strong>-n</strong> 参数设置 <strong>read</strong> 命令计数输入的字符。当输入的字符数目达到预定数目时，自动退出，并将输入的数据赋值给变量。</p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--d-1d8a980b.sh"  target="_blank" rel="noopener">创建d.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">read</span> -n1 -p <span class="string">"Do you want to continue [Y/N]?"</span> answer</span><br><span class="line"><span class="keyword">case</span> <span class="variable">$answer</span> <span class="keyword">in</span></span><br><span class="line">Y | y)</span><br><span class="line">      <span class="built_in">echo</span> <span class="string">"fine ,continue"</span>;;</span><br><span class="line">N | n)</span><br><span class="line">      <span class="built_in">echo</span> <span class="string">"ok,good bye"</span>;;</span><br><span class="line">*)</span><br><span class="line">     <span class="built_in">echo</span> <span class="string">"error choice"</span>;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">esac</span></span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne rdir]<span class="comment"># chmod +x d.sh</span></span><br><span class="line">[root@layne rdir]<span class="comment"># ./d.sh</span></span><br><span class="line">Do you want to <span class="built_in">continue</span> [Y/N]?yfine ,<span class="built_in">continue</span></span><br></pre></td></tr></table></div></figure>
+<p>该例子使用了-n 选项，后接数值 1，指示 read 命令只要接受到一个字符就退出。只要按下一个字符进行回答，read 命令立即接受输入并将其传给变量，<strong>无需按回车键。</strong></p>
+<p>（5）<strong>-s</strong> 选项能够使 <strong>read</strong> 命令中输入的数据不显示在命令终端上（实际上，数据是显示的，只是 <strong>read</strong> 命令将文本颜色设置成与背景相同的颜色）。输入密码常用这个选项。</p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--e-1d8a980b.sh"  target="_blank" rel="noopener">创建e.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">read</span>  -s  -p <span class="string">"请输入您的密码:"</span> pass</span><br><span class="line"><span class="built_in">echo</span> <span class="string">"\n您输入的密码是 <span class="variable">$pass</span>"</span></span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne rdir]<span class="comment"># chmod +x e.sh</span></span><br><span class="line">[root@layne rdir]<span class="comment"># ./e.sh </span></span><br><span class="line">请输入您的密码:\n您输入的密码是 123</span><br></pre></td></tr></table></div></figure>
+<p>（6） <strong>读取文件</strong></p>
+<p><strong>每次调用 read 命令都会读取文件中的 “一行” 文本</strong>。当文件没有可读的行时，read 命令将以非零状态退出。</p>
+<p>通过什么样的方法将文件中的数据传给 read 呢？使用 cat 命令并通过管道将结果直接传送给包含 read 命令的 while 命令。</p>
+<p>创建test.txt，内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">123</span><br><span class="line">456</span><br><span class="line">layne</span><br></pre></td></tr></table></div></figure>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--f-1d8a980b.sh"  target="_blank" rel="noopener">创建f.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">  </span><br><span class="line">count=1    <span class="comment"># 赋值语句，不加空格</span></span><br><span class="line">cat test.txt | <span class="keyword">while</span> <span class="built_in">read</span> line      <span class="comment"># cat 命令的输出作为read命令的输入,read读到&gt;的值放在line中</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"Line <span class="variable">$count</span>:<span class="variable">$line</span>"</span></span><br><span class="line">   count=$[ <span class="variable">$count</span> + 1 ]          <span class="comment"># 注意中括号中的空格。</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"finish"</span></span><br><span class="line"><span class="built_in">exit</span> 0</span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne rdir]<span class="comment"># chmod +x f.sh</span></span><br><span class="line">[root@layne rdir]<span class="comment"># ./f.sh</span></span><br><span class="line">Line 1:123</span><br><span class="line">Line 2:456</span><br><span class="line">Line 3:layne</span><br><span class="line">finish</span><br></pre></td></tr></table></div></figure>
+<p>（7）<strong>read在不提供参数的时候，会将用户的输入存储在REPLY变量中</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne rdir]<span class="comment"># read</span></span><br><span class="line">abc</span><br><span class="line">[root@layne rdir]<span class="comment"># echo $REPLY</span></span><br><span class="line">abc</span><br></pre></td></tr></table></div></figure>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/02/10/111016/">https://wxler.gitee.io/2021/02/10/111016/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/Linux/">Linux</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/02/10/111324/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Linux系统中文件的解压缩操作</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/02/10/105922/"><span class="paginator-prev__text">Linux文件系统相关操作</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-命令入门"><span class="toc-text">
+          1. 命令入门</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-help命令"><span class="toc-text">
+          2. help命令</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-help"><span class="toc-text">
+          2.1 help</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-help"><span class="toc-text">
+          2.2 --help</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-man命令"><span class="toc-text">
+          3. man命令</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-echo"><span class="toc-text">
+          4. echo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-test"><span class="toc-text">
+          5. test</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-type"><span class="toc-text">
+          6. type</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-file"><span class="toc-text">
+          7. file</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-ls"><span class="toc-text">
+          8. ls</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-pwd和history"><span class="toc-text">
+          9. pwd和history</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-cd"><span class="toc-text">
+          10. cd</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-ps"><span class="toc-text">
+          11. ps</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-pstree"><span class="toc-text">
+          12. pstree</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-mkdir"><span class="toc-text">
+          13. mkdir</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-rm"><span class="toc-text">
+          14、rm</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-cp"><span class="toc-text">
+          15. cp</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#16-mv"><span class="toc-text">
+          16. mv</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#17-ln"><span class="toc-text">
+          17. ln</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#18-du"><span class="toc-text">
+          18. du</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#19-stat"><span class="toc-text">
+          19. stat</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#20-touch"><span class="toc-text">
+          20. touch</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#21-kill"><span class="toc-text">
+          21. kill</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#22-whereis"><span class="toc-text">
+          22. whereis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#23-locate"><span class="toc-text">
+          23. locate</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#24-find"><span class="toc-text">
+          24. find</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#25-pstree"><span class="toc-text">
+          25. pstree</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#26-read"><span class="toc-text">
+          26. read</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">81</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">13</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">41</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
