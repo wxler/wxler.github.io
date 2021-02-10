@@ -1,0 +1,882 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="Linux中的bash语法，主要介绍bash的io、变量、分支、循环等基本操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux中的bash语法详解">
+<meta property="og:url" content="https://wxler.gitee.io/2021/02/10/111447/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="Linux中的bash语法，主要介绍bash的io、变量、分支、循环等基本操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209185227.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209223824.png">
+<meta property="article:published_time" content="2021-02-10T03:14:47.000Z">
+<meta property="article:modified_time" content="2021-02-10T04:54:50.312Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209185227.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>Linux中的bash语法详解 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/02/10/111447/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">Linux中的bash语法详解</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">7.6k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">61分</span></span></div></header><div class="post-body"><p>Linux中的bash语法，主要介绍bash的io、变量、分支、循环等基本操作。</p>
+<a id="more"></a>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-bash%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8">1. bash基本使用</a></li>
+<li><a href="#2-bash%E7%9A%84io">2. bash的io</a></li>
+<li><a href="#3-bash%E7%9A%84%E5%8F%98%E9%87%8F">3. bash的变量</a>
+<ul>
+<li><a href="#31-bash%E4%B8%AD%E5%8F%98%E9%87%8F%E7%9A%84%E7%B1%BB%E5%9E%8B">3.1 bash中变量的类型</a></li>
+<li><a href="#32-%E6%9C%AC%E5%9C%B0%E5%8F%98%E9%87%8F">3.2 本地变量</a></li>
+<li><a href="#33-%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F">3.3 局部变量</a></li>
+<li><a href="#34-%E4%BD%8D%E7%BD%AE%E5%8F%98%E9%87%8F">3.4 位置变量</a></li>
+<li><a href="#35-%E7%89%B9%E6%AE%8A%E5%8F%98%E9%87%8F">3.5 特殊变量</a></li>
+<li><a href="#36-%E6%95%B0%E7%BB%84">3.6 数组</a></li>
+<li><a href="#37-%E7%AE%A1%E9%81%93">3.7 管道</a></li>
+<li><a href="#38-%E5%92%8Cpashpid">3.8 $$和$PASHPID</a></li>
+</ul>
+</li>
+<li><a href="#4-bash%E7%9A%84%E5%9F%BA%E6%9C%AC%E8%AF%AD%E6%B3%95">4. bash的基本语法</a>
+<ul>
+<li><a href="#41-%E5%8D%95%E5%BC%95%E5%8F%B7%E5%92%8C%E5%8F%8C%E5%BC%95%E5%8F%B7">4.1 单引号和双引号</a></li>
+<li><a href="#42-%E5%91%BD%E4%BB%A4%E6%9B%BF%E6%8D%A2">4.2 命令替换</a></li>
+<li><a href="#43-%E9%80%BB%E8%BE%91%E5%88%A4%E6%96%AD">4.3 逻辑判断</a></li>
+<li><a href="#44-%E8%A1%A8%E8%BE%BE%E5%BC%8F">4.4 表达式</a></li>
+</ul>
+</li>
+<li><a href="#5-bash%E7%9A%84%E5%88%86%E6%94%AF">5. bash的分支</a>
+<ul>
+<li><a href="#51-if%E5%88%86%E6%94%AF">5.1 if分支</a></li>
+<li><a href="#52-case%E5%88%86%E6%94%AF">5.2 case分支</a></li>
+</ul>
+</li>
+<li><a href="#6-bash%E7%9A%84%E5%BE%AA%E7%8E%AF">6. bash的循环</a>
+<ul>
+<li><a href="#61-while%E5%BE%AA%E7%8E%AF">6.1 while循环</a></li>
+<li><a href="#62-for%E5%BE%AA%E7%8E%AF">6.2 for循环</a></li>
+</ul>
+</li>
+<li><a href="#7-bash%E7%BB%83%E4%B9%A0">7. bash练习</a>
+<ul>
+<li><a href="#71-%E6%A1%88%E4%BE%8B1">7.1 案例1</a></li>
+<li><a href="#72-%E6%A1%88%E4%BE%8B2">7.2 案例2</a></li>
+</ul>
+</li>
+</ul>
+</p>
+<p>shell就是一个bash程序（进程），就是一个解释器，启动器</p>
+<p>脚本本质：</p>
+<ul>
+<li>#!/bin/bash</li>
+<li>#!/usr/bin/python</li>
+</ul>
+<p>上面的不是普通的注释，是你用<code>./</code>执行的时候，默认走的哪一个解释器</p>
+<p>用<code>bash test.sh</code>执行的时候，是不看第一行的<code>#!/bin/bash</code>或<code>#!/usr/bin/python</code> ，直接用bash解释器。</p>
+<p>同样的，用<code>sh test.sh</code>执行的时候也一样，其直接用sh解释器。</p>
+<p>但是，用<code>./ test.sh</code>执行的时候，要看第一行，然后选择走哪一个解释器。</p>
+<p>脚本读取（或解释执行）方式常用的有五种：</p>
+<ul>
+<li><code>bash filename</code></li>
+<li><code>sh filename</code></li>
+<li><code>./filename</code></li>
+<li><code>source filename</code></li>
+<li><code>. filename</code></li>
+</ul>
+<p>说明： <code>./*.sh</code>的执行方式等价于<code>sh ./*.sh</code>或者<code>bash ./*.sh</code>，<strong>此三种执行脚本的方式都是重新启动一个子shell，在子shell中执行此脚本。</strong></p>
+<p><code>source ./*.sh</code>和 <code>. ./*.sh</code>的执行方式是等价的，即两种执行方式都是在当前shell进程中执行此脚本，而不是重新启动一个子shell执行。</p>
+<p>一个重要的点：<strong>父shell进程中没有被export导出的变量（即非环境变量）是不能被子shell进程继承的，但是在父进程中被export的变量可以被子shll进程使用。子shell进程中的所有变量（无论是否被export）都不能被父进程使用</strong></p>
+
+        <h2 id="1-bash基本使用"   >
+          <a href="#1-bash基本使用" class="heading-link"><i class="fas fa-link"></i></a>1. bash基本使用</h2>
+      
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># bash  # 启动一个新的bash进程，该bash进程为之前bash的子进程</span></span><br><span class="line">[root@layne ~]<span class="comment"># echo $$  # 打印当前bash的PID</span></span><br><span class="line">1852</span><br><span class="line">[root@layne ~]<span class="comment"># pstree -p # 打印进程树，并显示进程id</span></span><br><span class="line">init(1)─┬─auditd(899)───&#123;auditd&#125;(900)</span><br><span class="line">        ├─crond(1312)</span><br><span class="line">        ├─mingetty(1338)</span><br><span class="line">        ├─mingetty(1340)</span><br><span class="line">        ├─mingetty(1342)</span><br><span class="line">        ├─mingetty(1344)</span><br><span class="line">        ├─mingetty(1346)</span><br><span class="line">        ├─mingetty(1348)</span><br><span class="line">        ├─ntpd(973)</span><br><span class="line">        ├─rsyslogd(915)─┬─&#123;rsyslogd&#125;(917)</span><br><span class="line">        │               ├─&#123;rsyslogd&#125;(919)</span><br><span class="line">        │               └─&#123;rsyslogd&#125;(920)</span><br><span class="line">        ├─sshd(965)───sshd(1030)───bash(1219)───bash(1852)───pstree(1862)</span><br><span class="line">        └─udevd(354)───udevd(640)</span><br><span class="line">[root@layne ~]<span class="comment"># exit # （第一次输入exit，退出当前bash，再输入exit会退出ssh连接的bash，即就断掉连接了）</span></span><br><span class="line"><span class="built_in">exit</span></span><br><span class="line">[root@layne ~]<span class="comment"># echo $$</span></span><br><span class="line">1219</span><br><span class="line">[root@layne ~]<span class="comment"># pstree -p</span></span><br><span class="line">init(1)─┬─auditd(899)───&#123;auditd&#125;(900)</span><br><span class="line">        ├─crond(1312)</span><br><span class="line">        ├─mingetty(1338)</span><br><span class="line">        ├─mingetty(1340)</span><br><span class="line">        ├─mingetty(1342)</span><br><span class="line">        ├─mingetty(1344)</span><br><span class="line">        ├─mingetty(1346)</span><br><span class="line">        ├─mingetty(1348)</span><br><span class="line">        ├─ntpd(973)</span><br><span class="line">        ├─rsyslogd(915)─┬─&#123;rsyslogd&#125;(917)</span><br><span class="line">        │               ├─&#123;rsyslogd&#125;(919)</span><br><span class="line">        │               └─&#123;rsyslogd&#125;(920)</span><br><span class="line">        ├─sshd(965)───sshd(1030)───bash(1219)───pstree(1863)</span><br><span class="line">        └─udevd(354)───udevd(640)</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，当我们用ssh连接虚拟机时，会启动<code>sshd</code>进程，进入bash命令行界面后，会启动<code>bash</code>进程，这个bash进程是sshd进程的子进程，当我们在命令行中输入<code>bash</code>会启动一个新的bash进程，这个新的bash进程是之前bash进程的子进程。</p>
+<p>现在我们来验证：<strong>父shell进程中没有被export导出的变量（即非环境变量）是不能被子shell进程继承的，但是在父进程中被export的变量可以被子shll进程使用。</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne ~]<span class="comment"># name=layne</span></span><br><span class="line">[root@layne ~]<span class="comment"># age=24</span></span><br><span class="line">[root@layne ~]<span class="comment"># echo "$name,$age"</span></span><br><span class="line">layne,24</span><br><span class="line">[root@layne ~]<span class="comment"># export name</span></span><br><span class="line">[root@layne ~]<span class="comment"># bash</span></span><br><span class="line">[root@layne ~]<span class="comment"># echo "$name,$age"</span></span><br><span class="line">layne,</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，在子进程的bash，只能输出被export导出的变量（即环境变量），不能输出普通变量。</p>
+<p>还有一个重要点：<strong>子shell进程中的所有变量（无论是否被export）都不能被父进程使用</strong>。验证如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># GH=lazz</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># export GH</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $GH</span></span><br><span class="line">lazz</span><br><span class="line">[root@layne bashdir]<span class="comment"># exit</span></span><br><span class="line"><span class="built_in">exit</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $GH #输出空</span></span><br></pre></td></tr></table></div></figure>
+<p>另外，在<code>.sh</code>文件的开头一般输入下列中的一个：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment">#!/usr/bin/python</span></span><br><span class="line"><span class="comment">#!/bin/awk -f</span></span><br></pre></td></tr></table></div></figure>
+<p>用于指定该脚本由哪个程序负责解释执行。</p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--mysh-pe5fhby5imcw49ansnj3uepiivl123c.xn--shmysh1-9r4l.sh"  target="_blank" rel="noopener">现在我们创建两个文件mysh.sh和mysh1.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，这两个文件内容分别为：</p>
+<p>mysh.sh内容</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"hello mysh"</span></span><br><span class="line"><span class="built_in">echo</span> $$</span><br></pre></td></tr></table></div></figure>
+<p>mysh1.sh内容</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"hello mysh1"</span></span><br><span class="line"><span class="built_in">echo</span> $$</span><br><span class="line">pstree -p</span><br></pre></td></tr></table></div></figure>
+<p>下面是执行过程：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># ll</span></span><br><span class="line">total 8</span><br><span class="line">-rwxr-xr-x 1 root root 49 Feb  9 16:27 mysh1.sh</span><br><span class="line">-rwxr-xr-x 1 root root 39 Feb  9 16:27 mysh.sh</span><br><span class="line">[root@layne bashdir]<span class="comment"># chmod -x mysh.sh  # 清除执行权限</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># chmod -x mysh1.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ll</span></span><br><span class="line">total 8</span><br><span class="line">-rw-r--r-- 1 root root 49 Feb  9 16:27 mysh1.sh</span><br><span class="line">-rw-r--r-- 1 root root 39 Feb  9 16:27 mysh.sh</span><br><span class="line">[root@layne bashdir]<span class="comment"># source mysh.sh</span></span><br><span class="line">hello mysh</span><br><span class="line">1219</span><br><span class="line">[root@layne bashdir]<span class="comment"># source mysh1.sh</span></span><br><span class="line">hello mysh1</span><br><span class="line">1219</span><br><span class="line">init(1)─┬─auditd(899)───&#123;auditd&#125;(900)</span><br><span class="line">        ├─crond(1312)</span><br><span class="line">        ├─mingetty(1338)</span><br><span class="line">        ├─mingetty(1340)</span><br><span class="line">        ├─mingetty(1342)</span><br><span class="line">        ├─mingetty(1344)</span><br><span class="line">        ├─mingetty(1346)</span><br><span class="line">        ├─mingetty(1348)</span><br><span class="line">        ├─ntpd(973)</span><br><span class="line">        ├─rsyslogd(915)─┬─&#123;rsyslogd&#125;(917)</span><br><span class="line">        │               ├─&#123;rsyslogd&#125;(919)</span><br><span class="line">        │               └─&#123;rsyslogd&#125;(920)</span><br><span class="line">        ├─sshd(965)───sshd(1030)───bash(1219)───pstree(1890)</span><br><span class="line">        └─udevd(354)───udevd(640)</span><br><span class="line">[root@layne bashdir]<span class="comment"># pstree</span></span><br><span class="line">init─┬─auditd───&#123;auditd&#125;</span><br><span class="line">     ├─crond</span><br><span class="line">     ├─6*[mingetty]</span><br><span class="line">     ├─mysqld_safe───mysqld───27*[&#123;mysqld&#125;]</span><br><span class="line">     ├─ntpd</span><br><span class="line">     ├─rsyslogd───3*[&#123;rsyslogd&#125;]</span><br><span class="line">     ├─sshd───sshd───bash───pstree</span><br><span class="line">     └─udevd───udevd</span><br><span class="line">[root@layne bashdir]<span class="comment"># ./mysh.sh</span></span><br><span class="line">-bash: ./mysh.sh: Permission denied</span><br><span class="line">[root@layne bashdir]<span class="comment"># chmod +x mysh.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./mysh.sh</span></span><br><span class="line">hello mysh</span><br><span class="line">1894</span><br><span class="line">[root@layne bashdir]<span class="comment"># chmod +x mysh1.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./mysh1.sh</span></span><br><span class="line">hello mysh1</span><br><span class="line">1898</span><br><span class="line">init(1)─┬─auditd(899)───&#123;auditd&#125;(900)</span><br><span class="line">        ├─crond(1312)</span><br><span class="line">        ├─mingetty(1338)</span><br><span class="line">        ├─mingetty(1340)</span><br><span class="line">        ├─mingetty(1342)</span><br><span class="line">        ├─mingetty(1344)</span><br><span class="line">        ├─mingetty(1346)</span><br><span class="line">        ├─mingetty(1348)</span><br><span class="line">        ├─ntpd(973)</span><br><span class="line">        ├─rsyslogd(915)─┬─&#123;rsyslogd&#125;(917)</span><br><span class="line">        │               ├─&#123;rsyslogd&#125;(919)</span><br><span class="line">        │               └─&#123;rsyslogd&#125;(920)</span><br><span class="line">        ├─sshd(965)───sshd(1030)───bash(1219)───mysh1.sh(1898)───pstree(1899)</span><br><span class="line">        └─udevd(354)───udevd(640)</span><br></pre></td></tr></table></div></figure>
+<p>可以发现：</p>
+<ul>
+<li>当前shell执行脚本：<code>source mysh.sh</code> ，<strong>不需要执行权限就可以执行</strong></li>
+<li>子进程执行：<code>bash mysh.sh</code>或者<code>./mysh.sh</code>，需要该文件具有可执行权限才能执行</li>
+</ul>
+<p><code>.sh</code>文件中的函数格式为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">funName</span></span>() &#123;</span><br><span class="line">  各种命令</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>在下面的例子中会用到。</p>
+
+        <h2 id="2-bash的io"   >
+          <a href="#2-bash的io" class="heading-link"><i class="fas fa-link"></i></a>2. bash的io</h2>
+      
+<p>程序自身都有I/O</p>
+<ul>
+<li>0：标准输入</li>
+<li>1：标准输出</li>
+<li>2：错误输出</li>
+</ul>
+<p>例如：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ls / /hello 1&gt; log.out 2&gt; log.err</span><br></pre></td></tr></table></div></figure>
+<p>上面命令把正确的输出放在log.out里面，把错误的输出放在log.err里面。</p>
+<p>下面，我们看几个常用场景</p>
+<p>（1）输出重定向： 重定向从左到右绑定</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 命令1： 将错误输出（2）绑定到标准输出（1），此时标准输出先输出到控制台,然后才是标准输出重定向到文件。两个重定向的绑定没有关系，所以第二个标准输出1&gt; mylog.log的数据仍然是正确的输出</span></span><br><span class="line">ls  /  /hello   2&gt;&amp;1  1&gt; mylog.log</span><br><span class="line"><span class="comment">## 命令2：先让标准输出重定向到文件，然后将错误输出绑定到标准输出，也就是左边绑定的文件。</span></span><br><span class="line">ls  /  /hello   1&gt; mylog1.log  2&gt;&amp;1</span><br><span class="line"><span class="comment">## 命令3：标准输出和错误输出都重定向到文件</span></span><br><span class="line">ls  /  /hello   &gt;&amp; mylog2.log</span><br><span class="line"><span class="comment">## 命令4：作用同命令3</span></span><br><span class="line">ls  /  /hello  &amp;&gt; mylog3.log</span><br></pre></td></tr></table></div></figure>
+<p>（2）现在，我们创建rd.sh文件，内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">read</span> -p <span class="string">"请输入一个整数："</span> num</span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$num</span></span><br><span class="line"><span class="built_in">read</span> -p <span class="string">"再输入一个数："</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$REPLY</span></span><br></pre></td></tr></table></div></figure>
+<p>执行结果：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x rd.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./rd.sh</span></span><br><span class="line">请输入一个整数：123</span><br><span class="line">123</span><br><span class="line">再输入一个数：45</span><br><span class="line">45</span><br></pre></td></tr></table></div></figure>
+<p><code>sh -x rd.sh</code> 检查你写的脚本，执行到哪一步，把执行的过程打出来</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># sh -x rd.sh</span></span><br><span class="line">+ <span class="built_in">read</span> -p $<span class="string">'\350\257\267\350\276\223\345\205\245\344\270\200\344\270\252\346\225\264\346\225\260\357\274\232'</span> num</span><br><span class="line">请输入一个整数：123</span><br><span class="line">+ <span class="built_in">echo</span> 123</span><br><span class="line">123</span><br><span class="line">+ <span class="built_in">read</span> -p $<span class="string">'\345\206\215\350\276\223\345\205\245\344\270\200\344\270\252\346\225\260\357\274\232'</span></span><br><span class="line">再输入一个数：45</span><br><span class="line">+ <span class="built_in">echo</span> 45</span><br><span class="line">45</span><br></pre></td></tr></table></div></figure>
+<p>（3）<strong>将标准输入重定向到字符串，read读取后赋值给指定的变量：</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># read  aaa  0&lt;&lt;&lt;"hello"  # 赋给变量aaa</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $aaa</span></span><br><span class="line">hello</span><br></pre></td></tr></table></div></figure>
+<p>上面 <code>&lt;&lt;&lt;</code>将标准输入重定向到字符串</p>
+<p>（4）<code>cat 0&lt;&lt;CATEOF</code>用在脚本中用于向控制台打印n行，比如：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># cat 0&lt;&lt;CATEOF</span></span><br><span class="line">&gt; aaaaa</span><br><span class="line">&gt; bbbbb</span><br><span class="line">&gt; ccccc</span><br><span class="line">&gt; CATEOF</span><br><span class="line">aaaaa</span><br><span class="line">bbbbb</span><br><span class="line">ccccc</span><br></pre></td></tr></table></div></figure>
+<p>创建catof.sh文件，内容为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">cat 0&lt;&lt;CATEOF</span><br><span class="line">这里有一个bug</span><br><span class="line">这个bug是index out of bounds exception</span><br><span class="line">CATEOF</span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x catof.sh </span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./catof.sh</span></span><br><span class="line">这里有一个bug</span><br><span class="line">这个bug是index out of bounds exception</span><br></pre></td></tr></table></div></figure>
+<p>（5）exec：使用指定的命令替换当前shell命令。</p>
+<p>以读写方式打开到<code>www.baidu.com</code>的80端口的tcp连接</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># exec 8&lt;&gt; /dev/tcp/www.baidu.com/80 # 创建文件描述符8，并赋值</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo -e "GET / HTTP/1.0\n" &gt;&amp;8  # 表示重定向到8文件描述符</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># cat &lt;&amp;8 # 从文件描述符8读取信息</span></span><br><span class="line">HTTP/1.0 200 OK</span><br><span class="line">Accept-Ranges: bytes</span><br><span class="line">Cache-Control: no-cache</span><br><span class="line">Content-Length: 14615</span><br><span class="line">Content-Type: text/html</span><br><span class="line">...</span><br></pre></td></tr></table></div></figure>
+<p>echo的<code>-e</code>选项含义为：激活转义字符。使用-e选项时，若字符串中出现以下字符，则特别加以处理，而不会将它当成一般文字输出：</p>
+<ul>
+<li><code>\a</code> 发出警告声；</li>
+<li><code>\b</code> 删除前一个字符；</li>
+<li><code>\c</code> 最后不加上换行符号；</li>
+<li><code>\f</code> 换行但光标仍旧停留在原来的位置；</li>
+<li><code>\n</code> 换行且光标移至行首；</li>
+<li><code>\r</code> 光标移至行首，但不换行；</li>
+<li><code>\t</code> 插入tab；</li>
+<li><code>\v</code> 与<code>\f</code>相同；</li>
+<li><code>\\</code> 插入<code>\</code>字符；</li>
+<li><code>\nnn</code> 插入nnn（八进制）所代表的ASCII字符；</li>
+</ul>
+<p><code>echo -e &quot;GET / HTTP/1.0\n&quot; &gt;&amp;8</code>  表示重定向到8文件描述符</p>
+<p><code>cat &lt;&amp;8</code>   从文件描述符8读取信息</p>
+
+        <h2 id="3-bash的变量"   >
+          <a href="#3-bash的变量" class="heading-link"><i class="fas fa-link"></i></a>3. bash的变量</h2>
+      
+
+        <h3 id="31-bash中变量的类型"   >
+          <a href="#31-bash中变量的类型" class="heading-link"><i class="fas fa-link"></i></a>3.1 bash中变量的类型</h3>
+      
+<ul>
+<li>本地变量</li>
+<li>局部变量</li>
+<li>位置变量</li>
+<li>特殊变量</li>
+<li>环境变量</li>
+</ul>
+
+        <h3 id="32-本地变量"   >
+          <a href="#32-本地变量" class="heading-link"><i class="fas fa-link"></i></a>3.2 本地变量</h3>
+      
+<ul>
+<li>当前shell所有</li>
+<li>生命周期跟当前shell一样</li>
+</ul>
+<p>看下面的例子：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># a=99 # 定义一个变量</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $a # 输出变量a</span></span><br><span class="line">99</span><br><span class="line">[root@layne bashdir]<span class="comment"># myfunc() &#123;</span></span><br><span class="line">&gt;   myvar=99</span><br><span class="line">&gt;   <span class="built_in">echo</span>  <span class="variable">$myvar</span></span><br><span class="line">&gt; &#125;</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $myvar  #访问不到</span></span><br><span class="line"></span><br><span class="line">[root@layne bashdir]<span class="comment"># myfunc  #调用函数</span></span><br><span class="line">99</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $myvar    #可以访问到</span></span><br><span class="line">99</span><br><span class="line">[root@layne bashdir]<span class="comment"># abc=sxt</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $abc</span></span><br><span class="line">sxt</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo "$abcisnothere"  #访问不到</span></span><br><span class="line"></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo "$&#123;abc&#125;isnothere" #可以访问</span></span><br><span class="line">sxtisnothere</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo "$abc isnotthere"</span></span><br><span class="line">sxt isnotthere</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo "&#123;$abc&#125;isnotthere"</span></span><br><span class="line">&#123;sxt&#125;isnotthere</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="33-局部变量"   >
+          <a href="#33-局部变量" class="heading-link"><i class="fas fa-link"></i></a>3.3 局部变量</h3>
+      
+<ul>
+<li>只能用于函数</li>
+<li><code>local var=100</code> 定义一个局部变量</li>
+</ul>
+<p>看例子：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># unset myvar # 取消变量</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $myvar</span></span><br><span class="line"></span><br><span class="line">[root@layne bashdir]<span class="comment">#  myfunc()&#123;</span></span><br><span class="line">&gt; <span class="built_in">local</span> myvar=101</span><br><span class="line">&gt; <span class="built_in">echo</span> <span class="variable">$myvar</span></span><br><span class="line">&gt; &#125;</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $myvar #访问不到局部变量</span></span><br><span class="line"></span><br><span class="line">[root@layne bashdir]<span class="comment">#</span></span><br></pre></td></tr></table></div></figure>
+<p>继续往下看：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># funa()&#123;</span></span><br><span class="line">&gt; a=1</span><br><span class="line">&gt; <span class="built_in">local</span> b=2</span><br><span class="line">&gt; <span class="built_in">echo</span> <span class="string">"a = <span class="variable">$a</span>"</span></span><br><span class="line">&gt; <span class="built_in">echo</span> <span class="string">"b = <span class="variable">$b</span>"</span></span><br><span class="line">&gt; &#125;</span><br><span class="line">[root@layne bashdir]<span class="comment"># funa</span></span><br><span class="line">a = 1</span><br><span class="line">b = 2</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo "$a,$b" #b访问不到</span></span><br><span class="line">1,</span><br></pre></td></tr></table></div></figure>
+<p>上面，a是本地变量，b是局部变量，本地变量生命周期跟当前shell一样，局部变量的声明周期在一个函数内，函数执行完，局部变量就消失了。</p>
+
+        <h3 id="34-位置变量"   >
+          <a href="#34-位置变量" class="heading-link"><i class="fas fa-link"></i></a>3.4 位置变量</h3>
+      
+<p>直接看例子：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># myfun1()&#123;</span></span><br><span class="line">&gt; <span class="built_in">echo</span> <span class="variable">$1</span></span><br><span class="line">&gt; &#125;</span><br><span class="line">[root@layne bashdir]<span class="comment"># myfun1  </span></span><br><span class="line"></span><br><span class="line">[root@layne bashdir]<span class="comment"># myfun1 hello # hello为函数myfun1的参数</span></span><br><span class="line">hello</span><br><span class="line">[root@layne bashdir]<span class="comment"># myfun2()&#123;</span></span><br><span class="line">&gt; <span class="built_in">echo</span> <span class="variable">$4</span></span><br><span class="line">&gt; &#125;</span><br><span class="line">[root@layne bashdir]<span class="comment"># myfun2 a b c</span></span><br><span class="line"></span><br><span class="line">[root@layne bashdir]<span class="comment"># myfun2 a b c d</span></span><br><span class="line">d</span><br><span class="line">[root@layne bashdir]<span class="comment"># myfunc3()&#123;</span></span><br><span class="line">&gt; <span class="built_in">echo</span> <span class="variable">$13</span></span><br><span class="line">&gt; &#125;</span><br><span class="line">[root@layne bashdir]<span class="comment"># myfunc3 1 2 3 4 5 6 7 8 9 a b c d e f</span></span><br><span class="line">13</span><br><span class="line">[root@layne bashdir]<span class="comment"># myfunc3 a b c d 1 2 3 4 5 6 7 8 9</span></span><br><span class="line">a3</span><br><span class="line">[root@layne bashdir]<span class="comment"># myfunc3()&#123;</span></span><br><span class="line">&gt; <span class="built_in">echo</span> <span class="variable">$&#123;13&#125;</span></span><br><span class="line">&gt; &#125;</span><br><span class="line">[root@layne bashdir]<span class="comment"># myfunc3 1 2 3 4 5 6 7 8 9 a b c d</span></span><br><span class="line">d</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，<code>$n</code>为函数的第n个位置变量（第n个参数），<code>${13}</code>是函数的第13个参数，不能写为<code>$13</code></p>
+<p>再来看一个例子，创建文件mysh1.h，内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$1</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$2</span></span><br><span class="line"><span class="built_in">echo</span> <span class="variable">$&#123;10&#125;</span></span><br></pre></td></tr></table></div></figure>
+<p>执行结果：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># source mysh1.sh a b 1 2 3 4 5 6 7 8 9</span></span><br><span class="line">a</span><br><span class="line">b</span><br><span class="line">8</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="35-特殊变量"   >
+          <a href="#35-特殊变量" class="heading-link"><i class="fas fa-link"></i></a>3.5 特殊变量</h3>
+      
+<ul>
+<li><code>$#</code>：位置参数个数</li>
+<li><code>$*</code>：参数列表，所有的参数作为一个字符串，以空格隔开</li>
+<li><code>$@</code>：参数列表，双引号引用为单独的字符串，所有的参数作为单个的字符串，以空格隔开</li>
+<li><code>$$</code>：当前shell的PID</li>
+<li><code>$?</code>：上一个命令的退出状态</li>
+<li>0：成功</li>
+<li>其他：失败</li>
+</ul>
+<p>例子：<span class="exturl"><a class="exturl__link"   href="http://xn--mysh2-ll6hz28e.sh"  target="_blank" rel="noopener">创建mysh2.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"number of args:<span class="variable">$#</span>"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"string of args:$*"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"args:<span class="variable">$@</span>"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"current pid:$$"</span></span><br><span class="line">pstree -p</span><br></pre></td></tr></table></div></figure>
+<p>执行结果：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x mysh2.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./mysh2.sh a b 1 2 3 4 5  #创建子shell进程执行</span></span><br><span class="line">number of args:7</span><br><span class="line">string of args:a b 1 2 3 4 5</span><br><span class="line">args:a b 1 2 3 4 5</span><br><span class="line">current pid:2033</span><br><span class="line">init(1)─┬─auditd(899)───&#123;auditd&#125;(900)</span><br><span class="line">        ├─crond(1312)</span><br><span class="line">        ├─mingetty(1338)</span><br><span class="line">        ├─mingetty(1340)</span><br><span class="line">        ├─mingetty(1342)</span><br><span class="line">        ├─mingetty(1344)</span><br><span class="line">        ├─mingetty(1346)</span><br><span class="line">        ├─mingetty(1348)</span><br><span class="line">        ├─ntpd(973)</span><br><span class="line">        ├─rsyslogd(915)─┬─&#123;rsyslogd&#125;(917)</span><br><span class="line">        │               ├─&#123;rsyslogd&#125;(919)</span><br><span class="line">        │               └─&#123;rsyslogd&#125;(920)</span><br><span class="line">        ├─sshd(965)───sshd(1945)───bash(1947)───mysh2.sh(2033)───pstree(2034)</span><br><span class="line">        └─udevd(354)───udevd(640)</span><br><span class="line">[root@layne bashdir]<span class="comment"># source mysh2.sh a b 1 2 3 4 5 #在当前shell执行</span></span><br><span class="line">number of args:7</span><br><span class="line">string of args:a b 1 2 3 4 5</span><br><span class="line">args:a b 1 2 3 4 5</span><br><span class="line">current pid:1947</span><br><span class="line">init(1)─┬─auditd(899)───&#123;auditd&#125;(900)</span><br><span class="line">        ├─crond(1312)</span><br><span class="line">        ├─mingetty(1338)</span><br><span class="line">        ├─mingetty(1340)</span><br><span class="line">        ├─mingetty(1342)</span><br><span class="line">        ├─mingetty(1344)</span><br><span class="line">        ├─mingetty(1346)</span><br><span class="line">        ├─mingetty(1348)</span><br><span class="line">        ├─ntpd(973)</span><br><span class="line">        ├─rsyslogd(915)─┬─&#123;rsyslogd&#125;(917)</span><br><span class="line">        │               ├─&#123;rsyslogd&#125;(919)</span><br><span class="line">        │               └─&#123;rsyslogd&#125;(920)</span><br><span class="line">        ├─sshd(965)───sshd(1945)───bash(1947)───pstree(2036)</span><br><span class="line">        └─udevd(354)───udevd(640)</span><br></pre></td></tr></table></div></figure>
+<p><strong><code>$?</code>用于获取上一个命令的退出状态</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># mydir=/root</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># myfile=mysh2.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># [ -d $mydir ] &amp;&amp; echo "$mydir is dir"  # [ -d $mydir ]用于测试该变量是否是一个目录</span></span><br><span class="line">/root is dir</span><br><span class="line">[root@layne bashdir]<span class="comment"># [ -d $myfile ] &amp;&amp; echo "$mydir is dir"</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># [ -d $mydir ]</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $?</span></span><br><span class="line">0  <span class="comment"># 0相当于成立</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># [ -d $myfile ]</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $?</span></span><br><span class="line">1</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="36-数组"   >
+          <a href="#36-数组" class="heading-link"><i class="fas fa-link"></i></a>3.6 数组</h3>
+      
+<p>Bash提供了一维数组变量。任何变量都可以作为一个数组；内建命令 declare 可以显式地定义数组。数组的<strong>大小没有上限（初始创建多大的数组，可以超过这个大小继续往后赋值）</strong>，也没有限制在连续对成员引用和赋值时有什么要求。数组以整数为下标，从0开始。</p>
+<p>如果变量赋值时使用语法 <code>name[subscript]=value</code>，那么就会自动创建数组。 subscript 被当作一个算术表达式，结果必须是大于等于 0 的值。数组赋值可以使用复合赋值的方式，形式是 <code>name=(value1 value2 ... valuen)</code>，这里每个 value 的形式都是[subscript]=string。string 必须出现。如果出现了可选的括号和下标，将为这个下标赋值，否则被 赋值的元素的下标是语句中上一次赋值的下标加一。下标从 0 开始。这个语法也被内建命令 declare 所接受。单独的数组元素可以用上面介绍的语法 <code>name[subscript]=value</code>  来赋值</p>
+<p>数组的任何元素都可以用 <code>${name[subscript]}</code> 来引用。花括号是必须的，以避免和路径扩展冲突。如果subscript 是 <code>@</code> 或是 <code>*</code>，它扩展为 name 的所有成员。这两种下标只有在双引号中才不同。在双引号中，<code>${name[*]}</code> 扩展为一个词，<strong>由所有数组成员的值组成</strong>，用特殊变量 IFS 的 第  一 个 字 符 分 隔；<code>${name[@]}</code>将 name 的<strong>每个成员</strong>扩展为一个词。如果数组没有成员，<code>${name[@]}</code> 扩展为空串。这种不同类似于特殊参数 <code>*</code>和<code>@</code> 的扩展 (参见上面的 Special  Parameters 段落)。<code>${&amp;#35;name[subscript]}</code> 扩展为 <code>${name[subscript]}</code> 的长度。如果 subscript 是  <code>*</code> 或者是 <code>@</code>，扩展结果是数组中元素的个数。<strong>引用没有下标数组变量等价于引用元素 0。</strong></p>
+<p><strong>内建命令 unset 用于销毁数组</strong>。<code>unset name[subscript]</code> 将销毁下标是 subscript 的 元 素 。 <code>unset name</code>, 这里 name 是一个数组，或者 <code>unset name[subscript]</code>, 这里 subscript 是  <code>*</code> 或者是 <code>@</code>，将销毁整个数组。         内建命令 declare,  local, 和 readonly 都能接受<code>-a</code> 选项，从而指定一个数组。内建命令 read 可 以接受 <code>-a</code> 选项，从标准输入读入一列词来为数组赋值。内建命令 set 和  declare 使用一种可以重用为输入的格式来显示数组元素。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># sxt=(a  b  c)  #数组</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo  $sxt</span></span><br><span class="line">a</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo  $&#123;sxt[1]&#125;</span></span><br><span class="line">b</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo  $&#123;sxt[*]&#125;</span></span><br><span class="line">a b c</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo  $&#123;sxt[@]&#125;</span></span><br><span class="line">a b c</span><br></pre></td></tr></table></div></figure>
+<p>注意：<code>echo $sxt[1]</code> 是错误的写法</p>
+
+        <h3 id="37-管道"   >
+          <a href="#37-管道" class="heading-link"><i class="fas fa-link"></i></a>3.7 管道</h3>
+      
+<p>直接看例子：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># a=9</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $a</span></span><br><span class="line">9</span><br><span class="line">[root@layne bashdir]<span class="comment"># b=22 | echo ok #启动子进程给b赋值22</span></span><br><span class="line">ok</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $b #访问不到子进程的数据，父进程访问不了子进程的结果</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>管道两边的命令在当前shell的两个子进程中执行。</strong></p>
+
+        <h3 id="38-和pashpid"   >
+          <a href="#38-和pashpid" class="heading-link"><i class="fas fa-link"></i></a>3.8 $$和$PASHPID</h3>
+      
+<p><strong><code>$$</code>和<code>$BASHPID</code>的区别</strong></p>
+<ul>
+<li><code>$$</code>是在哪个进程中执行命令，该值就是哪个shell进程的PID</li>
+<li><code>echo &quot;hello&quot;| echo $BASHPID</code> 这里的id是前面执行<code>echo &quot;hello&quot;</code>的shell的id，而<code>echo $$</code> 是当前shell的id</li>
+</ul>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209185227.png"  alt="" />
+      </p>
+<p>另外，我们创建一个test.sh再来测试一下，test.sh内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"\$\$ value:$$"</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"BASHPID value:<span class="variable">$BASHPID</span>"</span></span><br><span class="line">pstree -p</span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x test.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./test.sh</span></span><br><span class="line">$$ value:2208</span><br><span class="line">BASHPID value:2208</span><br><span class="line">init(1)─┬─auditd(899)───&#123;auditd&#125;(900)</span><br><span class="line">        ├─crond(1312)</span><br><span class="line">        ├─mingetty(1338)</span><br><span class="line">        ├─mingetty(1340)</span><br><span class="line">        ├─mingetty(1342)</span><br><span class="line">        ├─mingetty(1344)</span><br><span class="line">        ├─mingetty(1346)</span><br><span class="line">        ├─mingetty(1348)</span><br><span class="line">        ├─ntpd(973)</span><br><span class="line">        ├─rsyslogd(915)─┬─&#123;rsyslogd&#125;(917)</span><br><span class="line">        │               ├─&#123;rsyslogd&#125;(919)</span><br><span class="line">        │               └─&#123;rsyslogd&#125;(920)</span><br><span class="line">        ├─sshd(965)───sshd(1945)───bash(1947)───test.sh(2208)───pstree(2209)</span><br><span class="line">        └─udevd(354)───udevd(640)</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，在子进程执行的时候，<code>$$</code>和<code>$BASHPID</code> 输出的都是当前进程的ID</p>
+<p>另外，<span class="exturl"><a class="exturl__link"   href="http://xn--test1-8v5h86af76e.sh"  target="_blank" rel="noopener">再创建test1.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"\$\$ outside of subshell = $$"</span>                              <span class="comment"># 9602</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"\$BASH_SUBSHELL  outside of subshell = <span class="variable">$BASH_SUBSHELL</span>"</span>      <span class="comment"># 0</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"\$BASHPID outside of subshell = <span class="variable">$BASHPID</span>"</span>                   <span class="comment"># 9602</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span></span><br><span class="line"></span><br><span class="line">( <span class="built_in">echo</span> <span class="string">"\$\$ inside of subshell = $$"</span>                             <span class="comment"># 9602</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"\$BASH_SUBSHELL inside of subshell = <span class="variable">$BASH_SUBSHELL</span>"</span>      <span class="comment"># 1</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"\$BASHPID inside of subshell = <span class="variable">$BASHPID</span>"</span> )                <span class="comment"># 9603</span></span><br><span class="line">  <span class="comment"># Note that $$ returns PID of parent process.</span></span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x test1.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./test1.sh</span></span><br><span class="line">$$ outside of subshell = 2214</span><br><span class="line"><span class="variable">$BASH_SUBSHELL</span>  outside of subshell = 0</span><br><span class="line"><span class="variable">$BASHPID</span> outside of subshell = 2214</span><br><span class="line"></span><br><span class="line">$$ inside of subshell = 2214</span><br><span class="line"><span class="variable">$BASH_SUBSHELL</span> inside of subshell = 1</span><br><span class="line"><span class="variable">$BASHPID</span> inside of subshell = 2215</span><br></pre></td></tr></table></div></figure>
+<p>我的理解： <code>$$</code>表示脚本文件在其下运行的进程ID。对于任何给定的脚本，当它运行时，<strong>它将只有一个“主”进程标识</strong>。不管您调用了多少个子shell，<code>$$</code>将始终返回与脚本关联的第一个进程标识。 <code>$BASHPID</code>将显示当前bash实例的进程ID，因此在子shell中它将与可能调用它的**“顶级”**bash不同。<code>$BASH_SUBSHELL</code> 表示你所在的“subshell级别”。如果你不在任何子级别，则级别为零。如果你在主程序中启动子shell，则该子shell级别为1。如果在该子shell内启动子shell，则级别为2，依此类推。</p>
+
+        <h2 id="4-bash的基本语法"   >
+          <a href="#4-bash的基本语法" class="heading-link"><i class="fas fa-link"></i></a>4. bash的基本语法</h2>
+      
+
+        <h3 id="41-单引号和双引号"   >
+          <a href="#41-单引号和双引号" class="heading-link"><i class="fas fa-link"></i></a>4.1 单引号和双引号</h3>
+      
+<p>单引号将其中的内容都作为了字符串来，忽略所有的命令和特殊字符，类似于一个字符串的用法</p>
+<p>双引号与单引号的区别在于其可以包含特殊字符（单引号直接输出内部字符串，不解析特殊字符；双引号内则会解析特殊字符），包括<code>', &quot;, $, \</code>，如果要忽略特殊字符，就可以利用<code>\</code>来转义，忽略特殊字符，作为普通字符输出：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># var=3</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo '$var'</span></span><br><span class="line"><span class="variable">$var</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo "$var"</span></span><br><span class="line">3</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo "Here \"this is a string\" is a string"</span></span><br><span class="line">Here <span class="string">"this is a string"</span> is a string</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="42-命令替换"   >
+          <a href="#42-命令替换" class="heading-link"><i class="fas fa-link"></i></a>4.2 命令替换</h3>
+      
+<p>命令替换允许我们<strong>将shell命令的输出赋值给变量</strong>。它是脚本编程中的一个主要部分。</p>
+<p>命令替换会创建子shell进程来运行相应的命令。子shell是由运行该脚本的shell所创建出来的一个独立的子进程，由该子进程执行的命令无法使用（父）脚本中所创建的变量（除非是export的环境变量）。</p>
+<p>反引号提升扩展优先级，<strong>先执行反引号的内容，再执行其他的</strong>。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># myvar=echo "hello"</span></span><br><span class="line">-bash: hello: <span class="built_in">command</span> not found</span><br><span class="line">[root@layne bashdir]<span class="comment"># myvar=`echo "hello"` #使用反引号，先创建子shell执行echo "hello"，再将执行的结果赋给myvar</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># echo $myvar</span></span><br><span class="line">hello</span><br></pre></td></tr></table></div></figure>
+<p>再来看一个例子：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@layne tdir]<span class="comment"># scp /root/tdir/test.txt  layne2:/root/tdir #把当前主机的test.txt文件copy到layne2主机的同一个目录下，前提是layne2的/root/tdir目录存在</span></span><br><span class="line">root@layne2<span class="string">'s password: </span></span><br><span class="line"><span class="string">test.txt                                                                                   100%   20     0.0KB/s   00:00    </span></span><br><span class="line"><span class="string">[root@layne tdir]# scp /root/tdir/log.txt layne2:`pwd` # 作用同上，相当于先输入pwd，把pwd的返回结果赋值给`pwd`</span></span><br><span class="line"><span class="string">root@layne2'</span>s password: </span><br><span class="line">log.txt                                                                                    100%   12     0.0KB/s   00:00    </span><br><span class="line">[root@layne tdir]<span class="comment">#</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="43-逻辑判断"   >
+          <a href="#43-逻辑判断" class="heading-link"><i class="fas fa-link"></i></a>4.3 逻辑判断</h3>
+      
+<ul>
+<li>command1 &amp;&amp; command2
+<ul>
+<li>n 如果command1退出状态是0（0代表正确），则执行command2</li>
+</ul>
+</li>
+<li>command1  ||  command2
+<ul>
+<li>n 如果command1的退出状态不是0，则执行command2</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@layne2 ~]<span class="comment"># test -d /hello || echo "文件夹/hello不存在"</span></span><br><span class="line">文件夹/hello不存在</span><br><span class="line">[root@layne2 ~]<span class="comment"># test -d /bin &amp;&amp; echo "文件夹/bin存在"</span></span><br><span class="line">文件夹/bin存在</span><br><span class="line">[root@layne2 ~]<span class="comment"># test -f a.txt &amp;&amp; rm -f a.txt &amp;&amp; touch a.txt #-f 判断是不是文件</span></span><br><span class="line">[root@layne2 ~]<span class="comment"># ls / &amp;&amp; echo ok</span></span><br><span class="line">bin  boot  dev  etc  home  lib  lib64  lost+found  media  mnt  opt  proc  root  sbin  selinux  srv  sys  tmp  usr  var</span><br><span class="line">ok</span><br><span class="line">[root@layne2 ~]<span class="comment"># ls / || echo ok</span></span><br><span class="line">bin  boot  dev  etc  home  lib  lib64  lost+found  media  mnt  opt  proc  root  sbin  selinux  srv  sys  tmp  usr  var</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="44-表达式"   >
+          <a href="#44-表达式" class="heading-link"><i class="fas fa-link"></i></a>4.4 表达式</h3>
+      
+<p><strong>（1）算术表达式</strong></p>
+<ul>
+<li>let  算数运算表达式
+<ul>
+<li><code>let C=$A+$B</code>    （很重要）</li>
+</ul>
+</li>
+<li>$[算术表达式]
+<ul>
+<li><code>C=$[$A+$B]</code></li>
+</ul>
+</li>
+<li>$((算术表达式))
+<ul>
+<li><code>C=$((A+B))</code></li>
+<li><code>C=$((A+B+1))</code>   #在原来结果的基础上再加1</li>
+</ul>
+</li>
+<li>expr算术表达式
+<ul>
+<li>表达式中各操作数及运算符之间要有空格，同时要使用命令引用</li>
+<li>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210209223824.png"  alt="" />
+      </li>
+</ul>
+</li>
+</ul>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[root@layne2 ~]<span class="comment"># a=1</span></span><br><span class="line">[root@layne2 ~]<span class="comment"># b=2</span></span><br><span class="line">[root@layne2 ~]<span class="comment"># let c=$a+$b</span></span><br><span class="line">[root@layne2 ~]<span class="comment"># echo $c</span></span><br><span class="line">3</span><br><span class="line">[root@layne2 ~]<span class="comment"># d=$((a+b+1))</span></span><br><span class="line">[root@layne2 ~]<span class="comment"># echo $d</span></span><br><span class="line">4</span><br><span class="line">[root@layne2 ~]<span class="comment"># ((a++))</span></span><br><span class="line">[root@layne2 ~]<span class="comment"># echo $a</span></span><br><span class="line">2</span><br><span class="line">[root@layne2 ~]<span class="comment"># e=$((--d+a))</span></span><br><span class="line">[root@layne2 ~]<span class="comment"># echo $e</span></span><br><span class="line">5</span><br></pre></td></tr></table></div></figure>
+<p><strong>（2）条件表达式</strong></p>
+<ul>
+<li>[  表达式  ]</li>
+<li>test  表达式</li>
+<li>[[  表达式  ]]</li>
+</ul>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">test</span>  3  -gt  2  &amp;&amp;  <span class="built_in">echo</span>  ok</span><br><span class="line">等价于</span><br><span class="line">[  3  -gt  2  ]  &amp;&amp;  <span class="built_in">echo</span>  ok</span><br><span class="line"></span><br><span class="line"><span class="built_in">test</span>  3  -gt  8  &amp;&amp;  <span class="built_in">echo</span>  ok</span><br><span class="line">等价于</span><br><span class="line">[  3  -gt  8  ]  &amp;&amp;  <span class="built_in">echo</span>  ok</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="5-bash的分支"   >
+          <a href="#5-bash的分支" class="heading-link"><i class="fas fa-link"></i></a>5. bash的分支</h2>
+      
+<ul>
+<li>if</li>
+<li>case</li>
+</ul>
+
+        <h3 id="51-if分支"   >
+          <a href="#51-if分支" class="heading-link"><i class="fas fa-link"></i></a>5.1 if分支</h3>
+      
+<p><strong>单分支结构</strong></p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">if [ 条件判断 ] </span><br><span class="line"> then</span><br><span class="line">    //命令</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line"></span><br><span class="line">if [ 条件判断 ]; then </span><br><span class="line"> 条件成立执行，命令;</span><br><span class="line">fi # 将if反过来写,就成为fi，结束if语句</span><br></pre></td></tr></table></div></figure>
+<p><strong>双分支结构</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ 条件1 ];<span class="keyword">then</span> </span><br><span class="line"> 条件1成立执行，指令集1</span><br><span class="line"><span class="keyword">else</span> </span><br><span class="line"> 条件1不成执行指令集2; </span><br><span class="line"> <span class="keyword">fi</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>多分支结构</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ 条件1 ];<span class="keyword">then</span></span><br><span class="line"> 条件1成立，执行指令集1</span><br><span class="line"><span class="keyword">elif</span> [ 条件2 ];<span class="keyword">then</span></span><br><span class="line"> 条件2成立，执行指令集2</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line"> 条件都不成立，执行指令集3 </span><br><span class="line"> <span class="keyword">fi</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>使用[命令判断</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> [ 3 -gt 2 ]; <span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span>  ok </span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ 3 -gt 2 ]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span>  ok </span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></div></figure>
+<p>示例：</p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--sh01-pj9fv59d.sh"  target="_blank" rel="noopener">创建sh01.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">a=20</span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$a</span> -gt <span class="variable">$1</span> ];</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"你输入的数字太小"</span></span><br><span class="line"><span class="keyword">elif</span> [ <span class="variable">$a</span> -eq <span class="variable">$1</span> ];</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"恭喜哈，数字相等"</span></span><br><span class="line"><span class="keyword">else</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="string">"你输入的数字太大"</span></span><br><span class="line"><span class="keyword">fi</span></span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x sh01.sh</span></span><br><span class="line">你输入的数字太大</span><br><span class="line">[root@layne bashdir]<span class="comment"># ./sh01.sh 20</span></span><br><span class="line">恭喜哈，数字相等</span><br><span class="line">[root@layne bashdir]<span class="comment"># ./sh01.sh 15</span></span><br><span class="line">你输入的数字太小</span><br><span class="line">[root@layne bashdir]<span class="comment"># ./sh01.sh 25</span></span><br><span class="line">你输入的数字太大</span><br><span class="line">[root@layne bashdir]<span class="comment"># ./sh01.sh</span></span><br><span class="line">./sh01.sh: line 3: [: 20: unary operator expected</span><br><span class="line">./sh01.sh: line 6: [: 20: unary operator expected</span><br><span class="line">你输入的数字太大</span><br></pre></td></tr></table></div></figure>
+<p>注意：<code>if</code>和中括号之间要有空格，中括号和条件表达式之间要有空格</p>
+<p><code>;</code>和then之前有空格没空格都可以</p>
+
+        <h3 id="52-case分支"   >
+          <a href="#52-case分支" class="heading-link"><i class="fas fa-link"></i></a>5.2 case分支</h3>
+      
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">case</span> $变量名称 <span class="keyword">in</span> “值1<span class="string">") </span></span><br><span class="line"><span class="string">  程序段1</span></span><br><span class="line"><span class="string">  ;;</span></span><br><span class="line"><span class="string">“值2"</span>) </span><br><span class="line">  程序段2</span><br><span class="line">  ;;</span><br><span class="line">*)</span><br><span class="line"><span class="built_in">exit</span> 1</span><br><span class="line">  ;;</span><br><span class="line"><span class="keyword">esac</span> <span class="comment"># esac是case的逆置，代表case的结尾</span></span><br></pre></td></tr></table></div></figure>
+<p>上面<code>*</code>类似java里面的default</p>
+<p><code>exit 1</code> 是<code>echo $?</code>获取到的返回值，<code>exit 0</code>代表正确的返回，<code>exit 1</code>代表错误的返回结果</p>
+<p>案例：判断用户输入的是哪个数，1-7显示输入的数字，1显示 Mon,2 :Tue,3:Wed,4:Thu,5:Fir,6-7:weekend,其它值的时候，提示：please input [1,7]，该如何实现？</p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--sh02-pj9fv59d.sh"  target="_blank" rel="noopener">创建sh02.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="built_in">read</span> -p <span class="string">"please input a number[1,7]:"</span> num</span><br><span class="line"><span class="keyword">case</span> <span class="variable">$num</span> <span class="keyword">in</span></span><br><span class="line">1)</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Mon"</span></span><br><span class="line">;;</span><br><span class="line">2)</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Tue"</span></span><br><span class="line">;;</span><br><span class="line">3)</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Wed"</span></span><br><span class="line">;;</span><br><span class="line">4)</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Thu"</span></span><br><span class="line">;;</span><br><span class="line">5)</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"Fir"</span></span><br><span class="line">;;</span><br><span class="line">[6-7])</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"weekend"</span></span><br><span class="line">;;</span><br><span class="line">*)</span><br><span class="line">    <span class="built_in">echo</span> <span class="string">"please input [1,7]"</span></span><br><span class="line">;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">esac</span></span><br><span class="line"></span><br><span class="line">或者</span><br><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment"># Mon,2 :Tue,3:Wed,4:Thu,5:Fir,6-7:weekend</span></span><br><span class="line"><span class="keyword">case</span> <span class="variable">$1</span> <span class="keyword">in</span> 1)</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"Mon"</span></span><br><span class="line">   <span class="built_in">exit</span> 0</span><br><span class="line">;;</span><br><span class="line">2)</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"Tue"</span></span><br><span class="line">   <span class="built_in">exit</span> 0</span><br><span class="line">;;</span><br><span class="line">3)</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"Wed"</span></span><br><span class="line">   <span class="built_in">exit</span> 0</span><br><span class="line">;;</span><br><span class="line">4)</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"Thu"</span></span><br><span class="line">   <span class="built_in">exit</span> 0</span><br><span class="line">;;</span><br><span class="line">5)</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"Fir"</span></span><br><span class="line">   <span class="built_in">exit</span> 0</span><br><span class="line">;;</span><br><span class="line">[6-7])</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"weekend"</span></span><br><span class="line">   <span class="built_in">exit</span> 0</span><br><span class="line">;;</span><br><span class="line">*)</span><br><span class="line">   <span class="built_in">echo</span> <span class="string">"please input [1,7]"</span></span><br><span class="line">   <span class="built_in">exit</span> 1</span><br><span class="line">;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">esac</span></span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x sh02.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./sh02.sh</span></span><br><span class="line">please input a number[1,7]:5</span><br><span class="line">Fir</span><br><span class="line">[root@layne bashdir]<span class="comment"># ./sh02.sh</span></span><br><span class="line">please input a number[1,7]:8</span><br><span class="line">please input [1,7]</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="6-bash的循环"   >
+          <a href="#6-bash的循环" class="heading-link"><i class="fas fa-link"></i></a>6. bash的循环</h2>
+      
+
+        <h3 id="61-while循环"   >
+          <a href="#61-while循环" class="heading-link"><i class="fas fa-link"></i></a>6.1 while循环</h3>
+      
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> [ condition ] ; <span class="keyword">do</span> <span class="comment"># 如果do换一行就不要;了</span></span><br><span class="line">  命令</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line">或者</span><br><span class="line"><span class="keyword">while</span> [ condition ] </span><br><span class="line"> <span class="keyword">do</span></span><br><span class="line">  命令</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></div></figure>
+<p>注意：while也与中括号之间有空格</p>
+<p>案例一：每隔两秒打印系统负载情况，如何实现？</p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--while1-hn3jk46f.sh"  target="_blank" rel="noopener">创建while1.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="keyword">while</span> <span class="literal">true</span></span><br><span class="line"> <span class="keyword">do</span></span><br><span class="line">   uptime   <span class="comment">#显示系统负载情况</span></span><br><span class="line">   sleep 2 <span class="comment">#休眠2秒</span></span><br><span class="line"> <span class="keyword">done</span></span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x while1.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./while1.sh</span></span><br><span class="line"> 23:05:07 up 12:56,  1 user,  load average: 0.00, 0.00, 0.00</span><br><span class="line"> 23:05:09 up 12:56,  1 user,  load average: 0.00, 0.00, 0.00</span><br><span class="line"> 23:05:11 up 12:56,  1 user,  load average: 0.00, 0.00, 0.00</span><br><span class="line"> <span class="comment"># 按ctrl +c 终止进程</span></span><br></pre></td></tr></table></div></figure>
+<p>案例二：使用while循环，编写shell脚本，计算1+2+3+…+100的和并输出，如何实现？</p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--while2-hn3jk46f.sh"  target="_blank" rel="noopener">创建while2.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">sum=0</span><br><span class="line">i=1</span><br><span class="line"><span class="keyword">while</span> [ <span class="variable">$i</span> -le 100 ]  <span class="comment">#while和[之间要加一个空格  true则执行</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  sum=$((sum+i))</span><br><span class="line">  i=$((i+1)) <span class="comment">#运算结果为变量赋值可以使用$(( … ))</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"the result of '1+2+3+...+100' is <span class="variable">$sum</span>"</span></span><br><span class="line"></span><br><span class="line">或者：</span><br><span class="line"></span><br><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">sum=0</span><br><span class="line">i=1</span><br><span class="line"><span class="keyword">while</span> [ <span class="variable">$i</span> -le 100 ]  <span class="comment">#while和[之间要加一个空格  true则执行</span></span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="built_in">let</span> sum=<span class="variable">$sum</span>+<span class="variable">$i</span></span><br><span class="line">  <span class="built_in">let</span> i=<span class="variable">$i</span>+1 <span class="comment">#运算结果为变量赋值可以使用$(( … )) 或let i++ 或 let i+=1</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"the result of '1+2+3+...+100' is <span class="variable">$sum</span>"</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="62-for循环"   >
+          <a href="#62-for循环" class="heading-link"><i class="fas fa-link"></i></a>6.2 for循环</h3>
+      
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> 变量名 <span class="keyword">in</span> 变量取值列表</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  命令</span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></div></figure>
+<p>案例1：<span class="exturl"><a class="exturl__link"   href="http://xn--for1-pj9fv59d.sh"  target="_blank" rel="noopener">创建for1.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，输入以下内容</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="keyword">for</span> num <span class="keyword">in</span> 1 2 3 4 </span><br><span class="line"><span class="keyword">do</span> </span><br><span class="line">  <span class="built_in">echo</span> <span class="variable">$num</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></div></figure>
+<p>执行：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x for1.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./for1.sh</span></span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td></tr></table></div></figure>
+<p><strong>使用大括号的方法：</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># echo &#123;1..8&#125;</span></span><br><span class="line">1 2 3 4 5 6 7 8</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo &#123;a..z&#125;</span></span><br><span class="line">a b c d e f g h i j k l m n o p q r s t u v w x y z</span><br><span class="line">[root@layne bashdir]<span class="comment"># echo 10.13.20.&#123;1..3&#125;</span></span><br><span class="line">10.13.20.1 10.13.20.2 10.13.20.3</span><br></pre></td></tr></table></div></figure>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--for1-pj6ks03f.sh"  target="_blank" rel="noopener">编辑for1.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，输入以下内容：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="keyword">for</span> num <span class="keyword">in</span> &#123;1..4&#125; </span><br><span class="line"><span class="keyword">do</span> </span><br><span class="line">  <span class="built_in">echo</span> <span class="variable">$num</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></div></figure>
+<p>案例2：使用<code>seq –s 分隔符 起始 步长 终点</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># seq -s " " 2 2 100</span></span><br><span class="line">2 4 6 8 10 12 14 16 18 20 22 24 26 28 30 32 34 36 38 40 42 44 46 48 50 52 54 56 58 60 62 64 66 68 70 72 74 76 78 80 82 84 86 88 90 92 94 96 98 100</span><br><span class="line">[root@layne bashdir]<span class="comment"># seq -s " " 1 1 5</span></span><br><span class="line">1 2 3 4 5</span><br></pre></td></tr></table></div></figure>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--for2-pj9fv59d.sh"  target="_blank" rel="noopener">创建for2.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span> ，内容为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"><span class="keyword">for</span> num <span class="keyword">in</span> `seq -s <span class="string">" "</span> 1 1 5`</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="variable">$num</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>注意：for后面``里面是执行的命令</strong></p>
+<p><span class="exturl"><a class="exturl__link"   href="http://xn--for2-pk6hg45q.sh"  target="_blank" rel="noopener">执行for2.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># chmod +x for2.sh</span></span><br><span class="line">[root@layne bashdir]<span class="comment"># ./for2.sh</span></span><br><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="7-bash练习"   >
+          <a href="#7-bash练习" class="heading-link"><i class="fas fa-link"></i></a>7. bash练习</h2>
+      
+
+        <h3 id="71-案例1"   >
+          <a href="#71-案例1" class="heading-link"><i class="fas fa-link"></i></a>7.1 案例1</h3>
+      
+<ul>
+<li>用户给定路径</li>
+<li>输出文件大小最大的文件</li>
+<li>递归子目录</li>
+</ul>
+<p><code>$IFS</code>默认空格、制表符和换行符 都可以识别</p>
+<p>for循环的时候 空格、制表符和换行符都可以识别（在不改<code>$IFS</code>情况下），如果要改变<code>$IFS</code>，让它识别这三个中的一个，比如让它只识别换行符，把<code>IFS=$'\n'</code>，这样一行一个循环，即一次一行来循环操作，不用管一行里面的空格或制表符。</p>
+<p><code>du -a</code> 列出所有的文件与目录</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">[root@layne bashdir]<span class="comment"># du #不用-a，不会列出所有的</span></span><br><span class="line">32	./rdir</span><br><span class="line">120	.</span><br><span class="line">[root@layne bashdir]<span class="comment"># du -a</span></span><br><span class="line">4	./rdir/a.sh</span><br><span class="line">4	./rdir/test.txt</span><br><span class="line">32	./rdir</span><br><span class="line">4	./mylog2.log</span><br><span class="line">4	./log.err</span><br><span class="line">4	./mylog.log</span><br><span class="line">4	./mylog3.log</span><br><span class="line">4	./nohup.out</span><br><span class="line">4	./test.sh</span><br><span class="line">4	./my.log</span><br><span class="line">4	./sh01.sh</span><br><span class="line">...</span><br></pre></td></tr></table></div></figure>
+<p>步骤一：</p>
+<p>思路：使用du命令加-a遍历用户指定目录（<code>$1</code>获取）的所有文件，使用管道将结果传递给sort，让sort使用数值序倒序排序，依次输出各个条目。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">oldIFS=<span class="variable">$IFS</span></span><br><span class="line">IFS=$<span class="string">'\n'</span>  <span class="comment"># 将for循环获取不同元素的标记修改为换行符</span></span><br><span class="line"><span class="comment"># for循环获取元素的时候使用空格区分各个不同的元素</span></span><br><span class="line"><span class="keyword">for</span>  item  <span class="keyword">in</span>  `du  -a  <span class="variable">$1</span> |  sort   -nr`; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">echo</span>  <span class="variable">$item</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line">IFS=<span class="variable">$oldIFS</span>    <span class="comment">#用完后重置IFS变量的值。</span></span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><code>$1</code>是第一个参数</li>
+<li><code>sort -nr</code> ：因为du输出的两列，第一列是大小，第二列是目录或文件，中间用制表符（\t）隔开，sort可以默认识别这种写法，并默把两列分开后用第一列排序，这里是缩写，全称为<code>sort -t '\t' -k 1 -nr sort.txt</code></li>
+</ul>
+<p><strong>因为要获取最大的文件，需要改进</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">oldIFS=<span class="variable">$IFS</span></span><br><span class="line">IFS=$<span class="string">'\n'</span>  <span class="comment"># 将for循环获取不同元素的标记修改为换行符</span></span><br><span class="line"><span class="comment"># for循环获取元素的时候使用空格区分各个不同的元素</span></span><br><span class="line"><span class="keyword">for</span>  item  <span class="keyword">in</span>  `du -a  <span class="variable">$1</span> |  sort -nr`; <span class="keyword">do</span></span><br><span class="line">  fileName=`<span class="built_in">echo</span>  <span class="variable">$item</span> | awk <span class="string">'&#123;print  $2&#125;'</span>`</span><br><span class="line">  <span class="keyword">if</span>  [  -f  <span class="variable">$fileName</span>  ]; <span class="keyword">then</span></span><br><span class="line">      <span class="built_in">echo</span>  <span class="variable">$fileName</span></span><br><span class="line">      <span class="built_in">break</span></span><br><span class="line">  <span class="keyword">fi</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line">IFS=<span class="variable">$oldIFS</span>    <span class="comment">#用完后重置IFS变量的值。</span></span><br></pre></td></tr></table></div></figure>
+<ul>
+<li>awk默认也是识别制表符，换行符，空格等</li>
+<li><strong><code>awk '{print $2}'</code></strong> <strong>这是取第二列，不是文件的第二个参数</strong></li>
+</ul>
+
+        <h3 id="72-案例2"   >
+          <a href="#72-案例2" class="heading-link"><i class="fas fa-link"></i></a>7.2 案例2</h3>
+      
+<p>问题：</p>
+<p>​    循环遍历文件每一行：流程控制语句 IFS</p>
+<ul>
+<li>定义一个计数器</li>
+<li>打印num正好是文件行数</li>
+</ul>
+<p>思路：</p>
+<ul>
+<li>管道</li>
+<li>重定向</li>
+<li>命令替换</li>
+</ul>
+<p><strong>方案一</strong>：</p>
+<p>思路：定义一个计数器，使用for循环从文件内容按行获取元素，每个元素是一行，在for循环中递增计数器用于计行数</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">num=0</span><br><span class="line">oldIFS=<span class="variable">$IFS</span></span><br><span class="line">IFS=$<span class="string">'\n'</span></span><br><span class="line"><span class="comment"># hello world are you ok</span></span><br><span class="line"><span class="keyword">for</span>  item  <span class="keyword">in</span>  `cat  <span class="variable">$1</span>`; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">echo</span> <span class="variable">$item</span></span><br><span class="line">  ((num++))  <span class="comment"># 或$((num++)) 或 let num++</span></span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"line number is :<span class="variable">$num</span>"</span></span><br><span class="line">IFS=<span class="variable">$oldIFS</span></span><br></pre></td></tr></table></div></figure>
+<p>解释：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> item <span class="keyword">in</span> `cat <span class="variable">$1</span>`; <span class="keyword">do</span></span><br></pre></td></tr></table></div></figure>
+<p>这里for循环可以识别换行符，所以可以遍历（即一行循环一次）</p>
+<p><strong>方案二：</strong></p>
+<p>思路：先使用<strong>wc数出总行数</strong>，然后使用带下标的for循环分页遍历该文件，打印出每行，最后打印出总行数。</p>
+<p>注意：</p>
+<p>1、<code>cat $1 | wc -l</code>：返回行数</p>
+<p>2、如果for循环想要java的写法，则可以在for后面用两个<code>((</code>包起来 ，如<code>for ((i=1;i&lt;=lines;i++))</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">num=0</span><br><span class="line">lines=`cat <span class="variable">$1</span> | wc  -l`</span><br><span class="line">hello=<span class="variable">$1</span></span><br><span class="line"><span class="keyword">for</span>  ((i=1;i&lt;=lines;i++)); <span class="keyword">do</span></span><br><span class="line">  line=`head  -<span class="variable">$i</span>  <span class="variable">$hello</span> |  tail  -1`</span><br><span class="line">  <span class="built_in">echo</span> <span class="variable">$line</span></span><br><span class="line">  ((num++))</span><br><span class="line"><span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">"line number is :<span class="variable">$num</span>"</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>方案三：</strong></p>
+<p>思路：将while的read标准输入重定向到文件file.txt，按行读取，每读一行，就打读到的行记录，同时计数器+1，最后得出总行数。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">num=0</span><br><span class="line"><span class="keyword">while</span>  <span class="built_in">read</span>  line  ;<span class="keyword">do</span></span><br><span class="line">   <span class="built_in">echo</span>  <span class="variable">$line</span></span><br><span class="line">   ((num++))</span><br><span class="line"><span class="keyword">done</span>  &lt;  <span class="variable">$1</span></span><br><span class="line"><span class="built_in">echo</span>  <span class="string">"line number is : <span class="variable">$num</span>"</span></span><br></pre></td></tr></table></div></figure>
+<p>解释：<code>&gt;&gt;</code>和<code>&gt;</code>都属于输出重定向，<code>&lt;</code>属于输入重定向</p>
+<p><strong>while read line [linux] shell 学习</strong>可参考：<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_22083251/article/details/80484176"  target="_blank" rel="noopener">https://blog.csdn.net/qq_22083251/article/details/80484176</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>写的不错。</p>
+<p><strong>方案四：</strong></p>
+<p>使用管道命令，<strong>但是通过管道无法向父进程传递数据</strong>（<strong>管道两边的命令在当前shell的两个子进程中执行</strong>），需要将结果数据写到文件中，运行结束后，将数据读出来即可</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line">num=0    <span class="comment"># 该num和管道后面的num不是一回事，因为num没有export</span></span><br><span class="line">cat   <span class="variable">$1</span>  |  <span class="keyword">while</span>  <span class="built_in">read</span>  line; <span class="keyword">do</span></span><br><span class="line">  <span class="built_in">echo</span>  <span class="variable">$line</span></span><br><span class="line">  ((num++))    <span class="comment">#即使当前环境没有num这个变量，((num++))一样可以使用</span></span><br><span class="line">  <span class="keyword">done</span></span><br><span class="line"><span class="built_in">echo</span>  <span class="string">"line number is: <span class="variable">$num</span>"</span>  &gt; <span class="variable">$2</span> <span class="comment">#将结果重定向到一个文件</span></span><br></pre></td></tr></table></div></figure>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/02/10/111447/">https://wxler.gitee.io/2021/02/10/111447/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/Linux/">Linux</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/02/10/115802/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Linux进程管理命令nohup、&amp;、jobs、fg、bg、ps、kill</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/02/04/212039/"><span class="paginator-prev__text">使用Xftp和lrzsz在Linux与Windows之间互传文件</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-bash基本使用"><span class="toc-text">
+          1. bash基本使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-bash的io"><span class="toc-text">
+          2. bash的io</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-bash的变量"><span class="toc-text">
+          3. bash的变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-bash中变量的类型"><span class="toc-text">
+          3.1 bash中变量的类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-本地变量"><span class="toc-text">
+          3.2 本地变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-局部变量"><span class="toc-text">
+          3.3 局部变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-位置变量"><span class="toc-text">
+          3.4 位置变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#35-特殊变量"><span class="toc-text">
+          3.5 特殊变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-数组"><span class="toc-text">
+          3.6 数组</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#37-管道"><span class="toc-text">
+          3.7 管道</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#38-和pashpid"><span class="toc-text">
+          3.8 $$和$PASHPID</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-bash的基本语法"><span class="toc-text">
+          4. bash的基本语法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#41-单引号和双引号"><span class="toc-text">
+          4.1 单引号和双引号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#42-命令替换"><span class="toc-text">
+          4.2 命令替换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#43-逻辑判断"><span class="toc-text">
+          4.3 逻辑判断</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#44-表达式"><span class="toc-text">
+          4.4 表达式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-bash的分支"><span class="toc-text">
+          5. bash的分支</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#51-if分支"><span class="toc-text">
+          5.1 if分支</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#52-case分支"><span class="toc-text">
+          5.2 case分支</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-bash的循环"><span class="toc-text">
+          6. bash的循环</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#61-while循环"><span class="toc-text">
+          6.1 while循环</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#62-for循环"><span class="toc-text">
+          6.2 for循环</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-bash练习"><span class="toc-text">
+          7. bash练习</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#71-案例1"><span class="toc-text">
+          7.1 案例1</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#72-案例2"><span class="toc-text">
+          7.2 案例2</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">71</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">13</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">39</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
