@@ -1,0 +1,802 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="文章很长，但是很用心！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="详解磁盘IO、网络IO、零拷贝IO、BIO、NIO、AIO、IO多路复用(select、poll、epoll)">
+<meta property="og:url" content="https://wxler.gitee.io/2021/02/19/134758/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="文章很长，但是很用心！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219155217.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127225002.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219161442.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219171705.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219175029.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219161442.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219202400.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219204649.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219221516.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210220151020.png">
+<meta property="article:published_time" content="2021-02-19T05:47:58.000Z">
+<meta property="article:modified_time" content="2021-02-20T09:45:30.613Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="IO">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219155217.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>详解磁盘IO、网络IO、零拷贝IO、BIO、NIO、AIO、IO多路复用(select、poll、epoll) | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/02/19/134758/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">详解磁盘IO、网络IO、零拷贝IO、BIO、NIO、AIO、IO多路复用(select、poll、epoll)</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-02-19</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-02-20</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">10.8k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">60分</span></span></div></header><div class="post-body"><p>文章很长，但是很用心！</p>
+<a id="more"></a>
+<p><strong>文章目录</strong></p>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-%E4%BB%80%E4%B9%88%E6%98%AFio">1. 什么是I/O</a></li>
+<li><a href="#2-%E7%A3%81%E7%9B%98io">2. 磁盘IO</a></li>
+<li><a href="#3-%E7%BD%91%E7%BB%9Cio">3. 网络IO</a></li>
+<li><a href="#4-io%E4%B8%AD%E6%96%AD%E4%B8%8Edma">4. IO中断与DMA</a></li>
+<li><a href="#5-%E9%9B%B6%E6%8B%B7%E8%B4%9Dio">5. 零拷贝IO</a></li>
+<li><a href="#6-bio">6. BIO</a></li>
+<li><a href="#7-nio">7. NIO</a></li>
+<li><a href="#8-io%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8">8. IO多路复用</a>
+<ul>
+<li><a href="#81-select">8.1 select</a></li>
+<li><a href="#82-poll">8.2 poll</a></li>
+<li><a href="#83-epoll">8.3 epoll</a></li>
+</ul>
+</li>
+<li><a href="#9-aio">9. AIO</a></li>
+<li><a href="#10-%E6%80%BB%E7%BB%93">10. 总结</a></li>
+</ul>
+</p>
+
+        <h2 id="1-什么是io"   >
+          <a href="#1-什么是io" class="heading-link"><i class="fas fa-link"></i></a>1. 什么是I/O</h2>
+      
+<p>在计算机操作系统中，所谓的I/O就是输入（Input）和输出（Output），也可以理解为读（Read）和写（Write)，针对不同的对象，I/O模式可以划分为磁盘IO模型和网络IO模型。</p>
+<p>IO操作会涉及到用户空间和内核空间的转换，先来理解以下规则：</p>
+<ul>
+<li>内存空间分为用户空间和内核空间，也称为用户缓冲区和用户缓冲区</li>
+<li>用户的应用程序不能直接操作内核空间，需要将数据从内核空间拷贝到用户空间才能使用</li>
+<li>无论是read操作，还是write操作，都只能在内核空间里执行</li>
+<li>磁盘IO和网络IO请求加载到内存的数据都是先放在内核空间的</li>
+</ul>
+<p>再来看看所谓的读（Read）和写（Write)操作：</p>
+<ul>
+<li>读操作：操作系统检查内核缓冲区有没有需要的数据，如果内核缓冲区已经有需要的数据了，那么就直接把内核空间的数据copy到用户空间，供用户的应用程序使用。如果内核缓冲区没有需要的数据，对于磁盘IO，直接从磁盘中读取到内核缓冲区（这个过程可以不需要cpu参与）。而对于网络IO，应用程序需要等待客户端发送数据，如果客户端还没有发送数据，对应的应用程序将会被阻塞，直到客户端发送了数据，该应用程序才会被唤醒，从Socket协议找中读取客户端发送的数据到内核空间，然后把内核空间的数据copy到用户空间，供应用程序使用。</li>
+<li>写操作：用户的应用程序将数据从用户空间copy到内核空间的缓冲区中（如果用户空间没有相应的数据，则需要从磁盘—&gt;内核缓冲区—&gt;用户缓冲区依次读取），这时对用户程序来说写操作就已经完成，至于什么时候再写到磁盘或通过网络发送出去，由操作系统决定。除非应用程序显示地调用了sync命令，立即把数据写入磁盘，或执行flush()方法，通过网络把数据发送出去。</li>
+<li>绝大多数磁盘IO和网络IO的读写操作都是上述过程，除了后面要讲到的零拷贝IO。</li>
+</ul>
+
+        <h2 id="2-磁盘io"   >
+          <a href="#2-磁盘io" class="heading-link"><i class="fas fa-link"></i></a>2. 磁盘IO</h2>
+      
+<p>磁盘IO的流程如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219155217.png"  alt="" />
+      </p>
+<p>（1）读操作</p>
+<p>当应用程序调用read()方法时，操作系统检查内核缓冲区中是否存在需要的数据，如果存在，那么就直接把内核空间的数据copy到用户空间，供用户的应用程序使用。如果内核缓冲区没有需要的数据，通过通过<strong>DMA方式</strong>（一种IO设备控制方式，下面会讲解）从磁盘中读取数据到内核缓冲区，然后由CPU控制，把内核空间的数据copy到用户空间。</p>
+<p>这个过程会涉及到两次缓冲区copy，第一次是从磁盘的缓冲区到内核缓冲区，第二次是从内核缓冲区到用户缓冲区（或应用缓冲区），第一次是cpu的copy，第二次是DMA的copy。</p>
+<p>（2）写操作</p>
+<p>当应用程序调用write()方法时，应用程序将数据从用户空间copy到内核空间的缓冲区中（如果用户空间没有相应的数据，则需要从磁盘—&gt;内核缓冲区—&gt;用户缓冲区依次读取），这时对用户程序来说写操作就已经完成，至于什么时候把数据再写到磁盘（从内核缓冲区到磁盘的写操作也由DMA控制，不需要cpu参与），由操作系统决定。除非应用程序显示地调用了sync命令，立即把数据写入磁盘。</p>
+<p>如果应用程序没准备好写的数据，则必须先从磁盘读取数据才能执行写操作，这时会涉及到四次缓冲区的copy，第一次是从磁盘的缓冲区到内核缓冲区，第二次是从内核缓冲区到用户缓冲区，第三次是从用户缓冲区到内核缓冲区，第四次是从内核缓冲区写回到磁盘。前两次是为了读，后两次是为了写。这其中有两次cpu拷贝，两次DMA copy。</p>
+<p>（3）磁盘IO的延时</p>
+<p>为了读或写，磁头必须能移动到所指定的磁道上，并等待所指定的扇区的开始位置旋转到磁头下，然后再开始读或写数据。磁盘IO的延时分成以下三部分：</p>
+<ul>
+<li><strong>寻道时间</strong>：把磁头移动到指定磁道上所经历的时间</li>
+<li><strong>旋转延迟时间</strong> ：指定扇区移动到磁头下面所经历的时间</li>
+<li><strong>传输时间</strong> ：数据的传输时间（数据读出或写入的时间）</li>
+</ul>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210127225002.png"  alt="img" />
+      </p>
+
+        <h2 id="3-网络io"   >
+          <a href="#3-网络io" class="heading-link"><i class="fas fa-link"></i></a>3. 网络IO</h2>
+      
+<p>网络IO的流程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219161442.png"  alt="" />
+      </p>
+<p>（1）读操作</p>
+<p>网络IO的既可以从物理磁盘中读数据，也可以从socket中读数据（从网卡中获取）。当从物理磁盘中读数据的时候，其流程和磁盘IO的读操作一样。当从socket中读数据，应用程序需要等待客户端发送数据，如果客户端还没有发送数据，对应的应用程序将会被阻塞，直到客户端发送了数据，该应用程序才会被唤醒，从Socket协议找中读取客户端发送的数据到内核空间（这个过程也由DMA控制），然后把内核空间的数据copy到用户空间，供应用程序使用。</p>
+<p>（2）写操作</p>
+<p>为了简化描述，我们假设网络IO的数据从磁盘中获取，读写操作的流程如下：</p>
+<ul>
+<li>当应用程序调用read()方法时，通过DMA方式将数据从磁盘拷贝到内核缓冲区</li>
+<li>由cpu控制，将内核缓冲区的数据拷贝到用户空间的缓冲区中，供应用程序使用</li>
+<li>当应用程序调用write()方法时，cpu会把用户缓冲区中的数据copy到内核缓冲区的Socket Buffer中</li>
+<li>最后通过DMA方式将内核空间中的Socket Buffer拷贝到Socket协议栈（即网卡设备）中传输。</li>
+</ul>
+<p>网络IO的写操作也有四次缓冲区的copy，第一次是从磁盘缓冲区到内核缓冲区（由cpu控制），第二次是内核缓冲区到用户缓冲区（DMA控制），第三次是用户缓冲区到内核缓冲区的Socket Buffer（由cpu控制），第四次是从内核缓冲区的Socket Buffer到网卡设备（由DMA控制）。四次缓冲区的copy工作两次由cpu控制，两次由DMA控制。</p>
+<p>（3）网络IO的延时</p>
+<p>网络IO主要延时是由：服务器响应延时+带宽限制+网络延时+跳转路由延时+本地接收延时 决定。一般为几十到几千毫秒，受环境影响较大。所以，一般来说，网络IO延时要大于磁盘IO延时。</p>
+
+        <h2 id="4-io中断与dma"   >
+          <a href="#4-io中断与dma" class="heading-link"><i class="fas fa-link"></i></a>4. IO中断与DMA</h2>
+      
+<p>以前传统的IO读写是通过中断由cpu控制的，为了减少CPU对I/O的干预，引入了直接存储器访问方式（DMA）方式。在DMA方式下，数据的传送是在DMA的控制下完成的，不需要cpu干预，所以CPU和I/O设备可以并行工作，提高了效率。现在来看看它们各自的原理：</p>
+<p>（1）IO中断原理</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219171705.png"  alt="" />
+      </p>
+<ol>
+<li>用户进程通过read等系统调用接口向操作系统（即CPU）发出IO请求，请求读取数据到自己的用户内存缓冲区中，然后<strong>该进程进入阻塞状态</strong>。</li>
+<li>操作系统收到用户进程的请求后，进一步将IO请求发送给磁盘。</li>
+<li>磁盘驱动器收到内核的IO请求后，把数据读取到自己的缓冲区中，此时不占用CPU。当磁盘的缓冲区被读满之后，向内核发起<strong>中断信号</strong>告知自己缓冲区已满。</li>
+<li>内核收到磁盘发来的中断信号，<strong>使用CPU将磁盘缓冲区中的数据copy到内核缓冲区中</strong>。</li>
+<li>如果内核缓冲区的数据少于用户申请读的数据，则重复步骤2、3、4，直到内核缓冲区的数据符合用户的要求为止。</li>
+<li>内核缓冲区的数据已经符合用户的要求，CPU停止向磁盘IO请求。</li>
+<li>CPU将数据从内核缓冲区拷贝到用户缓冲区，同时从系统调用中返回。</li>
+<li>用户进程读取到数据后继续执行原来的任务。</li>
+</ol>
+<p><strong>中断IO缺点：每次IO请求都需要CPU多次参与。</strong></p>
+<p>（2）DMA原理</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219175029.png"  alt="" />
+      </p>
+<ol>
+<li>用户进程通过read等系统调用接口向操作系统（即CPU）发出IO请求，请求读取数据到自己的用户内存缓冲区中，然后<strong>该进程进入阻塞状态</strong>。</li>
+<li>操作系统收到用户进程的请求后，<strong>进一步将IO请求发送给DMA，然后CPU就可以去干别的事了</strong>。</li>
+<li>DMA将IO请求转发给磁盘。</li>
+<li>磁盘驱动器收到内核的IO请求后，把数据读取到自己的缓冲区中，当磁盘的缓冲区被读满后，向DMA发起中断信号告知自己缓冲区已满。</li>
+<li>DMA收到磁盘驱动器的信号，将磁盘缓存中的数据copy到内核缓冲区中，<strong>此时不占用CPU（IO中断这里是占用CPU的）</strong>。</li>
+<li>如果内核缓冲区的数据少于用户申请读的数据，则重复步骤3、4、5，直到内核缓冲区的数据符合用户的要求为止。</li>
+<li>内核缓冲区的数据已经符合用户的要求，<strong>DMA停止向磁盘IO请求</strong>。</li>
+<li>DMA发送中断信号给CPU。</li>
+<li><strong>CPU收到DMA的信号，知道数据已经准备好，于是将数据从内核空间copy到用户空间</strong>，系统调用返回。</li>
+<li>用户进程读取到数据后继续执行原来的任务。</li>
+</ol>
+<p><strong>跟IO中断模式相比，DMA模式下，DMA就是CPU的一个代理，它负责了一部分的拷贝工作，从而减轻了CPU的负担</strong>。</p>
+<p>需要注意的是，DMA承担的工作是从磁盘的缓冲区到内核缓冲区或网卡设备到内核的soket buffer的拷贝工作，以及内核缓冲区到磁盘缓冲区或内核的soket buffer到网卡设备的拷贝工作，而内核缓冲区到用户缓冲区之间的拷贝工作仍然由CPU负责。</p>
+
+        <h2 id="5-零拷贝io"   >
+          <a href="#5-零拷贝io" class="heading-link"><i class="fas fa-link"></i></a>5. 零拷贝IO</h2>
+      
+<p>在上述IO中，读写操作要经过四次缓冲区的拷贝，并经历了四次内核态和用户态的切换。 零拷贝（zero copy）IO技术减少不必要的内核缓冲区跟用户缓冲区之间的拷贝，从而减少CPU的开销和状态切换带来的开销，达到性能的提升。</p>
+<p>在zero copy下，如果从磁盘中读取文件然后通过网络发送出去，<strong>只需要拷贝三次，只发生两次内核态和用户态的切换</strong>。</p>
+<p>下图是不使用zero copy的网络IO传输过程：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219161442.png"  alt="" />
+      </p>
+<p><strong>零拷贝的传输过程</strong>：硬盘 &gt;&gt; kernel buffer (快速拷贝到kernel socket buffer) &gt;&gt;Socket协议栈（网卡设备中）</p>
+<ul>
+<li>当应用程序调用read()方法时，通过DMA方式将数据从磁盘拷贝到内核缓冲区</li>
+<li>由cpu控制，将内核缓冲区的数据直接拷贝到另外一个与 socket相关的内核缓冲区，即kernel socket buffer</li>
+<li>然后由DMA 把数据从kernel socket buffer直接拷贝给Socket协议栈（网卡设备中）。</li>
+</ul>
+<p>这里，<strong>只经历了三次缓冲区的拷贝</strong>，第一次是从磁盘缓冲区到内核缓冲区，第二次是从内核缓冲区到kernel socket buffer，第三次是从kernel socket buffe到Socket协议栈（网卡设备中）。<strong>只发生两次内核态和用户态的切换</strong>，第一次是当应用程序调用read()方法时，用户态切换到内核到执行read系统调用，第二次是将数据从网络中发送出去后系统调用返回，从内核态切换到用户态。</p>
+<p>零拷贝（zero copy）的应用：</p>
+<ul>
+<li>Linux下提供了zero copy的接口：sendfile和splice，用户可通过这两个接口实现零拷贝传输</li>
+<li>Nginx可以通过sendfile配置开启零拷贝</li>
+<li>在linux系统中，Java NIO中FileChannel.transferTo的实现依赖于 sendfile()调用。</li>
+<li>Apache使用了sendfile64()来传送文件，sendfile64()是sendfile()的扩展实现</li>
+<li>kafka也用到了零拷贝的功能，具体我没有深究</li>
+</ul>
+<p>注意：零拷贝要求输入的fd必须是文件句柄，不能是socket，输出的fd必须是socket，也就是说，数据的来源必须是从本地的磁盘，而不能是从网络中，如果数据来源于socket，就不能使用零拷贝功能了。我们看一下sendfile接口就知道了：</p>
+<figure class="highlight c"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/sendfile.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">ssize_t</span> <span class="title">sendfile</span><span class="params">(<span class="keyword">int</span> out_fd, <span class="keyword">int</span> in_fd, <span class="keyword">off_t</span> *offset, <span class="keyword">size_t</span> count)</span></span></span><br></pre></td></tr></table></div></figure>
+<ul>
+<li>out_fd：待写入文件描述符</li>
+<li>in_fd： 待读出文件描述符</li>
+<li>offset：从读入文件流的哪个位置开始读，如果为空，则默认从起始位置开始</li>
+<li>count：指定在文件描述符in_fd 和out_fd之间传输的字节数</li>
+<li>返回值：成功时，返回出传输的字节数，失败返回-1</li>
+</ul>
+<p><strong>in_fd必须指向真实的文件，不能是socket和管道；而out_fd则必须是一个socket。由此可见，sendfile几乎是专门为在网络上传输文件而设计的。</strong></p>
+<blockquote>
+<p>在Linxu系统中，一切皆文件，因此socket也是一个文件，也有文件句柄（或文件描述符）。</p>
+</blockquote>
+
+        <h2 id="6-bio"   >
+          <a href="#6-bio" class="heading-link"><i class="fas fa-link"></i></a>6. BIO</h2>
+      
+<p>现在，我们就来讲解BIO、NIO、IO多路复用、AIO，在这之前，<strong>我必须强调，这些IO大多用于网络IO，并且这里主要介绍用户程序从网络中获取数据那一部分</strong>。一方面是为了方便描述，另一方式，更能体现出这些IO的区别。</p>
+<p>网络IO从Socket获取数据的步骤：</p>
+<ol>
+<li>用户进程执行系统调用转入内核态</li>
+<li>操作系统等待远处客户端发送数据（前提是客户端和服务器通过TCP三次握手成功），客户端发送数据后，操作系统通过从网卡设备获取数据，并把数据从Socket协议栈拷贝到内核缓冲区</li>
+<li>把内核缓冲区的数据拷贝到用户缓冲区</li>
+<li>用户进程获取到数据，继续执行</li>
+</ol>
+<p>BIO、NIO、AIO的主要区别在于：</p>
+<ul>
+<li>步骤1里用户进程执行系统调用后的状态如何，是阻塞（或挂起），还是非阻塞。</li>
+<li>步骤3里把内核缓冲区的数据拷贝到用户缓冲区，在拷贝过程中，用户进程的状态又如何，是阻塞，还是非阻塞。</li>
+</ul>
+<p>如果用户进程在步骤1执行后的状态是阻塞的，且步骤3过程中，进程也是阻塞的，那么是BIO（同步阻塞IO）。</p>
+<p>如果用户进程在步骤1执行后的状态是非阻塞的，且步骤3过程中，进程是阻塞的，那么是NIO（同步非阻塞IO）。</p>
+<p>如果用户进程在步骤1执行后的状态是非阻塞的，且步骤3过程中，进程也是非阻塞的，<strong>也就是说真正读（或写）时，进程的状态是非阻塞的</strong>，那么是AIO（异步IO）。</p>
+<p>至于多路复用IO和BIO、NIO、AIO的区别，后面会细细讲解。</p>
+<p>那么，我们就开始吧！</p>
+<p>BIO （Blocking I/O），称之为同步阻塞I/O，其IO模型传输如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219202400.png"  alt="" />
+      </p>
+<p><em>上图红色表示进程处理阻塞状态，绿色表示进程处于非阻塞状态</em></p>
+<p>我相信BIO模型的传输过程上图已经描述很清楚了，可以看到，BIO模型的用户进程在执行系统调用后，一直处于阻塞状态，等待内核数据到位后，进程继续阻塞，直到内核数据拷贝到用户空间。</p>
+<p>该模式下，一个线程只能处理一个Socket IO连接，高并发时，服务端会启用大量的线程来处理多个Socket，由于是阻塞IO，会导致大量线程处于阻塞状态，导致cpu资源浪费，且大量线程会导致大量的上下文切换，造成过多的开销。</p>
+<blockquote>
+<p>当前绝大操作系统都支持多线程，当操作系统引入多线程之后，进程的执行实际就是进程中的多个线程在执行，同一时刻，cpu只能执行一个线程，多个线程通过轮询的方式交替执行。</p>
+</blockquote>
+<p>这时你可能会有疑问，用户进程都被阻塞（或挂起）了，在内核态还怎么操作呢？事实上，read和write都是内核级的操作，只要用户进程调用相应的系统调用接口后，内核进程（或线程）在真正执行读和写操作硬件时，与用户进程就没什么关系了。</p>
+
+        <h2 id="7-nio"   >
+          <a href="#7-nio" class="heading-link"><i class="fas fa-link"></i></a>7. NIO</h2>
+      
+<p>NIO （Non-blocking IO），称之为非阻塞IO，其传输过程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219204649.png"  alt="" />
+      </p>
+<p>在NIO模式下，当用户进程执行系统调用后，如果当前数据还没有准备好，则会立即返回（NIO的非阻塞就提现在这里），然后再次进行系统调用，不断测试数据是否准备好。如果数据准备好了，当前进程会进入阻塞转态，直到数据从内核空间拷贝到用户空间，进程才会被唤醒，就可以处理数据了。</p>
+<p>NIO模式下，一个线程就可以处理多个Socket连接，没必要开启多线程进行处理（如果多个NIO，会有多个线程一起执行多次系统调用，结果会很可怕）。但是，当有1000个Socket连接时，用户进程会以轮询的方式执行1000次系统调用判断数据有没有准备好，即会发生1000次用户态到内核态的切换，成本几何上升。即使当前只有一个Socket连接，也会重复进行系统调用，因为此时的用户进程不仅要接收新的Socket连接并把它拷贝到内核，还要判断已有的Socket连接是否准备好数据，这都会有系统调用，极大的浪费cpu资源。</p>
+
+        <h2 id="8-io多路复用"   >
+          <a href="#8-io多路复用" class="heading-link"><i class="fas fa-link"></i></a>8. IO多路复用</h2>
+      
+<p>IO多路复用的传输过程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210219221516.png"  alt="" />
+      </p>
+<p>由于NIO会多次执行系统调用进行测试，大大浪费系统的资源，而<strong>多路复用IO把轮询多个Socket文件句柄的事情放在内核空间里执行，即让内核负责轮询所有socket（这样就不会有用户态和系统态的切换）</strong>，当某个或几个socket有数据到达了，返回所有就绪的Socket文件句柄给用户进程，然后用户进程执行read系统调用接口，并进入阻塞状态。内核进程（或线程）把数据从内核空间拷贝到用户空间，用户进程读取到数据就可以进行处理了。</p>
+<p>多路复用IO在执行系统调用后，进程就处于阻塞状态，所以多路复用IO本质上也是同步阻塞IO，只不过它是在内核态轮询所有socket，大大提高了IO的处理速度，也减少了系统状态切换的开销。此外，它与同步阻塞的BIO不同，多路复用IO可以使用一个线程同时处理多个Socket的IO请求，这是BIO做不到的。而在BIO中，必须通过多线程的方式才能达到这个目的。</p>
+<p>另外，大家可以思考一下，<strong>为什么用户进程从网络中获取数据的第一步就要执行系统调用</strong>，我举一个例子来说明。</p>
+<p>假如一个服务端上的用户进程要读取客户端发来的数据，此时用户进程在用户态，当进程执行了accept()方法获取客户端的链接，此时就得到了客户端Socket的文件句柄（或文件描述符），但是该用户进程并不知道该Socket的文件句柄是否就绪（即是否可读），这就要执行系统调用进入内核态，并把当前网络连接的Socket文件句柄（或文件描述符）复制到内核态。为什么要进入内核态呢？因为数据是从Socket协议栈（或网卡设备）发过来的，要操作硬件设备才能读取数据，所以必须在内核态下判断客户端的Socket是否发来消息。进入内核态以后，内核进程会判断该Socket是否可读（即是否准备好数据），如果准备好了数据，就把数据从Socket协议栈（或网卡设备）拷贝到内核缓冲区，再把内核缓冲区的数据拷贝到用户缓冲区。所以只要有一个客户端的Socket连接到来，就会进入一次系统调用判断Socket的文件句柄是否就绪。这里可能不好理解，但对下面多路复用模式的理解很有用处。</p>
+<p>多路复用模式包含三种，即select、poll和epoll，<strong>这几种模式主要区别在于获取可读Socket文件句柄的方式</strong>。</p>
+
+        <h3 id="81-select"   >
+          <a href="#81-select" class="heading-link"><i class="fas fa-link"></i></a>8.1 select</h3>
+      
+<p>为了更清楚的进行说明，这里给出selet函数的定义：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int select (int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, struct timeval *timeout);</span><br></pre></td></tr></table></div></figure>
+<p>select 函数监视的文件描述符分3类，分别是writefds、readfds、和exceptfds。**调用后select函数后用户进程会阻塞，直到有文件描述符就绪（有数据可读、可写、或者有exception）**或者超时（timeout指定等待时间），函数返回。当select函数返回后，可以通过遍历fd_set（文件描述符的集合），来找到就绪的描述符。</p>
+<p>select目前几乎在所有的平台上支持，其良好跨平台支持也是它的一个优点。select的一个缺点在于单个进程能够监视的文件描述符的数量存在最大限制，在Linux上一般为1024（可以修改）。</p>
+<p>select机制的详细过程如下：</p>
+<ol>
+<li>select创建3个文件描述符的集合（即writefds、readfds、和exceptfds），当有Socket连接时，将该Sokcet的文件句柄放入这3个文件描述符的集合中一个或多个，并将这些文件描述符集全部拷贝到内核中，这里限制了文件句柄的最大的数量为1024，此时用户进程会进入阻塞状态。</li>
+<li><strong>内核分别遍历（或轮询）这3个文件描述符集</strong>，判断是否有Socket连接可读、可写、或者有exception，这个动作和select无关。</li>
+<li>内核检测文件描述符集中有某个或某几个Socket文件句柄就绪（有数据可读、可写、或者有exception），修改相应Socket文件句柄的状态位，表示该Socket已经就绪，以区别其它没有就绪的文件句柄。然后，就产生中断通知用户进程，并返回就绪的文件句柄的总数，只需遍历一遍文件描述符集合，就可以得到就绪的 Socket（可使用FD_ISSET宏函数来检测哪些文件句柄就绪）。</li>
+<li>用户进程调用系统调用接口（read或write），转入内核态执行read或write操作，此时进程又进入阻塞状态，在内核态执行完系统调用以后，再次通知用户进程，用户进程获取到数据就可以进行处理了。</li>
+<li>内核对就绪文件句柄的监控是建立在Socket状态位之上的，也就是说经过一次监控之后，相应Socket的状态位会被修改，因此再次监控时需要再次从用户态向内核态进行拷贝（即复位内核里面所有的fd）。</li>
+<li>如果有新的Socket连接进来，用户进程（处于非阻塞时）将新Socket的文件句柄放入3个文件描述符集后，再次将这些文件描述符集全部拷贝到内核中（文件句柄的最大的数量为1024）。</li>
+</ol>
+<p>使用select以后最大的优势是用户可以在一个线程内同时处理多个socket的IO请求。当有多个Socket连接时，把它们放入select创建的3个文件描述符集中的一个即可，然后由内核分别轮询这3个文件描述符集，即可达到在同一个线程内同时处理多个IO请求的目的。</p>
+<p>在select机制中，为了减少数据拷贝带来的性能损坏，内核对被监控的<code>fd_set</code>集合大小做了限制（默认最大为1024），且想要做到多次监控或者有未就绪的文件句柄，select机制会不断地将文件描述符集从用户态向内核态进行拷贝，会大大浪费系统的资源。此外，select机制只能知道有socket就绪（有数据可读或可写、或者有exception），无法知道具体是哪一个socket接收到了数据，所以需要用户进程进行遍历，才能知道具体是哪个socket接收到了数据。</p>
+
+        <h3 id="82-poll"   >
+          <a href="#82-poll" class="heading-link"><i class="fas fa-link"></i></a>8.2 poll</h3>
+      
+<p>不同于select使用3个文件描述符集合，poll使用一个pollfd结构体的指针实现。</p>
+<figure class="highlight c"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"># poll函数定义</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">poll</span> <span class="params">(struct pollfd *fds, <span class="keyword">unsigned</span> <span class="keyword">int</span> nfds, <span class="keyword">int</span> timeout)</span></span>;</span><br><span class="line"><span class="meta"># pollfd指针的结构体</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">pollfd</span> &#123;</span></span><br><span class="line"><span class="keyword">int</span> fd; <span class="comment">/* file descriptor */</span>  </span><br><span class="line">short events; <span class="comment">/* requested events to watch */</span></span><br><span class="line">short revents; <span class="comment">/* returned events witnessed */</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></div></figure>
+<p>poll函数参数说明：</p>
+<ul>
+<li><code>struct pollfd *fds</code> ：<code>fds</code>是一个<code>struct pollfd</code>类型的数组，用于存放需要检测其状态的socket文件描述符，并且调用poll函数之后<code>fds</code>数组不会被清空，这一点与select()函数不同，调用select()函数之后，select() 函数会清空它所检测的socket描述符集合，导致每次调用select()之前都必须把socket描述符重新加入到待检测的集合中。一个<code>pollfd</code>结构体表示一个被监视的Socket文件描述符，通过给poll函数传递<code>pollfd</code>数组来监视多个socket文件描述符。</li>
+<li><code>nfds</code>：是监控的socket文件句柄数量。</li>
+<li><code>timeout</code>是等待的毫秒数，这段时间内无论IO是否准备好，poll都会返回。timeout为负数表示无线等待，timeout为0表示调用后立即返回。</li>
+<li>poll函数执行结果：为0表示超时前没有任何事件发生，-1表示失败，成功则返回结构体<code>pollfd</code>的<code>revents</code>不为0的文件描述符个数。</li>
+</ul>
+<p>接下来，我们就介绍一下，结构体<code>pollfd</code>的events域和revents域。<strong><code>events</code>域是监视该文件描述符的事件，由用户来设置这个域，<code>revents</code>域是文件描述符的操作结果事件，由内核在调用返回时设置这个域。events域中请求的任何事件都可能在revents域中返回</strong>，events域合法的事件如下：</p>
+<ul>
+<li><code>POLLIN</code>：有数据可读。</li>
+<li><code>POLLRDNORM</code>：有普通数据可读。</li>
+<li><code>POLLRDBAND</code>：有优先数据可读。</li>
+<li><code>POLLPRI</code>：有紧迫数据可读。</li>
+<li><code>POLLOUT</code>：写数据不会导致阻塞。</li>
+<li><code>POLLWRNORM</code>：写普通数据不会导致阻塞。</li>
+<li><code>POLLWRBAND</code>：写优先数据不会导致阻塞。</li>
+<li><code>POLLMSG、SIGPOLL</code>：消息可用。</li>
+</ul>
+<p>此外，revents域中还可能返回下列事件，这些事件在events域中无意义，因为它们在合适的时候总是会从revents中返回。</p>
+<ul>
+<li><code>POLLER</code>：指定的文件描述符发生错误。</li>
+<li><code>POLLHUP</code>：指定的文件描述符挂起事件。</li>
+<li><code>POLLNVAL</code>：指定的文件描述符非法。</li>
+</ul>
+<p>举一个例子，<code>events=POLLIN | POLLPRI</code>等价于select()的读事件，<code>events=POLLOUT | POLLWRBAND</code>等价于select()的写事件。此外，<code>POLLIN</code>等价于<code>POLLRDNORM |POLLRDBAND</code>，而<code>POLLOUT</code>则等价于<code>POLLWRNORM</code>。</p>
+<p>当我们要同时监视一个文件描述符是否可读和可写，可以设置 <code>events=POLLIN |POLLOUT</code>（由用户设置）。在poll返回时，可以检查revents中的标志（由内核在调用返回时设置）。如果<code>revents=POLLIN</code>，表示Socket文件描述符可以被读取而不阻塞。如果<code>revents=POLLOUT</code>，表示Socket文件描述符可以写入而不导致阻塞。注意，<code>POLLIN</code>和<code>POLLOUT</code>并不是互斥的：它们可能被同时设置，表示这个文件描述符的读取和写入操作都会正常返回而不阻塞。</p>
+<p>现在，我们来总结一下poll机制的过程：</p>
+<ol>
+<li>调用poll函数，进入系统调用，将pollfd数组拷贝至内核，此时用户进程会进入阻塞状态。</li>
+<li>此时已经从用户空间复制了pollfd数组来存放所有的Socket文件描述符，此时把数组pollfd组织成poll_list链表。</li>
+<li>对poll_list链表进行遍历，判断每个Socket文件描述符的状态，如果某个Socket就绪，就在Socket的就绪队列上加入一项，然后继续遍历。若遍历完所有的文件描述符后，都没发现任何Socket就绪，则继续阻塞当前进程，直到有Socket就绪或者等待超时，就唤醒用户进程，返回就绪队列。</li>
+<li>如果用户进程被唤醒后，Socket就绪队列有就绪的Socket，用户进程就获取所有就绪的Socket，调用系统调用接口（read或write），转入内核态执行read或write操作，此时进程又进入阻塞状态，在内核态执行完系统调用以后，再次通知用户进程，用户进程获取到数据就可以进行处理了。</li>
+<li>如果用户进程因等待超时被唤醒，Socket就绪队列为空，进程会再次执行系统调用，重复步骤1、2、3。</li>
+</ol>
+<p>可以看到，poll的实现和select非常相似，只是文件描述符集合不同，poll使用pollfd结构体，select使用的是fd_set结构，其他的都差不多，管理多个文件描述符也都是采用轮询的方式，然后根据文件描述符的状态进行处理。由于poll使用的链表，故没有最大文件描述符数量的限制，而select监控文件描述符的最大默认数量为1024。</p>
+<p>poll和select同样存在一个缺点就是，包含大量文件描述符的数组被整体复制于用户态和内核的内存空间之间，而不论这些文件描述符是否就绪，它的开销随着文件描述符数量的增加而线性增大。事实上，同时连接的大量客户端在一时刻可能只有很少的处于就绪状态，因此随着监视的文件描述符数量的增长，其效率也会线性下降。</p>
+<p>poll还有一个特点是“水平触发”，如果报告了某个就绪的Socket文件描述符后，没有被处理，那么下次poll时会再次报告该Socket fd。</p>
+
+        <h3 id="83-epoll"   >
+          <a href="#83-epoll" class="heading-link"><i class="fas fa-link"></i></a>8.3 epoll</h3>
+      
+<p>epoll是在Linux2.6内核中提出的，是之前的select和poll的增强版本，先来看下epoll系统调用的三个函数</p>
+<figure class="highlight c"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_create</span><span class="params">(<span class="keyword">int</span> <span class="built_in">size</span>)</span></span>;  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_ctl</span><span class="params">(<span class="keyword">int</span> epfd, <span class="keyword">int</span> op, <span class="keyword">int</span> fd, struct epoll_event *event)</span></span>;  </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">epoll_wait</span><span class="params">(<span class="keyword">int</span> epfd, struct epoll_event *events,<span class="keyword">int</span> maxevents, <span class="keyword">int</span> timeout)</span></span>;</span><br></pre></td></tr></table></div></figure>
+<p>解释：</p>
+<ol>
+<li>
+<p><code>int epoll_create(int size);</code><br />
+创建一个epoll的句柄，size用来告诉内核这个监听的数目一共有多大，这个参数不同于select()中的第一个参数，给出最大监听的fd+1的值，这里的size并不是限制了epoll所能监听的描述符最大个数，只是对内核初始分配内部数据结构的一个建议，也就是说，size是内核保证能够正确处理的最大句柄数，多于这个最大数时内核可不保证效果。<strong>当创建好epoll句柄后，它就会占用一个fd值</strong>，所以在使用完epoll后，必须调用close()关闭，否则可能导致该进程的fd被耗尽。</p>
+</li>
+<li>
+<p><code>int epoll_ctl(int epfd, int op, int fd, struct epoll_event *event);</code><br />
+该函数是对上面建立的epoll文件句柄执行op操作。例如，将刚建立的socket加入到epoll中让其监控，或者把 epoll正在监控的某个socket句柄移出epoll不再监控它等等。</p>
+<ul>
+<li>
+<p><code>epfd</code>：是epoll的文件句柄。</p>
+</li>
+<li>
+<p><code>op</code>：表示op操作，用三个宏来表示：添加<code>EPOLL_CTL_ADD</code>，删除<code>EPOLL_CTL_DEL</code>，修改<code>EPOLL_CTL_MOD</code>，分别表示添加、删除和修改对fd的监听事件。</p>
+</li>
+<li>
+<p><code>fd</code>：是需要监听的fd（文件描述符）</p>
+</li>
+<li>
+<p><code>epoll_event</code>：告诉内核需要监听什么事件，<code>struct epoll_event</code>结构如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">struct epoll_event &#123;</span><br><span class="line">__uint32_t events; /* Epoll events */</span><br><span class="line">epoll_data_t data; /* User data variable */</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//events可以是以下几个宏的集合：</span><br><span class="line">EPOLLIN ：表示对应的文件描述符可以读（包括对端SOCKET正常关闭）；</span><br><span class="line">EPOLLOUT：表示对应的文件描述符可以写；</span><br><span class="line">EPOLLPRI：表示对应的文件描述符有紧急的数据可读（这里应该表示有带外数据到来）；</span><br><span class="line">EPOLLERR：表示对应的文件描述符发生错误；</span><br><span class="line">EPOLLHUP：表示对应的文件描述符被挂断；</span><br><span class="line">EPOLLET： 将EPOLL设为边缘触发(Edge Triggered)模式，这是相对于水平触发(Level Triggered)来说的。</span><br><span class="line">EPOLLONESHOT：只监听一次事件，当监听完这次事件之后，如果还需要继续监听这个socket的话，需要再次把这个socket加入到EPOLL队列里</span><br></pre></td></tr></table></div></figure>
+</li>
+</ul>
+</li>
+<li>
+<p><code>int epoll_wait(int epfd, struct epoll_event * events, int maxevents, int timeout);</code><br />
+epoll_wait在调用时，在给定的timeout时间内，当在监控的所有句柄中有事件发生时（即有Socket就绪时），就返回用户态的进程。</p>
+<ul>
+<li><code>epfd</code>：是epoll的文件句柄。</li>
+<li><code>events</code>：从内核得到事件的集合</li>
+<li><code>maxevents</code>：events的大小</li>
+<li><code>timeout</code>：超时时间，timeout为负数表示无线等待，timeout为0表示调用后立即返回。</li>
+</ul>
+</li>
+</ol>
+<p>select机制的详细过程如下：</p>
+<ol>
+<li>执行epoll_create在内核建立专属于epoll的高速cache区，并在该缓冲区建立<strong>红黑树和就绪链表</strong>，用户态传入的文件句柄将被放到红黑树中（第一次拷贝）。</li>
+<li><strong>epoll_ctl执行add动作时除了将Socket文件句柄放到红黑树上之外，还向内核注册了该文件句柄的回调函数</strong>，内核在检测到某Socket文件句柄就绪，则调用该回调函数，回调函数将文件句柄放到就绪链表。</li>
+<li>epoll_wait只监控就绪链表就可以，如果就绪链表有文件句柄，则表示该文件句柄可读（或可写），并返回到用户态（少量的拷贝）；</li>
+<li>由于内核不修改文件句柄的状态位，因此只需要在第一次传入就可以重复监控，直到使用epoll_ctl删除，否则不需要重新传入，因此无多次拷贝。</li>
+</ol>
+<p><strong>从上面的调用方式就可以看到epoll比select/poll的优越之处：</strong></p>
+<ul>
+<li>epoll同poll一样，也没有文件句柄的数量限制。</li>
+<li>select/poll每次系统调用时，都要传递所有监控的socket给内核缓冲区，如果有数以万计的Socket文件句柄，意味着每次都要copy几十几百KB的内存到内核态，非常低效。epoll不需要每次都将Socket文件句柄从用户态拷贝到内核态，在执行epoll_create时已经在内核建立了epoll句柄，每次调用epoll_ctl只是在往内核的数据结构里加入新的socket句柄，所以不需要每次都重新复制一次。</li>
+<li>select 和 poll 都是主动轮询，select在内核态轮询所有的fd_set来判断有没有就绪的文件句柄，poll 轮询链表判断有没有就绪的文件句柄，而epoll是被动触发方式。epoll_ctl执行add动作时除了将Socket文件句柄放到红黑树上之外，还向内核注册了该文件句柄的回调函数，当Socket就绪时，则调用该回调函数将文件句柄放到就绪链表，epoll_wait只监控就绪链表就可以判断有没有事件发生了。</li>
+</ul>
+<p><strong>epoll的工作模式</strong></p>
+<p>epoll对文件描述符的操作有两种模式：LT（level trigger）和ET（edge trigger）。LT模式是默认模式，LT模式与ET模式的区别如下：</p>
+<ul>
+<li>水平触发（LT模式）：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。下次调用epoll_wait时，会再次响应应用程序并通知此事件。</li>
+<li>边缘触发（ET模式）：当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件。如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。</li>
+<li>LT模式：LT(level triggered)是缺省的工作方式，并且同时支持block和no-block socket，在这种做法中，内核告诉你一个文件描述符是否就绪了，然后你可以对这个就绪的fd进行IO操作。如果你不做任何操作，内核还是会继续通知你的。</li>
+<li>ET模式：ET(edge-triggered)是高速工作方式，只支持no-block socket。在这种模式下，当描述符从未就绪变为就绪时，内核通过epoll告诉你。然后它会假设你知道文件描述符已经就绪，并且不会再为那个文件描述符发送更多的就绪通知，直到你做了某些操作（错误的操作）导致那个文件描述符不再为就绪状态了。但是请注意，如果一直不对这个fd做IO操作（从而导致它再次变成未就绪），内核不会发送更多的通知(only once)。ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。epoll工作在ET模式的时候，必须使用no-block socket，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。</li>
+</ul>
+<p>另外，还需要补充一点，epoll机制下，用户进程在执行epoll_create进入系统调用之后，并没有进入阻塞状态，因为它还要执行后面的epoll_ctl和epoll_wait方法来监控多个Socket连接，这点与select和poll不同，用户进程在第一次执行系统调用后就进入阻塞状态，等待就绪的Socket来唤醒它。但是，epoll机制下，用户进程在真正执行read或write系统调用接口时，还是会进入阻塞状态。所以这方面来讲，epoll是同步非阻塞IO，select和poll是同步阻塞IO（个人见解）。</p>
+
+        <h2 id="9-aio"   >
+          <a href="#9-aio" class="heading-link"><i class="fas fa-link"></i></a>9. AIO</h2>
+      
+<p>AIO （ Asynchronous I/O）：异步非阻塞I/O模型。传输过程如下：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210220151020.png"  alt="" />
+      </p>
+<p>可以看到，异步非阻塞I/O在判断数据有没有准备好（即Socket是否就绪）和真正读数据两个阶段都是非阻塞的。AIO在第一次执行系统调用后，会注册一个回调函数，内核在检测到某Socket文件句柄就绪，调用该回调函数执行真正的读操作，将数据从内核空间拷贝到用户空间，然后返回给用户使用。在整个过程，用户进程都是非阻塞状态，可以做其它的事情。</p>
+<p>没有Linux系统采用AIO模型，只有windows的IOCP是此模型。</p>
+
+        <h2 id="10-总结"   >
+          <a href="#10-总结" class="heading-link"><i class="fas fa-link"></i></a>10. 总结</h2>
+      
+<p>IO可以分为两个阶段，第一阶段，判断有没有事件发生（或判断数据有没有准备好，或判断Socket是否就绪），第二阶段，在数据准备好以后，执行真正的读（或写）操作，将数据从内核空间拷贝到用户空间。</p>
+<p>这几个阶段：</p>
+<ul>
+<li>同步阻塞IO（BIO）：两个阶段的用户进程都阻塞。</li>
+<li>同步非阻塞IO（NIO）：第一阶段没有阻塞，但是用户进程（或线程）必须不断的轮询，判断有没有Socket就绪，这时cpu疯狂被占用。第二阶段，数据拷贝的过程是阻塞的。所以，所有的同步过程，在第二阶段都是阻塞的，尽管这是非阻塞的调用。</li>
+<li>多路复用：NIO的第一阶段没有阻塞，但是由用户线程不断轮询多个Socket有没有就绪。而多路复用把这件事情交给一个内核线程去处理，速度非常快。select和poll机制下，第一阶段是也是阻塞的，而epoll机制，用户线程除了要执行epoll_create，还要执行epoll_ctl和epoll_wait，所以是非阻塞的。在第二阶段，所有的多路复用IO都是阻塞的。所以，多路复用IO也是同步IO。</li>
+<li>异步IO（AIO）：两个阶段都是非阻塞的。</li>
+</ul>
+<p>另外，不得不提的是，上述的阻塞和非阻塞指的是IO模型，用户进程获取数据后执行业务逻辑的时候，也分异步和同步。比如，进程执行一段很复杂的业务逻辑，需要很长的时间才能返回，也可以注册一个回调函数，等待此段代码执行完毕后，就通知用户进程。例如，nginx在Linux2.6以后的内核中用的IO模型是epoll，即同步IO，而Nginx的worker进程的处理请求的时候是异步的。</p>
+<p>业务逻辑的同步和异步概念如下：</p>
+<ul>
+<li>同步：所谓同步，就是在发出一个功能调用时，在没有得到结果之前，该调用就不返回。</li>
+<li>异步：异步的概念和同步相对。当一个异步过程调用发出后，调用者不能立刻得到结果。实际处理这个调用的部件在完成后，通过状态、通知和回调来通知调用者。</li>
+<li>阻塞：阻塞调用是指调用结果返回之前，当前线程会被挂起，函数只有在得到结果之后才会返回。有人也许会把阻塞调用和同步调用等同起来，实际上它们是不同的。对于同步调用来说，很多时候当前线程还是激活的，只是当前函数没有返回而已。</li>
+<li>非阻塞：非阻塞和阻塞的概念相对应，指在不能立刻得到结果之前，该函数不会阻塞当前线程，而会立刻返回。</li>
+</ul>
+<p>【参考文档】</p>
+<ol>
+<li><span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/Mr-shen/p/12832501.html"  target="_blank" rel="noopener">https://www.cnblogs.com/Mr-shen/p/12832501.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://www.zhihu.com/question/20122137"  target="_blank" rel="noopener">https://www.zhihu.com/question/20122137</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/pluto-yang/p/12546942.html"  target="_blank" rel="noopener">https://www.cnblogs.com/pluto-yang/p/12546942.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/sunsky303/p/8962628.html"  target="_blank" rel="noopener">https://www.cnblogs.com/sunsky303/p/8962628.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_22121229/article/details/103101191"  target="_blank" rel="noopener">https://blog.csdn.net/qq_22121229/article/details/103101191</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/pugang/p/12823108.html"  target="_blank" rel="noopener">https://www.cnblogs.com/pugang/p/12823108.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_33330687/article/details/81558198"  target="_blank" rel="noopener">https://blog.csdn.net/qq_33330687/article/details/81558198</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/ljbkyBlog/p/10190576.html"  target="_blank" rel="noopener">https://www.cnblogs.com/ljbkyBlog/p/10190576.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://zhuanlan.zhihu.com/p/121651179"  target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/121651179</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://zhuanlan.zhihu.com/p/260450151"  target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/260450151</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://zhuanlan.zhihu.com/p/272891398"  target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/272891398</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://zhuanlan.zhihu.com/p/159357381"  target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/159357381</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+</ol>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/02/19/134758/">https://wxler.gitee.io/2021/02/19/134758/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/IO/">IO</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-next"><a class="paginator-next__link" href="/2021/02/18/143128/"><span class="paginator-prev__text">session的实现原理</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-什么是io"><span class="toc-text">
+          1. 什么是I&#x2F;O</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-磁盘io"><span class="toc-text">
+          2. 磁盘IO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-网络io"><span class="toc-text">
+          3. 网络IO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-io中断与dma"><span class="toc-text">
+          4. IO中断与DMA</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-零拷贝io"><span class="toc-text">
+          5. 零拷贝IO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-bio"><span class="toc-text">
+          6. BIO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-nio"><span class="toc-text">
+          7. NIO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-io多路复用"><span class="toc-text">
+          8. IO多路复用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#81-select"><span class="toc-text">
+          8.1 select</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#82-poll"><span class="toc-text">
+          8.2 poll</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#83-epoll"><span class="toc-text">
+          8.3 epoll</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-aio"><span class="toc-text">
+          9. AIO</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-总结"><span class="toc-text">
+          10. 总结</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">85</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">15</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">45</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
