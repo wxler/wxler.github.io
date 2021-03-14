@@ -1,0 +1,900 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="在看了史上最全的Zookeeper原理详解(万字长文)，了解Zookeeper的原理后，你是不是蠢蠢欲动想着手实践呢？这篇文章将手把手教你在Linux上搭建ZooKeeper集群，并调用相关API实现自己的Zookeeper应用。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ZooKeeper实战篇-zk集群搭建、zkCli.sh操作、权限控制ACL、ZooKeeper JavaAPI使用">
+<meta property="og:url" content="https://wxler.gitee.io/2021/02/23/101109/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="在看了史上最全的Zookeeper原理详解(万字长文)，了解Zookeeper的原理后，你是不是蠢蠢欲动想着手实践呢？这篇文章将手把手教你在Linux上搭建ZooKeeper集群，并调用相关API实现自己的Zookeeper应用。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-02-23T02:11:09.000Z">
+<meta property="article:modified_time" content="2021-03-14T08:11:44.283Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="zookeeper">
+<meta name="twitter:card" content="summary"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>ZooKeeper实战篇-zk集群搭建、zkCli.sh操作、权限控制ACL、ZooKeeper JavaAPI使用 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/02/23/101109/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">ZooKeeper实战篇-zk集群搭建、zkCli.sh操作、权限控制ACL、ZooKeeper JavaAPI使用</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-02-23</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-03-14</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">9k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">71分</span></span></div></header><div class="post-body"><p>在看了<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_37555071/article/details/114609145"  target="_blank" rel="noopener" title="Zookeeper原理详解">史上最全的Zookeeper原理详解(万字长文)</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，了解Zookeeper的原理后，你是不是蠢蠢欲动想着手实践呢？这篇文章将手把手教你在Linux上搭建ZooKeeper集群，并调用相关API实现自己的Zookeeper应用。</p>
+<a id="more"></a>
+<p><strong>文章目录</strong></p>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-linux%E4%B8%8A%E6%90%AD%E5%BB%BAzookeeper%E9%9B%86%E7%BE%A4">1. Linux上搭建ZooKeeper集群</a>
+<ul>
+<li><a href="#11-%E5%A4%9A%E5%8F%B0%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B9%8B%E9%97%B4%E5%85%8D%E5%AF%86%E7%99%BB%E5%BD%95">1.1 多台服务器之间免密登录</a></li>
+<li><a href="#12-zookeeper%E9%9B%86%E7%BE%A4%E6%90%AD%E5%BB%BA">1.2 ZooKeeper集群搭建</a></li>
+</ul>
+</li>
+<li><a href="#2-zkclish%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%93%8D%E4%BD%9C">2. zkCli.sh客户端操作</a>
+<ul>
+<li><a href="#21-%E6%89%93%E5%BC%80%E5%AE%A2%E6%88%B7%E7%AB%AF">2.1 打开客户端</a></li>
+<li><a href="#22-%E5%88%9B%E5%BB%BA%E8%8A%82%E7%82%B9">2.2 创建节点</a></li>
+<li><a href="#23-%E8%AF%BB%E5%8F%96%E8%8A%82%E7%82%B9">2.3 读取节点</a></li>
+<li><a href="#24-%E6%9B%B4%E6%96%B0%E8%8A%82%E7%82%B9">2.4 更新节点</a></li>
+<li><a href="#25-%E5%88%A0%E9%99%A4%E8%8A%82%E7%82%B9">2.5 删除节点</a></li>
+</ul>
+</li>
+<li><a href="#3-zookeeper-%E6%9D%83%E9%99%90%E6%8E%A7%E5%88%B6-acl">3. Zookeeper 权限控制 ACL</a>
+<ul>
+<li><a href="#31-world-%E5%AE%9E%E4%BE%8B">3.1 world 实例</a></li>
+<li><a href="#32-auth-%E5%AE%9E%E4%BE%8B">3.2 auth 实例</a></li>
+<li><a href="#33-digest-%E5%AE%9E%E4%BE%8B">3.3 digest 实例</a></li>
+<li><a href="#34-ip-%E5%AE%9E%E4%BE%8B">3.4 IP 实例</a></li>
+<li><a href="#35-super%E7%94%A8%E6%88%B7">3.5 super用户</a></li>
+</ul>
+</li>
+<li><a href="#4-zookeeper-java-api%E7%9A%84%E4%BD%BF%E7%94%A8">4. Zookeeper JAVA API的使用</a>
+<ul>
+<li><a href="#41-maven%E5%9D%90%E6%A0%87">4.1 maven坐标</a></li>
+<li><a href="#42-log4j%E9%85%8D%E7%BD%AE">4.2 log4j配置</a></li>
+<li><a href="#43-%E8%BF%9E%E6%8E%A5zookeeper">4.3 连接Zookeeper</a></li>
+<li><a href="#44-%E6%96%B0%E5%A2%9E%E8%8A%82%E7%82%B9">4.4 新增节点</a></li>
+<li><a href="#45-%E6%9F%A5%E7%9C%8B%E8%8A%82%E7%82%B9">4.5 查看节点</a></li>
+<li><a href="#46-%E4%BF%AE%E6%94%B9%E8%8A%82%E7%82%B9">4.6 修改节点</a></li>
+<li><a href="#47-watcher%E7%9B%91%E5%90%AC">4.7 watcher监听</a></li>
+</ul>
+</li>
+</ul>
+</p>
+
+        <h2 id="1-linux上搭建zookeeper集群"   >
+          <a href="#1-linux上搭建zookeeper集群" class="heading-link"><i class="fas fa-link"></i></a>1. Linux上搭建ZooKeeper集群</h2>
+      
+<p>在这之前，欢迎参考我之前的文章对虚拟机进行相关配置：<span class="exturl"><a class="exturl__link"   href="https://mp.weixin.qq.com/s/kk1sY9EYajaEt_mevwmfIg"  target="_blank" rel="noopener">Linux切换运行级别、关闭防火墙、禁用selinux、关闭sshd、时间同步、修改时区、拍摄快照、克隆操作</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，否则后面可能会出现意想不到的错误。</p>
+
+        <h3 id="11-多台服务器之间免密登录"   >
+          <a href="#11-多台服务器之间免密登录" class="heading-link"><i class="fas fa-link"></i></a>1.1 多台服务器之间免密登录</h3>
+      
+<p>为什么要实现多台服务器之间免密登录？</p>
+<p>因为zookeeper之间选举也好、投票也好，互相之间都会传递消息进行通信的，为了方便未来的管理，我们要实现多台服务器之间免密登陆。</p>
+<p>现在我们就实现在Linux上搭建ZooKeeper集群吧，下面先介绍授权的两个文件：</p>
+<ul>
+<li><code>id_dsa.pub</code> 存放每台服务器自己的公钥</li>
+<li><code>authorized_keys</code> 存放的也是服务器的公钥，不过除了自己的公钥外，也可以存放其它服务器的公钥。</li>
+</ul>
+<p>下面我准备了四台虚拟机，主机名分别为layne1、layne2、layne3、layne4，实现四台服务器之间免密登录。</p>
+<ol>
+<li>
+<p>首先在每个服务器上产生自己的公钥，在每台服务器上执行以下命名，产生的公钥文件id_dsa.pub存放在<code>/root/.ssh</code>下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen  -t  dsa  -P  <span class="string">''</span>  -f  ~/.ssh/id_dsa</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>在layne1上将其公钥写入到authorized_keys中</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat  ~/.ssh/id_dsa.pub  &gt;&gt;  ~/.ssh/authorized_keys</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>将layne1上的authorized_keys文件拷贝给layne2，在layne1上执行如下命令即可</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp  ~/.ssh/authorized_keys   layne2:/root/.ssh/</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>在layne2上将其公钥追加到authorized_keys中</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat  ~/.ssh/id_dsa.pub  &gt;&gt;  ~/.ssh/authorized_keys</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>将layne2上的authorized_keys文件拷贝给layne3</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp  ~/.ssh/authorized_keys   layne3:/root/.ssh/</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>在layne3上将其公钥追加到authorized_keys中</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat  ~/.ssh/id_dsa.pub  &gt;&gt;  ~/.ssh/authorized_keys</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>将layne3上的authorized_keys文件拷贝给layne4</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp  ~/.ssh/authorized_keys   layne4:/root/.ssh/</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>在layne4上将其公钥追加到authorized_keys中</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat  ~/.ssh/id_dsa.pub  &gt;&gt;  ~/.ssh/authorized_keys</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>将layne4的authorized_keys文件分别拷贝给layne1、layne2、layne3</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">scp  ~/.ssh/authorized_keys   layne1:/root/.ssh/</span><br><span class="line">scp  ~/.ssh/authorized_keys   layne2:/root/.ssh/</span><br><span class="line">scp  ~/.ssh/authorized_keys   layne3:/root/.ssh/</span><br></pre></td></tr></table></div></figure>
+</li>
+</ol>
+<p>至此，我们将完成了layne1~4虚拟机之间的免密登录。</p>
+<p>在任意虚拟机的shell命令行里，我们就可以通过<code>ssh 主机名</code>随意连接其他的虚拟机，而不需要输入密码。比如，在layne1上连接layne4，只需要输入以下命令：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 ~]<span class="comment"># ssh layne4 # 第一次连接需要输入yes|no，不需要输入密码</span></span><br><span class="line">The authenticity of host <span class="string">'layne4 (192.168.218.54)'</span> can<span class="string">'t be established.</span></span><br><span class="line"><span class="string">RSA key fingerprint is 2d:4c:3c:0c:2a:0f:50:bc:a2:8d:c1:2f:8a:7d:63:c4.</span></span><br><span class="line"><span class="string">Are you sure you want to continue connecting (yes/no)? yes</span></span><br><span class="line"><span class="string">Warning: Permanently added '</span>layne4,192.168.218.54<span class="string">' (RSA) to the list of known hosts.</span></span><br><span class="line"><span class="string">Last login: Tue Feb 23 10:29:52 2021 from 192.168.218.1</span></span><br><span class="line"><span class="string">[root@layne4 ~]#</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="12-zookeeper集群搭建"   >
+          <a href="#12-zookeeper集群搭建" class="heading-link"><i class="fas fa-link"></i></a>1.2 ZooKeeper集群搭建</h3>
+      
+<p>在搭建ZooKeeper集群之前，先要在所有虚拟机上安装jdk，我之前的好多博客都详细描述了jdk的安装方法，这里就不介绍了，有需要的小伙伴，可参考<span class="exturl"><a class="exturl__link"   href="https://wxler.github.io/2021/02/10/112210/#rpm%E5%AE%89%E8%A3%85jdk"  target="_blank" rel="noopener" title="Linux中jdk安装方式">Linux上通过rpm安装jdk</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>。</p>
+<p>我安装的jdk版本是<code>jdk-8u221-linux-x64</code>，下面我在主机名为layne2、layne3、layne4的虚拟机搭建ZooKeeper集群。</p>
+<ol>
+<li>
+<p>在<code>https://zookeeper.apache.org/releases.html</code>上下载zookeeper的Linux压缩包。</p>
+</li>
+<li>
+<p>将zookeeper的压缩包<code>zookeeper-3.4.6.tar.gz</code>上传到layne2上。</p>
+</li>
+<li>
+<p>解压至<code>/opt</code>目录下</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf zookeeper-3.4.6.tar.gz -C /opt</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>配置zookeeper的环境变量，执行<code>vim /etc/profile</code>，在末尾加入：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> ZOOKEEPER_HOME=/opt/zookeeper-3.4.6</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$ZOOKEEPER_HOME</span>/bin</span><br></pre></td></tr></table></div></figure>
+<p>然后执行<code>source /etc/profile</code>，让配置生效。</p>
+</li>
+<li>
+<p>进入zookeeper的安装目录的conf下</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne2 apps]<span class="comment"># cd $ZOOKEEPER_HOME/conf</span></span><br><span class="line">[root@layne2 conf]<span class="comment"># pwd</span></span><br><span class="line">/opt/zookeeper-3.4.6/conf</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>复制<code>zoo_sample.cfg</code>文件为<code>zoo.cfg</code></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp zoo_sample.cfg zoo.cfg</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>先介绍<code>zoo.cfg</code>参数说明，然后再进行配置。</p>
+<ul>
+<li><code>tickTime=2000</code> ：客户端与服务器或者服务器与服务器之间维持心跳的时间间隔，也就是每个tickTime时间就会发送一次心跳，默认心跳时间为2000ms。通过心跳不仅能够用来监听机器的工作状态，还可以通过心跳来控制Flower跟Leader的通信时间。zookeeper的客户端和服务端之间也有和web开发里类似的session的概念，而zookeeper里最小的session过期时间通常是tickTime的两倍。</li>
+<li><code>dataDir=/tmp/zookeeper</code>：用于保存 Zookeeper 中的数据，同时用于zookeeper集群的myid文件也存在这个文件夹里。默认路径为<code>/tmp/zookeeper</code>，最好不要使用<code>/tmp</code>，因为临时目录下，操作系统会定时清理里面的文件，可能会造成出乎意料的错误。</li>
+<li><code>dataLogDir</code>：存放日志的目录。</li>
+<li><code>clientPort=2181</code>：客户端连接zookeeper服务器的端口，zookeeper会监听这个端口，接收客户端的请求访问，这个端口默认是2181。</li>
+<li><code>initLimit</code>：集群中的follower服务器(F)与leader服务器(L)之间<strong>初始化连接时</strong>最长能忍受多少个心跳时间间隔数。如果配置的是5，当已经超过 5 个心跳的时间（也就是 tickTime）长度后 ，ZooKeeper 服务器还没有收到客户端（即follower服务器，相对于 leader 而言的客户端）的返回信息，那么表明这个客户端连接失败，此时总的时间长度就是 5*2000=10秒。 如果在设定的时间段内，半数以上的跟随者未能完成同步（即初始时的选举），领导者便会宣布放弃领导地位，进行另一次的领导选举。如果zk集群环境数量确实很大，同步数据的时间会变长，因此这种情况下可以适当调大该参数。</li>
+<li><code>syncLimit</code>：标识 Leader 与 Follower 之间请求和应答能容忍的最多心跳数，如果配置的是4，总的时间长度就是 4*2000=8 秒。如果 follower 在设置的时间内不能与leader 进行通信，那么此 follower 将被丢弃，此时所有关联到这个跟随者的客户端将连接到另外一个跟随着。</li>
+<li><code>server.A=B：C：D</code>：其 中 A 是一个数字，表示这个是第几号服务器（和myid对应）；B 是这个服务器的ip地址（或主机名）；C 表示的是这个服务器与集群中的Leader服务器交换信息的端口（即follower与Leader交换信息的端口）；D表示的是万一集群中的 Leader 服务器挂了，需要一个端口来重新进行选举，选出一个新的Leader，而这个端口就是用来执行选举时服务器相互通信的端口（选举时的端口）。如果是伪集群的配置方式，由于B都是一样的，所以不同的ZooKeeper实例通信端口号不能一样，要给C和D分配不同的端口号。</li>
+</ul>
+</li>
+<li>
+<p>根据上面的参数说明，对<code>zoo.cfg</code>进行配置，配置如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># The number of milliseconds of each tick</span></span><br><span class="line">tickTime=2000</span><br><span class="line"><span class="comment"># The number of ticks that the initial </span></span><br><span class="line"><span class="comment"># synchronization phase can take</span></span><br><span class="line">initLimit=5</span><br><span class="line"><span class="comment"># The number of ticks that can pass between </span></span><br><span class="line"><span class="comment"># sending a request and getting an acknowledgement</span></span><br><span class="line">syncLimit=2</span><br><span class="line"><span class="comment"># the directory where the snapshot is stored.</span></span><br><span class="line"><span class="comment"># do not use /tmp for storage, /tmp here is just </span></span><br><span class="line"><span class="comment"># example sakes.</span></span><br><span class="line">dataDir=/opt/zookeeper-3.4.6/data</span><br><span class="line"><span class="comment"># zk log dir</span></span><br><span class="line">dataLogDir=/var/<span class="built_in">log</span>/zookeeper/datalog </span><br><span class="line"><span class="comment"># the port at which the clients will connect</span></span><br><span class="line">clientPort=2181</span><br><span class="line"><span class="comment"># server list</span></span><br><span class="line">server.1=layne2:2881:3881</span><br><span class="line">server.2=layne3:2881:3881</span><br><span class="line">server.3=layne4:2881:3881</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>创建<code>/var/log/zookeeper/datalog</code>和<code>/opt/zookeeper-3.4.6/data</code>目录</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne2 conf]<span class="comment"># mkdir -p /var/log/zookeeper/datalog</span></span><br><span class="line">[root@layne2 conf]<span class="comment"># mkdir /opt/zookeeper-3.4.6/data</span></span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>在<code>/opt/zookeeper-3.4.6/data</code>目录下创建一个名为myid的文件，在myid中写下当前ZooKeeper的编号</p>
+</li>
+</ol>
+   <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne2 data]<span class="comment"># pwd</span></span><br><span class="line">/opt/zookeeper-3.4.6/data</span><br><span class="line">[root@layne2 data]<span class="comment"># touch myid</span></span><br><span class="line">[root@layne2 data]<span class="comment"># echo 1 &gt; /opt/zookeeper-3.4.6/data/myid</span></span><br></pre></td></tr></table></div></figure>
+<ol start="11">
+<li>
+<p>将配置好Zookeeper拷贝到layne3、layne4上</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp -r /opt/zookeeper-3.4.6/ layne3:/opt/</span><br><span class="line">scp -r /opt/zookeeper-3.4.6/ layne4:/opt/</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>在layne3和layne4上分别修改myid</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> 2 &gt; /opt/zookeeper-3.4.6/data/myid</span><br><span class="line"><span class="built_in">echo</span> 3 &gt; /opt/zookeeper-3.4.6/data/myid</span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>在layne3和layne4配置Zookeeper的环境变量，并创建<code>/var/log/zookeeper/datalog</code>目录，参考步骤3和步骤8。</p>
+</li>
+<li>
+<p>分别启动layne2、layne3、layne4上的ZooKeeper</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入/opt/zookeeper-3.4.6/bin目录下操作</span></span><br><span class="line">zkServer.sh start <span class="comment">#启动zk</span></span><br><span class="line">zkServer.sh stop  <span class="comment">#停止zk</span></span><br><span class="line">zkServer.sh status  <span class="comment">#查看zk状态</span></span><br><span class="line">zkCli.sh <span class="comment"># 连接ZooKeeper客户端</span></span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>启动3台虚拟机上的ZooKeeper之后，如果报错<code>Will not attempt to authenticate using SASL</code>，报错原因是我们在实现多台服务器之间免密登陆的时候，<strong>两台服务器之间一次都没有进行连接</strong>。只要第一次连接之后，两台服务器之间才能免密登陆和授权。在layne2上执行下面三条命令，即可和layne3、layne4免密登陆。同理，layne3、layne4也如此。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在layne2、layne3、layne4全部都要执行下述命令</span></span><br><span class="line">ssh layne2 <span class="comment">#自己也要和自己连接一次，即自己授权自己</span></span><br><span class="line"><span class="built_in">exit</span></span><br><span class="line">ssh layne3</span><br><span class="line"><span class="built_in">exit</span></span><br><span class="line">ssh layne4</span><br><span class="line"><span class="built_in">exit</span></span><br></pre></td></tr></table></div></figure>
+</li>
+<li>
+<p>再次尝试启动ZooKeeper，如果还报错，重启所有的虚拟机就好了。</p>
+</li>
+</ol>
+<p>以上步骤就是搭建Zookeeper集群的完整过程，如果Zookeeper启动不了，或者是启动报错，可能是以下原因造成的：</p>
+<ol>
+<li>没有创建zookeeper的日志目录<code>/var/log/zookeeper/datalog</code>。</li>
+<li>没有在每个服务器的myid写入正确的编号。</li>
+<li>没有用<code>ssh 主机名</code>在任意两台服务器之间进行第一次连接</li>
+<li>如果不是上面3个原因，重启一下所有的虚拟机就好了。</li>
+</ol>
+
+        <h2 id="2-zkclish客户端操作"   >
+          <a href="#2-zkclish客户端操作" class="heading-link"><i class="fas fa-link"></i></a>2. zkCli.sh客户端操作</h2>
+      
+<p>zkCli是 Zookeeper的一个简易客户端，下面讲解通过zkCli.sh客户端操作znode节点。</p>
+
+        <h3 id="21-打开客户端"   >
+          <a href="#21-打开客户端" class="heading-link"><i class="fas fa-link"></i></a>2.1 打开客户端</h3>
+      
+<p>在Zookeeper服务端开启的情况下，运行客户端，使用命令：<code>zkCli.sh</code></p>
+<p>若连接不同的主机，可使用命令：<code>zkCli.sh -server ip:port</code>，如<code>zkCli.sh -server 192.168.218.52:2181</code>，此处的端口是zoo.cfg配置文件中clientPort。</p>
+<p>连接客户端以后，可以使用<code>help</code>命令来查看客户端的操作</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 1] <span class="built_in">help</span></span><br><span class="line">ZooKeeper -server host:port cmd args</span><br><span class="line">	<span class="built_in">stat</span> path [watch]</span><br><span class="line">	<span class="built_in">set</span> path data [version]</span><br><span class="line">	ls path [watch]</span><br><span class="line">	delquota [-n|-b] path</span><br><span class="line">	ls2 path [watch]</span><br><span class="line">	setAcl path acl</span><br><span class="line">	setquota -n|-b val path</span><br><span class="line">	<span class="built_in">history</span> </span><br><span class="line">	redo cmdno</span><br><span class="line">	printwatches on|off</span><br><span class="line">	delete path [version]</span><br><span class="line">	sync path</span><br><span class="line">	listquota path</span><br><span class="line">	rmr path</span><br><span class="line">	get path [watch]</span><br><span class="line">	create [-s] [-e] path data acl</span><br><span class="line">	addauth scheme auth</span><br><span class="line">	quit </span><br><span class="line">	getAcl path</span><br><span class="line">	close </span><br><span class="line">	connect host:port</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="22-创建节点"   >
+          <a href="#22-创建节点" class="heading-link"><i class="fas fa-link"></i></a>2.2 创建节点</h3>
+      
+<p>使用create命令，可以创建一个Zookeeper节点，格式为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create [-s] [-e] path data acl</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><strong>[-s] [-e]</strong>：-s 和 -e 都是可选的，-s 代表顺序节点， -e 代表临时节点，注意其中 -s 和 -e 可以同时使用，都不使用，则代表普通节点。需要注意的是，临时节点不能再创建子节点。</li>
+<li><strong>path</strong>：指定要创建节点的路径，比如 <strong>/zk01</strong>。</li>
+<li><strong>data</strong>：要在此节点存储的数据。</li>
+<li><strong>acl</strong>：访问权限相关，默认是 world，相当于全世界都能访问，请看后面第3节<strong>Zookeeper权限控制ACL</strong>。</li>
+</ul>
+<p><strong>①创建永久顺序节点</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 5] create -s /zk01-seq 123 <span class="comment"># 创建顺序节点</span></span><br><span class="line">Created /zl01-seq0000000009</span><br></pre></td></tr></table></div></figure>
+<p>可以看到创建的zk01-seq节点后面添加了一串数字以示区别。</p>
+<p><strong>②创建临时顺序节点</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 1] create -s -e /zk01-tmp-seq 1234</span><br><span class="line">Created /zk01-tmp-seq0000000013</span><br></pre></td></tr></table></div></figure>
+<p><strong>③创建普通临时节点</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 10] create -e /zk01-tmp 456</span><br><span class="line">Created /zk01-tmp</span><br></pre></td></tr></table></div></figure>
+<p>临时节点在客户端会话结束后，就会自动删除，下面使用<strong>quit</strong>命令退出客户端</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 11] quit</span><br><span class="line">Quitting...</span><br><span class="line">2021-03-01 21:06:58,605 [myid:] - INFO  [main:ZooKeeper@684] - Session: 0x177ed505b850002 closed</span><br></pre></td></tr></table></div></figure>
+<p>再次使用客户端连接服务端，并使用ls / 命令查看根目录下的节点</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 0] ls /</span><br><span class="line">[zookeeper, zk01-seq0000000011]</span><br></pre></td></tr></table></div></figure>
+<p>可以看到根目录下已经不存在zk01-tmp临时节点了。</p>
+<p><strong>④创建普通永久节点</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 2] create /zk01-permanent 123</span><br><span class="line">Created /zk01-permanent</span><br></pre></td></tr></table></div></figure>
+<p>可以看到普通节点不同于顺序节点，不会自动在后面添加一串数字。</p>
+
+        <h3 id="23-读取节点"   >
+          <a href="#23-读取节点" class="heading-link"><i class="fas fa-link"></i></a>2.3 读取节点</h3>
+      
+<p>与读取相关的命令ls、ls2、get和stat命令。</p>
+<p><strong>①ls命令</strong></p>
+<p>ls 命令用于查看某个路径下的znode节点（只能查看第一级目录的所有子节点），格式为<code>ls path</code>，例如：</p>
+<ul>
+<li><code>ls /</code></li>
+<li><code>ls /zookeeper</code></li>
+</ul>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 3] ls / <span class="comment"># 查看根目录下的znode节点</span></span><br><span class="line">[zookeeper, zk01-seq0000000011, zk01-tmp-seq0000000013, zk01-permanent]</span><br><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 4] ls /zk01-permanent <span class="comment"># 查看zk01-permanent目录下的znode节点</span></span><br><span class="line">[]</span><br></pre></td></tr></table></div></figure>
+<p><strong>②ls2命令</strong></p>
+<p>ls2 命令也是用于查看某个路径下的znode节点，格式同ls，<strong>但它能同时显示该路径节点的信息。</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 5] ls2 / <span class="comment">#查看根目录下的znode节点，并显示根节点的信息</span></span><br><span class="line">[zookeeper, zk01-seq0000000011, zk01-tmp-seq0000000013, zk01-permanent]</span><br><span class="line">cZxid = 0x0</span><br><span class="line">ctime = Thu Jan 01 08:00:00 CST 1970</span><br><span class="line">mZxid = 0x0</span><br><span class="line">mtime = Thu Jan 01 08:00:00 CST 1970</span><br><span class="line">pZxid = 0x600000022</span><br><span class="line">cversion = 26</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 0</span><br><span class="line">numChildren = 4</span><br></pre></td></tr></table></div></figure>
+<p><strong>③get 命令</strong></p>
+<p>get 命令用于获取某个znode节点<strong>数据和状态信息</strong>。其格式为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">get path [watch]</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li>path：代表路径</li>
+<li>[watch]：对该节点进行事件监听，该参数为可选参数。</li>
+</ul>
+<p>以下示例我们同时开启两个终端，对zk01节点进行监听：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 9] create /zk01 zk01Content <span class="comment"># 创建zk01普通持久节点</span></span><br><span class="line">Created /zk01</span><br><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 10] get /zk01 watch <span class="comment">#在当前终端上对zk01事件监听</span></span><br><span class="line">zk01Content</span><br><span class="line">cZxid = 0x600000023</span><br><span class="line">ctime = Mon Mar 01 21:20:26 CST 2021</span><br><span class="line">mZxid = 0x600000023</span><br><span class="line">mtime = Mon Mar 01 21:20:26 CST 2021</span><br><span class="line">pZxid = 0x600000023</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 11</span><br><span class="line">numChildren = 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 0] <span class="built_in">set</span> /zk01 zk01ABC <span class="comment">#在终端二上修改zk01节点的数据</span></span><br><span class="line">cZxid = 0x600000023</span><br><span class="line">ctime = Mon Mar 01 21:20:26 CST 2021</span><br><span class="line">mZxid = 0x600000024</span><br><span class="line">mtime = Mon Mar 01 21:24:07 CST 2021</span><br><span class="line">pZxid = 0x600000023</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 1</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 7</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></div></figure>
+<p>此时，会在第一个终端上会输出NodeDataChanged 事件：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 11]</span><br><span class="line">WATCHER::</span><br><span class="line"></span><br><span class="line">WatchedEvent state:SyncConnected <span class="built_in">type</span>:NodeDataChanged path:/zk01</span><br></pre></td></tr></table></div></figure>
+<p><strong>④stat 命令</strong></p>
+<p>stat 命令用于查看某个节点状态信息。该命令除了不输出节点的内容之后，输出的其他信息和get命令一致。</p>
+<p>其格式为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">get path [watch]</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li>path：代表路径</li>
+<li>[watch]：对该节点进行事件监听，该参数为可选参数。</li>
+</ul>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 12] <span class="built_in">stat</span> /zk01 <span class="comment">#查看zk01节点的信息</span></span><br><span class="line">cZxid = 0x600000023</span><br><span class="line">ctime = Mon Mar 01 21:20:26 CST 2021</span><br><span class="line">mZxid = 0x600000024</span><br><span class="line">mtime = Mon Mar 01 21:24:07 CST 2021</span><br><span class="line">pZxid = 0x600000023</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 1</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 7</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="24-更新节点"   >
+          <a href="#24-更新节点" class="heading-link"><i class="fas fa-link"></i></a>2.4 更新节点</h3>
+      
+<p>使用set命令，可以更新指定节点的数据内容，其格式：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">set</span> path data [version]</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><strong>path</strong>：节点路径。</li>
+<li><strong>data</strong>：需要存储的数据。</li>
+<li><strong>[version]</strong>：可选项，版本号(可用作乐观锁)。</li>
+</ul>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 13] get /zk01</span><br><span class="line">zk01ABC</span><br><span class="line">cZxid = 0x600000023</span><br><span class="line">ctime = Mon Mar 01 21:20:26 CST 2021</span><br><span class="line">mZxid = 0x600000024</span><br><span class="line">mtime = Mon Mar 01 21:24:07 CST 2021</span><br><span class="line">pZxid = 0x600000023</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 1</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 7</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，zk01节点dataVersion为1，下面只有正确的版本号才能设置成功：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 14] <span class="built_in">set</span> /zk01 123 0 <span class="comment">#带上版本号，只有正确的版本才能执行</span></span><br><span class="line">version No is not valid : /zk01</span><br><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 15] <span class="built_in">set</span> /zk01 456 1 </span><br><span class="line">cZxid = 0x600000023</span><br><span class="line">ctime = Mon Mar 01 21:20:26 CST 2021</span><br><span class="line">mZxid = 0x600000026</span><br><span class="line">mtime = Mon Mar 01 21:29:11 CST 2021</span><br><span class="line">pZxid = 0x600000023</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 2</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 3</span><br><span class="line">numChildren = 0</span><br><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 16] <span class="built_in">set</span> /zk01 789 3</span><br><span class="line">version No is not valid : /zk01</span><br><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 17] <span class="built_in">set</span> /zk01 555  <span class="comment">#不加版本号，均可以执行成功</span></span><br><span class="line">cZxid = 0x600000023</span><br><span class="line">ctime = Mon Mar 01 21:20:26 CST 2021</span><br><span class="line">mZxid = 0x600000028</span><br><span class="line">mtime = Mon Mar 01 21:30:30 CST 2021</span><br><span class="line">pZxid = 0x600000023</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 3</span><br><span class="line">aclVersion = 0</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 3</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="25-删除节点"   >
+          <a href="#25-删除节点" class="heading-link"><i class="fas fa-link"></i></a>2.5 删除节点</h3>
+      
+<p>delete 命令用于删除某节点。格式为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">delete path [version]</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><strong>path</strong>：节点路径。</li>
+<li><strong>[version]</strong>：可选项，版本号（同 set 命令）。</li>
+</ul>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 18] delete /zk01-permanent <span class="comment">#删除zk01-permanent节点</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>若删除节点存在子节点，那么无法删除该节点，必须先删除子节点，再删除父节点。</strong></p>
+
+        <h2 id="3-zookeeper-权限控制-acl"   >
+          <a href="#3-zookeeper-权限控制-acl" class="heading-link"><i class="fas fa-link"></i></a>3. Zookeeper 权限控制 ACL</h2>
+      
+<p>Zookeeper 的 ACL（Access Control List，访问控制表）权限在生产环境是特别重要的，ACL 权限可以针对节点设置相关读写等权限，保障数据安全性。我们以zkCli.sh客户端为例，来说明zookeeper对ACL的设置。</p>
+<p>ACL通过<code>[scheme:id:permissions]</code> 来构成权限列表。</p>
+<ul>
+<li><strong>scheme</strong>：代表采用的某种权限机制，包括 world、auth、digest、ip、super 几种。</li>
+<li><strong>id</strong>：代表允许访问的用户。</li>
+<li><strong>permissions</strong>：权限组合字符串，由 cdrwa 组成，其中每个字母代表支持不同权限， 创建权限 create©、删除权限 delete(d)、读权限 read®、写权限 write(w)、管理权限admin(a)。</li>
+</ul>
+<p>需要注意的是，zookeeper对权限的控制是znode级别的，不具有继承性，即子节点不继承父节点的权限。</p>
+<p>ACL 命令有三个，分别是：</p>
+<ul>
+<li><strong>getAcl 命令</strong>：获取某个节点的 acl 权限信息。</li>
+<li><strong>setAcl 命令</strong>：设置某个节点的 acl 权限信息。</li>
+<li><strong>addauth 命令</strong>：输入认证授权信息，注册时输入明文密码，加密形式保存。</li>
+</ul>
+
+        <h3 id="31-world-实例"   >
+          <a href="#31-world-实例" class="heading-link"><i class="fas fa-link"></i></a>3.1 world 实例</h3>
+      
+<p>这是默认方式，代表开放式权限。当创建一个新的节点(znode)，而又没有设置任何权限时，就是这个值，例如：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 51] create /node mynode</span><br><span class="line">Created /node</span><br><span class="line">[zk: localhost:2181(CONNECTED) 52] getAcl /node</span><br><span class="line"><span class="string">'world,'</span>anyone</span><br><span class="line">: cdrwa</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，<code>/node</code>节点的ACL属于是world schema的，因为它没有设置ACL属性，这样任何人都可以访问这个节点。</p>
+<p>设置某一节点的权限命令为<code>setAcl</code>，语法格式为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setAcl &lt;path&gt; scheme:&lt;id&gt;:&lt;acl&gt;</span><br></pre></td></tr></table></div></figure>
+<blockquote>
+<p>setAcl命令中的id域是可忽略的，可以填任意值，或者空串，例如：<code>setAcl &lt;path&gt; auth::crdwa</code>。如果这个域是忽略的，会把所有已经授权的认证用户都加进来。</p>
+</blockquote>
+<p>如果要手工设置world schema，那么此时的id域只允许一个值，即anyone，格式如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setAcl /node world:anyone:crdwa</span><br></pre></td></tr></table></div></figure>
+<p>下面，设置<code>/node</code>节点 permissions 权限部分为 crwa</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 53] setAcl /node world:anyone:crwa</span><br><span class="line">cZxid = 0x60000002a</span><br><span class="line">ctime = Mon Mar 01 21:58:20 CST 2021</span><br><span class="line">mZxid = 0x60000002a</span><br><span class="line">mtime = Mon Mar 01 21:58:20 CST 2021</span><br><span class="line">pZxid = 0x60000002a</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 1</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 6</span><br><span class="line">numChildren = 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 54] getAcl /node <span class="comment">#再次查看权限，发现permissions部分已经改变。</span></span><br><span class="line"><span class="string">'world,'</span>anyone</span><br><span class="line">: crwa</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="32-auth-实例"   >
+          <a href="#32-auth-实例" class="heading-link"><i class="fas fa-link"></i></a>3.2 auth 实例</h3>
+      
+<p>auth 用于给用户授予权限，授权之前需要先创建用户。</p>
+<p>语法格式为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">addauth digest &lt;user&gt;:&lt;password&gt;</span><br></pre></td></tr></table></div></figure>
+<p>下面，给lucy用户授权<code>/node</code>节点的权限：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 6] setAcl /node auth:lucy:123456:cdrwa</span><br><span class="line">Acl is not valid : /node</span><br><span class="line">[zk: localhost:2181(CONNECTED) 7] addauth digest user1:123456  <span class="comment">#只有授权之后的用户才能设置权限</span></span><br><span class="line">[zk: localhost:2181(CONNECTED) 8] setAcl /node auth:lucy:123456:cdrwa</span><br><span class="line">cZxid = 0x600000032</span><br><span class="line">ctime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">mZxid = 0x600000032</span><br><span class="line">mtime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">pZxid = 0x600000032</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 1</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 6</span><br><span class="line">numChildren = 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 9] getAcl /node <span class="comment">#查看权限，发现scheme和id部分已经改变</span></span><br><span class="line"><span class="string">'digest,'</span>user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br><span class="line">: cdrwa</span><br></pre></td></tr></table></div></figure>
+<p>再来看一个例子，会有奇怪的现象发生：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 10] quit  <span class="comment">#退出</span></span><br><span class="line">Quitting...</span><br><span class="line">2021-03-01 22:31:30,855 [myid:] - INFO  [main:ZooKeeper@684] - Session: 0x177ed505b850004 closed</span><br><span class="line">2021-03-01 22:31:30,856 [myid:] - INFO  [main-EventThread:ClientCnxn<span class="variable">$EventThread</span>@512] - EventThread shut down</span><br><span class="line">[root@layne2 bin]<span class="comment"># zkCli.sh  #连接客户端，重新生成session</span></span><br><span class="line">[zk: localhost:2181(CONNECTED) 0] addauth digest user1:123456</span><br><span class="line">[zk: localhost:2181(CONNECTED) 1] addauth digest user2:123456</span><br><span class="line">[zk: localhost:2181(CONNECTED) 2] addauth digest user3:123456</span><br><span class="line">[zk: localhost:2181(CONNECTED) 3] getAcl /node</span><br><span class="line"><span class="string">'digest,'</span>user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br><span class="line">: cdrwa</span><br><span class="line">[zk: localhost:2181(CONNECTED) 4] setAcl /node auth:user2:crdwa</span><br><span class="line">cZxid = 0x600000032</span><br><span class="line">ctime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">mZxid = 0x600000032</span><br><span class="line">mtime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">pZxid = 0x600000032</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 2</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 6</span><br><span class="line">numChildren = 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 5] getAcl /node</span><br><span class="line"><span class="string">'digest,'</span>user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br><span class="line">: cdrwa</span><br><span class="line"><span class="string">'digest,'</span>user2:hZG2W+NR7DCvADzOkGR6JGLqoTY=</span><br><span class="line">: cdrwa</span><br><span class="line"><span class="string">'digest,'</span>user3:SzpfOOuDCdri8p4n7oIaFCZpXeE=</span><br><span class="line">: cdrwa</span><br></pre></td></tr></table></div></figure>
+<p>这个例子中，我们先添加了三个授权用户user1、user2、user3，然后通过setAcl设置ACL，命令中指定了id为user2，可以看到，最后通过getAcl查询出来的结果包含所有前面添加的三个认证用户。</p>
+<p>下面做几点总结（重要）：</p>
+<ol>
+<li>setAcl命令中的id值是无效的，当使用addauth命令授权多个用户后，再用setAcl设置ACL时，会把当前会话所有addauth的用户都被会加入到acl中。</li>
+<li><strong>通过addauth命令(<code>addauth digest &lt;username&gt;:&lt;password&gt;</code>)授权的用户只在当前会话(session)有效</strong>。</li>
+<li><strong>setAcl命令设置权限后是永久式的</strong>，即使当前会话退出也不会消失。</li>
+<li>如果在当前会话中，用户没有通过addauth授权就用setAcl设置acl权限时会失败。</li>
+<li>使用setAcl来设置acl权限后，经过addauth授权其它的用户，如果再使用setAcl设置权限 ，则会覆盖之前的acl权限信息，而且只会针对当前会话中的授权用户来设置acl权限。</li>
+</ol>
+<p>所以这种授权方式更倾向于用作测试开发环境，而不是产品环境中。</p>
+
+        <h3 id="33-digest-实例"   >
+          <a href="#33-digest-实例" class="heading-link"><i class="fas fa-link"></i></a>3.3 digest 实例</h3>
+      
+<p>这就是最普通的<code>用户名:密码</code>的验证方式，在一般业务系统中最常用。其语法格式如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">setAcl &lt;path&gt; digest:&lt;user&gt;:&lt;password(密文)&gt;:&lt;acl&gt;</span><br></pre></td></tr></table></div></figure>
+<p>和auth实例相比，digest 实例的密码是经过sha1及base64处理的密文。</p>
+<p>密码可以通过如下shell的方式生成：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">echo</span> -n &lt;user&gt;:&lt;password&gt; | openssl dgst -binary -sha1 | openssl base64</span><br></pre></td></tr></table></div></figure>
+<p>也可以通过zookeeper的库文件生成：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 方式一：通过linux自带的命令工具生成密码的密文</span></span><br><span class="line">[root@layne2 bin]<span class="comment"># echo -n user1:123456 | openssl dgst -binary -sha1 | openssl base64</span></span><br><span class="line">HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br><span class="line"></span><br><span class="line"><span class="comment"># 方式二：通过zookeeper的库文件生成密码的密文</span></span><br><span class="line">[root@layne2 bin]<span class="comment"># java -cp /opt/zookeeper-3.4.6/zookeeper-3.4.6.jar:/opt/zookeeper-3.4.6/lib/slf4j-api-1.6.1.jar \</span></span><br><span class="line">&gt;   org.apache.zookeeper.server.auth.DigestAuthenticationProvider \</span><br><span class="line">&gt;   user1:123456</span><br><span class="line">SLF4J: Failed to load class <span class="string">"org.slf4j.impl.StaticLoggerBinder"</span>.</span><br><span class="line">SLF4J: Defaulting to no-operation (NOP) logger implementation</span><br><span class="line">SLF4J: See http://www.slf4j.org/codes.html<span class="comment">#StaticLoggerBinder for further details.</span></span><br><span class="line">user1:123456-&gt;user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br></pre></td></tr></table></div></figure>
+<p>把上面输出的<code>HYGa7IZRm2PUBFiFFu8xY2pPP/s=</code>传递给diges实例下setAcl使用的password域。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 10] quit <span class="comment">#退出</span></span><br><span class="line">Quitting...</span><br><span class="line">2021-03-01 22:31:30,855 [myid:] - INFO  [main:ZooKeeper@684] - Session: 0x177ed505b850004 closed</span><br><span class="line">2021-03-01 22:31:30,856 [myid:] - INFO  [main-EventThread:ClientCnxn<span class="variable">$EventThread</span>@512] - EventThread shut down</span><br><span class="line">[root@layne2 bin]<span class="comment"># zkCli.sh #连接客户端，重新生成session</span></span><br><span class="line">[zk: localhost:2181(CONNECTED) 0] getAcl /node</span><br><span class="line"><span class="string">'digest,'</span>user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br><span class="line">: cdrwa</span><br><span class="line"><span class="string">'digest,'</span>user2:hZG2W+NR7DCvADzOkGR6JGLqoTY=</span><br><span class="line">: cdrwa</span><br><span class="line"><span class="string">'digest,'</span>user3:SzpfOOuDCdri8p4n7oIaFCZpXeE=</span><br><span class="line">: cdrwa</span><br><span class="line">[zk: localhost:2181(CONNECTED) 1] setAcl /node digest:user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=:rwdca</span><br><span class="line">Authentication is not valid : /node   <span class="comment">#digest scheme用户也必须经过授权</span></span><br><span class="line">[zk: localhost:2181(CONNECTED) 2] addauth digest user1:123abc456 <span class="comment">#用户的密码一定是生成密文的密码才行                             </span></span><br><span class="line">[zk: localhost:2181(CONNECTED) 3] setAcl /node digest:user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=:rwdca</span><br><span class="line">Authentication is not valid : /node</span><br><span class="line">[zk: localhost:2181(CONNECTED) 4] addauth digest user1:123456 <span class="comment">#这次是生成密文的密码                               </span></span><br><span class="line">[zk: localhost:2181(CONNECTED) 5] setAcl /node digest:user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=:rwdca</span><br><span class="line">cZxid = 0x600000032</span><br><span class="line">ctime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">mZxid = 0x600000032</span><br><span class="line">mtime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">pZxid = 0x600000032</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 3</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 6</span><br><span class="line">numChildren = 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 6] getAcl /node</span><br><span class="line"><span class="string">'digest,'</span>user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br><span class="line">: cdrwa</span><br><span class="line">[zk: localhost:2181(CONNECTED) 7] addauth digest user2:123456</span><br><span class="line">[zk: localhost:2181(CONNECTED) 8] setAcl /node digest:user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=:rwdca   <span class="comment">#授权user2用户后，再次用setAcl为user1设置权限，看是否同时给user2设置权限</span></span><br><span class="line">cZxid = 0x600000032</span><br><span class="line">ctime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">mZxid = 0x600000032</span><br><span class="line">mtime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">pZxid = 0x600000032</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 4</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 6</span><br><span class="line">numChildren = 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 9] getAcl /node <span class="comment">#可以看到，没有为user2设置权限</span></span><br><span class="line"><span class="string">'digest,'</span>user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br><span class="line">: cdrwa</span><br><span class="line">[zk: localhost:2181(CONNECTED) 10]</span><br></pre></td></tr></table></div></figure>
+<p>和auth比较，digest有如下特性：</p>
+<ol>
+<li>授权是针对单个特定用户。</li>
+<li>setAcl使用的密码不是明文，是sha1摘要值，无法反推出用户密码内容。</li>
+</ol>
+
+        <h3 id="34-ip-实例"   >
+          <a href="#34-ip-实例" class="heading-link"><i class="fas fa-link"></i></a>3.4 IP 实例</h3>
+      
+<p>限制 IP 地址的访问权限，比如把权限设置给 IP 地址为 192.168.218.54 后，IP 为 192.168.218.52 已经没有访问权限。</p>
+<p>IP地址也可以为主机名。主机名可以是单个主机名，也可以是域名。IP可以是单个IP地址，也可以是IP地址段</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 10] create /testnode tnode</span><br><span class="line">Created /testnode</span><br><span class="line">[zk: localhost:2181(CONNECTED) 11] getAcl /testnode</span><br><span class="line"><span class="string">'world,'</span>anyone</span><br><span class="line">: cdrwa</span><br><span class="line">[zk: localhost:2181(CONNECTED) 15] setAcl /testnode ip:192.168.218.54:cdrwa</span><br><span class="line">cZxid = 0x60000003e</span><br><span class="line">ctime = Mon Mar 01 23:18:00 CST 2021</span><br><span class="line">mZxid = 0x60000003f</span><br><span class="line">mtime = Mon Mar 01 23:18:55 CST 2021</span><br><span class="line">pZxid = 0x60000003e</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 1</span><br><span class="line">aclVersion = 1</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 23</span><br><span class="line">numChildren = 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 16] getAcl /testnode                        </span><br><span class="line"><span class="string">'ip,'</span>192.168.218.54</span><br><span class="line">: cdrwa</span><br><span class="line">[zk: localhost:2181(CONNECTED) 17] get /testnode                           </span><br><span class="line">Authentication is not valid : /testnode</span><br></pre></td></tr></table></div></figure>
+<p>这时，<span class="exturl"><a class="exturl__link"   href="http://xn--192-503jln.168.218.xn--54192-dl8jk07w.168.218.xn--52zkCli-h43kf211a.sh"  target="_blank" rel="noopener">通过192.168.218.54连接192.168.218.52中的zkCli.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，就有访问权限：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">[root@layne4 version-2]<span class="comment"># zkCli.sh -server 192.168.218.52:2181</span></span><br><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 0] getAcl /testnode</span><br><span class="line"><span class="string">'ip,'</span>192.168.218.54</span><br><span class="line">: cdrwa</span><br><span class="line">[zk: 192.168.218.52:2181(CONNECTED) 1] get /testnode</span><br><span class="line">tnode</span><br><span class="line">cZxid = 0x60000003e</span><br><span class="line">ctime = Mon Mar 01 23:18:00 CST 2021</span><br><span class="line">mZxid = 0x60000003f</span><br><span class="line">mtime = Mon Mar 01 23:18:55 CST 2021</span><br><span class="line">pZxid = 0x60000003e</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 1</span><br><span class="line">aclVersion = 1</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 23</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="35-super用户"   >
+          <a href="#35-super用户" class="heading-link"><i class="fas fa-link"></i></a>3.5 super用户</h3>
+      
+<p>设置一个超级用户，这个超级用户的设置必须在zookeeper内部，在zookeeper启动之前设置好。在这种scheme情况下，超级用户具有超级权限，可以做任何事情(cdrwa)，不需要授权。</p>
+<p>我们通过digest scheme方式只为user1设置d权限：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 23] setAcl /node digest:user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=:d </span><br><span class="line">cZxid = 0x600000032</span><br><span class="line">ctime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">mZxid = 0x600000032</span><br><span class="line">mtime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">pZxid = 0x600000032</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 5</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 6</span><br><span class="line">numChildren = 0</span><br><span class="line">[zk: localhost:2181(CONNECTED) 24] get /node</span><br><span class="line">Authentication is not valid : /node</span><br><span class="line">[zk: localhost:2181(CONNECTED) 25] getAcl /node</span><br><span class="line"><span class="string">'digest,'</span>user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br><span class="line">: d</span><br><span class="line">[zk: localhost:2181(CONNECTED) 26] addauth digest root:123456</span><br><span class="line">[zk: localhost:2181(CONNECTED) 28] get /node                 </span><br><span class="line">Authentication is not valid : /node</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，usr1用户已经不能访问<code>/node</code>结点信息。同样的，root用户也不能。</p>
+<p>现在，我们为root用户添加为super用户：</p>
+<p>1、生成root用户的密文：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne2 bin]<span class="comment"># echo -n root:123456 | openssl dgst -binary -sha1 | openssl base64</span></span><br><span class="line">u53OoA8hprX59uwFsvQBS3QuI00=</span><br></pre></td></tr></table></div></figure>
+<p>2、设置zookeeper环境变量SERVER_JVMFLAGS</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> SERVER_JVMFLAGS=<span class="string">"-Dzookeeper.DigestAuthenticationProvider.superDigest=root:u53OoA8hprX59uwFsvQBS3QuI00="</span></span><br></pre></td></tr></table></div></figure>
+<p>3、重启zookeeper</p>
+<p>4、连接zkCli.sh客户端</p>
+<p>5、再次访问<code>/node</code>结点</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">[zk: localhost:2181(CONNECTED) 1] getAcl /node</span><br><span class="line"><span class="string">'digest,'</span>user1:HYGa7IZRm2PUBFiFFu8xY2pPP/s=</span><br><span class="line">: d</span><br><span class="line">[zk: localhost:2181(CONNECTED) 2] get /node</span><br><span class="line">Authentication is not valid : /node</span><br><span class="line">[zk: localhost:2181(CONNECTED) 3] addauth digest root:123456</span><br><span class="line">[zk: localhost:2181(CONNECTED) 4] get /node                 </span><br><span class="line">mynode</span><br><span class="line">cZxid = 0x600000032</span><br><span class="line">ctime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">mZxid = 0x600000032</span><br><span class="line">mtime = Mon Mar 01 22:12:43 CST 2021</span><br><span class="line">pZxid = 0x600000032</span><br><span class="line">cversion = 0</span><br><span class="line">dataVersion = 0</span><br><span class="line">aclVersion = 5</span><br><span class="line">ephemeralOwner = 0x0</span><br><span class="line">dataLength = 6</span><br><span class="line">numChildren = 0</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，给root添加授权后，就能访问<code>/node</code>结点了，因为这时root在zookeeper集群里面被配置成了超级用户。</p>
+<p>在第2步，直接在Linux的bash命令行输入设置zookeeper环境变量SERVER_JVMFLAGS只对当前有效，如果Linux系统重启，就会失效。可以将该命令写入<code>/etc/profile</code>文件里，保证重启电脑后也不会失效。</p>
+<p>即在<code>/etc/profile</code>的最后一行加入下面的内容，并执行<code>source /etc/profile</code>让配置立即生效。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> SERVER_JVMFLAGS=<span class="string">"-Dzookeeper.DigestAuthenticationProvider.superDigest=root:u53OoA8hprX59uwFsvQBS3QuI00="</span></span><br></pre></td></tr></table></div></figure>
+<p>还有另一种方法设置Spuer用户，可以参考<span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/u010900754/article/details/78498291"  target="_blank" rel="noopener" title="zookeeper设置super用户">ACL super 超级管理员</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>，我没有尝试，应该也可行。</p>
+
+        <h2 id="4-zookeeper-java-api的使用"   >
+          <a href="#4-zookeeper-java-api的使用" class="heading-link"><i class="fas fa-link"></i></a>4. Zookeeper JAVA API的使用</h2>
+      
+
+        <h3 id="41-maven坐标"   >
+          <a href="#41-maven坐标" class="heading-link"><i class="fas fa-link"></i></a>4.1 maven坐标</h3>
+      
+<figure class="highlight xml"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>junit<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>4.11<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.zookeeper<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>zookeeper<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.4.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>log4j<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>log4j<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.2.16<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="42-log4j配置"   >
+          <a href="#42-log4j配置" class="heading-link"><i class="fas fa-link"></i></a>4.2 log4j配置</h3>
+      
+<figure class="highlight properties"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">log4j.rootLogger</span>=<span class="string">INFO, stdout</span></span><br><span class="line"><span class="meta">log4j.appender.stdout</span>=<span class="string">org.apache.log4j.ConsoleAppender</span></span><br><span class="line"><span class="meta">log4j.appender.stdout.layout</span>=<span class="string">org.apache.log4j.PatternLayout</span></span><br><span class="line"><span class="meta">log4j.appender.stdout.layout.ConversionPattern</span>=<span class="string">%d %p [%c] - %m%n</span></span><br><span class="line"><span class="meta">log4j.appender.logfile</span>=<span class="string">org.apache.log4j.FileAppender</span></span><br><span class="line"><span class="meta">log4j.appender.logfile.File</span>=<span class="string">target/zookeeperAPI.log</span></span><br><span class="line"><span class="meta">log4j.appender.logfile.layout</span>=<span class="string">org.apache.log4j.PatternLayout</span></span><br><span class="line"><span class="meta">log4j.appender.logfile.layout.ConversionPattern</span>=<span class="string">%d %p [%c] - %m%n</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="43-连接zookeeper"   >
+          <a href="#43-连接zookeeper" class="heading-link"><i class="fas fa-link"></i></a>4.3 连接Zookeeper</h3>
+      
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 用于等待 SyncConnected 事件触发后继续执行当前线程</span></span><br><span class="line"><span class="keyword">private</span> CountDownLatch countDownLatch = <span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line"><span class="comment">//session的实效时间</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> SESSION_TIMEOUT = <span class="number">30000</span>;</span><br><span class="line"><span class="comment">//创建Logger对象，按照文件log4j.properties中指定的格式输出日志到控制台</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Logger LOGGER = LoggerFactory.getLogger(ZookeeperApiDemo<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line"><span class="comment">//zookeeper连接对象</span></span><br><span class="line"><span class="keyword">private</span> ZooKeeper zooKeeper;</span><br><span class="line"><span class="keyword">private</span> Watcher watcher = <span class="keyword">new</span> Watcher() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent event)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span>(Event.KeeperState.SyncConnected == event.getState())&#123;</span><br><span class="line">            countDownLatch.countDown();</span><br><span class="line">            String msg=String.format(<span class="string">"process info,eventType:%s,eventState:%s,eventPath:%s"</span>,event.getType(),event.getState(),event.getPath());</span><br><span class="line">            LOGGER.info(msg);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Before</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">connect</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    zooKeeper = <span class="keyword">new</span> ZooKeeper(<span class="string">"192.168.218.52:2181,192.168.218.53:2181,192.168.218.54:2181"</span>,</span><br><span class="line">                              SESSION_TIMEOUT,watcher);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        countDownLatch.await();</span><br><span class="line">        LOGGER.info(<span class="string">"Zookeeper session establish success,sessionID="</span>+Long.toHexString(zooKeeper.getSessionId()));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">        LOGGER.debug(<span class="string">"Zookeeper session establish fail"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@After</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span>(zooKeeper!=<span class="keyword">null</span>)&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            zooKeeper.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>ZooKeeper构造函数的参数：</p>
+<ul>
+<li><code>connectionString</code> ：zookeeper主机（注意端口2181）</li>
+<li><code>sessionTimeout</code> ：会话超时（以毫秒为单位)</li>
+<li><code>watcher</code> ：实现“监视器”对象，zookeeper集合通过监视器对象返回连接状态。</li>
+</ul>
+<p>当new一个zookeeper对象后，zookeeper的连接过程可能会受到网络、zookeeper集群等各种问题的影响，连接的过程可能会比较慢。因此，为了提高程序的执行性能，可以在watcher监视器里面使用并发工具类CountDownLatch，这个工具类在初始化的时候指定一个int类型的值，通过调用countDown方法，这个值会减一，当减到0时，所有的await线程都会被叫醒。所以，每次在使用zookeeper之前，使用<code>countDownLatch.await()</code>来确保每次使用zookeeper对象之前，zookeeper客户端都能成功连接到集群。</p>
+
+        <h3 id="44-新增节点"   >
+          <a href="#44-新增节点" class="heading-link"><i class="fas fa-link"></i></a>4.4 新增节点</h3>
+      
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 同步方式</span></span><br><span class="line">create(String path, <span class="keyword">byte</span>[] data, List&lt;ACL&gt; acl, CreateMode createMode)</span><br><span class="line"><span class="comment">// 异步方式</span></span><br><span class="line">create(String path, <span class="keyword">byte</span>[] data, List&lt;ACL&gt; acl, CreateMode createMode,</span><br><span class="line">AsyncCallback.StringCallback callBack,Object ctx)</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><code>path</code>：znode路径</li>
+<li><code>data</code>：要存储在指定znode路径中的数据</li>
+<li><code>acl</code>：要创建的节点的访问控制列表。 zookeeper API提供了一个静态接口<code>ZooDefs.Ids</code>来获取一些基本的acl列表</li>
+<li><code>createMode</code>：节点的类型，这是一个枚举类型</li>
+<li><code>callBack</code>：异步回调接口</li>
+<li><code>ctx</code>：传递上下文参数</li>
+</ul>
+<p>下面创建临时结点<code>/zk001</code></p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**创建节点：</span></span><br><span class="line"><span class="comment"> *CreateMode：</span></span><br><span class="line"><span class="comment"> * PERSISTENT 普通持久节点</span></span><br><span class="line"><span class="comment"> * PERSISTENT_SEQUENTIAL:顺序持久节点</span></span><br><span class="line"><span class="comment"> * EPHEMERAL ：普通临时</span></span><br><span class="line"><span class="comment"> * EPHEMERAL_SEQUENTIAL：顺序临时节点</span></span><br><span class="line"><span class="comment"> * Access Control List: 访问控制列表</span></span><br><span class="line"><span class="comment"> * OPEN_ACL_UNSAFE: ANYONE CAN VISIT</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createNode</span><span class="params">()</span></span>&#123;</span><br><span class="line">    String result = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        result = zooKeeper.create(<span class="string">"/zk001"</span>,<span class="comment">//节点的全路径</span></span><br><span class="line">                <span class="string">"zk001-data"</span>.getBytes(),<span class="comment">//节点中的数据-&gt;字节数据</span></span><br><span class="line">                ZooDefs.Ids.OPEN_ACL_UNSAFE,<span class="comment">//指定访问控制列表</span></span><br><span class="line">                CreateMode.EPHEMERAL <span class="comment">//指定创建节点的类型</span></span><br><span class="line">        );</span><br><span class="line">        Thread.sleep(<span class="number">10000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">       LOGGER.error(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">   LOGGER.info(<span class="string">"create node success,result=&#123;&#125;"</span>,result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="45-查看节点"   >
+          <a href="#45-查看节点" class="heading-link"><i class="fas fa-link"></i></a>4.5 查看节点</h3>
+      
+<p>查询节点有两层，第一个是相当于zkCli的get，就是获取某个节点的内容。还有一个就是类似于ls，列出子节点。</p>
+<p>获取获取某个节点的内容可以通过zookeeper的getData方法，getData方法有多个重载，主要就是分为直接获取和异步获取，异步获取多了一个回掉，直接获取则直接返回获取的结果。</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 同步方式</span></span><br><span class="line">getData(String path, Watcher watcher, Stat stat)</span><br><span class="line"><span class="comment">// 异步方式</span></span><br><span class="line">getData(String path, Watcher watcher， AsyncCallback.DataCallback callBack，</span><br><span class="line">Object ctx)</span><br><span class="line"><span class="comment">// 同步方式</span></span><br><span class="line">getData(String path, <span class="keyword">boolean</span> watch, Stat stat)</span><br><span class="line"><span class="comment">// 异步方式</span></span><br><span class="line">getData(String path, <span class="keyword">boolean</span> watch， AsyncCallback.DataCallback callBack，</span><br><span class="line">Object ctx)</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><code>path</code>：znode路径</li>
+<li><code>watcher</code>：使用新的注册的监视器，该参数允许传入null</li>
+<li><code>watch</code>：当watch为true时，则使用系统默认的Watcher，系统默认的Watcher是在zookeeper的构造函数中传递的Watcher。如果watch为false，则表明不注册Watcher。</li>
+<li><code>stat</code> ：返回znode的元数据</li>
+<li><code>callBack</code>：异步回调接口</li>
+<li><code>ctx</code>：传递上下文参数</li>
+</ul>
+<p><strong>同步方式获取某个节点的内容</strong></p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getNodeData</span><span class="params">()</span></span>&#123;</span><br><span class="line">    String result = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//注意，是结点的全路径</span></span><br><span class="line">        <span class="keyword">byte</span>[] data = zooKeeper.getData(<span class="string">"/zk01"</span>, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">        result = <span class="keyword">new</span> String(data);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">        Assert.fail();</span><br><span class="line">    &#125;</span><br><span class="line">    LOGGER.info(<span class="string">"getNodeData=&#123;&#125;"</span>,result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p><strong>异步方式获取某个节点的内容</strong></p>
+<p>这里要注意，一定要休眠，否则在看不到结果之前可能程序就停掉了。</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getNodeDataAsync</span><span class="params">()</span></span>&#123;</span><br><span class="line">    String result = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        zooKeeper.getData(<span class="string">"/zk01"</span>, <span class="keyword">null</span>, <span class="keyword">new</span> AsyncCallback.DataCallback() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processResult</span><span class="params">(<span class="keyword">int</span> i, String s, Object o, <span class="keyword">byte</span>[] bytes, Stat stat)</span> </span>&#123;</span><br><span class="line">                LOGGER.info(<span class="string">"getNodeDataAsync=&#123;&#125;"</span>,<span class="keyword">new</span> String(bytes));</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;,<span class="keyword">null</span>);</span><br><span class="line">        Thread.sleep(<span class="number">3000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">        Assert.fail();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p><strong>列出所有的子节点</strong></p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取所有的子节点</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getChilds</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        List&lt;String&gt; children = zooKeeper.getChildren(<span class="string">"/zk01"</span>, <span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">for</span>(String node:children)&#123;</span><br><span class="line">            LOGGER.info(<span class="string">"================&#123;&#125;"</span>,node);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>获取所有子节点，并打印其信息</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getChilds2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        List&lt;String&gt; children = zooKeeper.getChildren(<span class="string">"/zk01"</span>, <span class="keyword">true</span>);</span><br><span class="line">        Stat stat=<span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">for</span>(String node:children)&#123;</span><br><span class="line">            stat=<span class="keyword">new</span> Stat();<span class="comment">//封装结点的信息</span></span><br><span class="line">            LOGGER.info(<span class="string">"================&#123;&#125;"</span>,node);</span><br><span class="line">            <span class="keyword">byte</span>[] data=zooKeeper.getData(<span class="string">"/zk01/"</span>+node,<span class="keyword">null</span>,stat);</span><br><span class="line">            System.out.println(<span class="keyword">new</span> String(data)+<span class="string">", stat:"</span>+stat);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="46-修改节点"   >
+          <a href="#46-修改节点" class="heading-link"><i class="fas fa-link"></i></a>4.6 修改节点</h3>
+      
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 同步方式</span></span><br><span class="line">setData(String path, <span class="keyword">byte</span>[] data, <span class="keyword">int</span> version)</span><br><span class="line"><span class="comment">// 异步方式</span></span><br><span class="line">setData(String path, <span class="keyword">byte</span>[] data, <span class="keyword">int</span> version， AsyncCallback.StatCallback</span><br><span class="line">callBack， Object ctx)</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><code>path</code>：znode路径</li>
+<li><code>data</code>：要存储在指定znode路径中的数据</li>
+<li><code>version</code>：这里的version指的是znode节点的dataVersion的值，每次数据的修改都会更新这个值，主要是为了保证一致性。通俗来讲就是如果你指定的version比保持的version值小，则表示已经有其他线程所更新了，你也就不能更新成功了，否则则可以更新成功。如果你不管别的线程有没有更新成功都要更新这个节点的值，则version可以指定为-1。</li>
+<li><code>callBack</code>：异步回调接口</li>
+<li><code>ctx</code>：传递上下文参数</li>
+</ul>
+<p>下面是删除节点的例子</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">deleteNode</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//-1指的是无论你的结点是什么版本，都将删除</span></span><br><span class="line">        zooKeeper.delete(<span class="string">"/zk06/test-0000000008"</span>,-<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">        Assert.fail();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="47-watcher监听"   >
+          <a href="#47-watcher监听" class="heading-link"><i class="fas fa-link"></i></a>4.7 watcher监听</h3>
+      
+<p>客户端注册 Watcher，注册 watcher 有 3 种方式，getData、exists、getChildren，可以触发观察的操作有：create、delete、setData，下面分别进行测试：</p>
+<p>（1）<strong>对于getData</strong></p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testGetDataWather</span><span class="params">()</span></span>&#123;</span><br><span class="line">    String result = <span class="string">""</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">//在读取数据时添加一个监听事件</span></span><br><span class="line">        <span class="keyword">byte</span>[] data = zooKeeper.getData(<span class="string">"/zk01"</span>, <span class="keyword">new</span> Watcher() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent event)</span> </span>&#123;</span><br><span class="line">                LOGGER.info(<span class="string">"testGetDataWather watch type:&#123;&#125;"</span>, event.getType());</span><br><span class="line">                <span class="comment">//只能监听一次，想要持续监听可以通过循环或递归的方式</span></span><br><span class="line">                <span class="comment">//testGetDataWather();</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, <span class="keyword">null</span>);</span><br><span class="line">        result = <span class="keyword">new</span> String(data);</span><br><span class="line">        Thread.sleep(<span class="number">30000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">        Assert.fail();</span><br><span class="line">    &#125;</span><br><span class="line">    LOGGER.info(<span class="string">"result = &#123;&#125;"</span>,result);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>主要<code>/zk01</code>节点中的数据改变，就会输出<code>testGetDataWather watch type:NodeDataChanged</code>，但只会出发一次，想要持续监听可以通过循环或递归的方式。</p>
+<p>（2）<strong>对于exists</strong></p>
+<p>使用系统默认的Watcher是在zookeeper的构造函数中传递的Watcher</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * watch:true:表示使用系统默认的Watcher是在zookeeper的构造函数中传递的Watcher</span></span><br><span class="line"><span class="comment"> * watch:false:不使用Watcher</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">isExistWatcher1</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Stat stat = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        stat = zooKeeper.exists(<span class="string">"/zk01/node1"</span>, <span class="keyword">true</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//如果stat不为null，继续往后执行</span></span><br><span class="line">    Assert.assertNotNull(stat);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        zooKeeper.delete(<span class="string">"/zk01/node1"</span>,-<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>出发事件时，将输出<code>process info,eventType:NodeDeleted,eventState:SyncConnected,eventPath:/zk01/node1</code>，因为zookeeper的构造函数中传递的Watcher的内容是：</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">String msg=String.format(<span class="string">"process info,eventType:%s,eventState:%s,eventPath:%s"</span>,event.getType(),event.getState(),event.getPath());</span><br><span class="line">LOGGER.info(msg);</span><br></pre></td></tr></table></div></figure>
+<p>然后，使用自定义的监听对象</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 注册了自定义的监听对象，走自定义的。</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">isExistWatcher2</span><span class="params">()</span></span>&#123;</span><br><span class="line">    Stat stat = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        stat = zooKeeper.exists(<span class="string">"/zk01/node2"</span>, <span class="keyword">new</span> Watcher() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent event)</span> </span>&#123;</span><br><span class="line">                LOGGER.info(<span class="string">"isExistWatcher2  wather type:&#123;&#125;"</span>,event.getType());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//如果stat不为null，继续往后执行</span></span><br><span class="line">    Assert.assertNotNull(stat);</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        zooKeeper.setData(<span class="string">"/zk01/node2"</span>,<span class="string">"isExistWatcher2_edited"</span>.getBytes(),-<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        zooKeeper.delete(<span class="string">"/zk01/node2"</span>,-<span class="number">1</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>输出的结果：<code>isExistWatcher2 wather type:NodeDataChanged</code> 或者 <code>isExistWatcher2 wather type:NodeDeleted</code>，不过一般是第一个操作触发。</p>
+<p>（3）<strong>对于getChildren</strong></p>
+<p>对于getChildren只有子节点创建和删除时，才能触发watcher事件，<strong>子节点数据改变不会触发该事件</strong>，只有在子节点创建和删除时，才能触发watcher事件。</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Test</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">getChildsWatcher</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        List&lt;String&gt; children = zooKeeper.getChildren(<span class="string">"/zk01"</span>, <span class="keyword">new</span> Watcher() &#123;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(WatchedEvent watchedEvent)</span> </span>&#123;</span><br><span class="line">                LOGGER.info(<span class="string">"getChildsWatcher  wather type:&#123;&#125;"</span>,watchedEvent.getType());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        <span class="keyword">for</span>(String node:children)&#123;</span><br><span class="line">            LOGGER.info(<span class="string">"================&#123;&#125;"</span>,node);</span><br><span class="line">            <span class="comment">//  /zk06/test-0000000001</span></span><br><span class="line">        &#125;</span><br><span class="line">        Thread.sleep(<span class="number">30000</span>);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        LOGGER.error(e.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>当子节点创建和删除时，会输出：<code>getChildsWatcher wather type:NodeChildrenChanged</code></p>
+<p>本文所有的demo的github地址为：<span class="exturl"><a class="exturl__link"   href="https://github.com/wxler/zookeeperAPI.git"  target="_blank" rel="noopener" title="zookeeper demo">https://github.com/wxler/zookeeperAPI.git</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>另外，我也通过zookeeper使用RMI远程调用，通过三个IP实现简单的负载均衡，也在上述github地址中。</p>
+<p>【参考资料】</p>
+<ol>
+<li><span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/leesf456/p/6022357.html"  target="_blank" rel="noopener">https://www.cnblogs.com/leesf456/p/6022357.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/wx_it/article/details/105862972"  target="_blank" rel="noopener">https://blog.csdn.net/wx_it/article/details/105862972</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://www.runoob.com/w3cnote/zookeeper-acl.html"  target="_blank" rel="noopener">https://www.runoob.com/w3cnote/zookeeper-acl.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+</ol>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/02/23/101109/">https://wxler.gitee.io/2021/02/23/101109/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/zookeeper/">zookeeper</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/02/25/123719/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">Notepad++运行java代码，并设置自动格式化Java代码</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/02/19/134758/"><span class="paginator-prev__text">详解磁盘IO、网络IO、零拷贝IO、BIO、NIO、AIO、IO多路复用(select、poll、epoll)</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-linux上搭建zookeeper集群"><span class="toc-text">
+          1. Linux上搭建ZooKeeper集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-多台服务器之间免密登录"><span class="toc-text">
+          1.1 多台服务器之间免密登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-zookeeper集群搭建"><span class="toc-text">
+          1.2 ZooKeeper集群搭建</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-zkclish客户端操作"><span class="toc-text">
+          2. zkCli.sh客户端操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-打开客户端"><span class="toc-text">
+          2.1 打开客户端</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-创建节点"><span class="toc-text">
+          2.2 创建节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-读取节点"><span class="toc-text">
+          2.3 读取节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-更新节点"><span class="toc-text">
+          2.4 更新节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-删除节点"><span class="toc-text">
+          2.5 删除节点</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-zookeeper-权限控制-acl"><span class="toc-text">
+          3. Zookeeper 权限控制 ACL</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-world-实例"><span class="toc-text">
+          3.1 world 实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-auth-实例"><span class="toc-text">
+          3.2 auth 实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-digest-实例"><span class="toc-text">
+          3.3 digest 实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-ip-实例"><span class="toc-text">
+          3.4 IP 实例</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#35-super用户"><span class="toc-text">
+          3.5 super用户</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-zookeeper-java-api的使用"><span class="toc-text">
+          4. Zookeeper JAVA API的使用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#41-maven坐标"><span class="toc-text">
+          4.1 maven坐标</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#42-log4j配置"><span class="toc-text">
+          4.2 log4j配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#43-连接zookeeper"><span class="toc-text">
+          4.3 连接Zookeeper</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#44-新增节点"><span class="toc-text">
+          4.4 新增节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#45-查看节点"><span class="toc-text">
+          4.5 查看节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#46-修改节点"><span class="toc-text">
+          4.6 修改节点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#47-watcher监听"><span class="toc-text">
+          4.7 watcher监听</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">96</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">17</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">51</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
