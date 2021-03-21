@@ -1,0 +1,544 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="基础设施        基础设施环境如下：  jdk 1.7+（提前设置好环境变量） ssh自己和自己之间进行免密登陆，如在layne1上执行ssh layne1 时间同步 设置本机ip 设置主机名  可参考Linux切换运行级别、关闭防火墙、禁用selinux、关闭sshd、时间同步、修改时区、拍摄快照、克隆操作、修改语言环境。 另外，不得不提Linux系">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hadoop伪分布式集群搭建">
+<meta property="og:url" content="https://wxler.gitee.io/2021/03/16/191640/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="基础设施        基础设施环境如下：  jdk 1.7+（提前设置好环境变量） ssh自己和自己之间进行免密登陆，如在layne1上执行ssh layne1 时间同步 设置本机ip 设置主机名  可参考Linux切换运行级别、关闭防火墙、禁用selinux、关闭sshd、时间同步、修改时区、拍摄快照、克隆操作、修改语言环境。 另外，不得不提Linux系">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210317200315.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316205007.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316205112.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316212658.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316213025.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316213104.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316213104.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316213303.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316215355.png">
+<meta property="article:published_time" content="2021-03-16T11:16:40.000Z">
+<meta property="article:modified_time" content="2021-03-21T05:47:49.743Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="hadoop">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210317200315.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>hadoop伪分布式集群搭建 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/03/16/191640/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">hadoop伪分布式集群搭建</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-16</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-03-21</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">2.1k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">18分</span></span></div></header><div class="post-body">
+        <h2 id="基础设施"   >
+          <a href="#基础设施" class="heading-link"><i class="fas fa-link"></i></a>基础设施</h2>
+      
+<p>基础设施环境如下：</p>
+<ul>
+<li>jdk 1.7+（提前设置好环境变量）</li>
+<li>ssh自己和自己之间进行免密登陆，如在layne1上执行<code>ssh layne1</code></li>
+<li>时间同步</li>
+<li>设置本机ip</li>
+<li>设置主机名</li>
+</ul>
+<p>可参考<span class="exturl"><a class="exturl__link"   href="https://wxler.github.io/2021/02/04/211133/"  target="_blank" rel="noopener">Linux切换运行级别、关闭防火墙、禁用selinux、关闭sshd、时间同步、修改时区、拍摄快照、克隆操作、修改语言环境</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>。</p>
+<p>另外，不得不提Linux系统远程执行和远程登陆的区别：</p>
+<ul>
+<li>远程执行：不需要用户交互，而是用户直接给出一个命令，直接在远程执行，不会加载 <code>/etc/profile</code></li>
+<li>远程登陆：返回一个交互接口，返回接口<code>/bash</code>  会加载<code>/etc/profile</code></li>
+</ul>
+
+        <h2 id="操作步骤"   >
+          <a href="#操作步骤" class="heading-link"><i class="fas fa-link"></i></a>操作步骤</h2>
+      
+<p>我在主机名为layne1上搭建hadoop伪分布式集群，详细步骤如下</p>
+<p>1、配置免密钥</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssh-keygen  -t  dsa  -P  <span class="string">''</span>  -f  ~/.ssh/id_dsa</span><br><span class="line">cat  ~/.ssh/id_dsa.pub  &gt;  ~/.ssh/authorized_keys</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><code>id_dsa.pub</code> 存放每台服务器自己的公钥</li>
+<li><code>authorized_keys</code> 存放的也是服务器的公钥，不过除了自己的公钥外，也可以存放其它服务器的公钥。</li>
+</ul>
+<p>再执行<code>ssh layne1</code>，让其自己和自己之间进行免密登陆。</p>
+<p>2、上传hadoop的tar包<code>hadoop-2.6.5.tar.gz</code>到Linux系统的<code>/opt/apps</code>目录下</p>
+<p>3、解压<code>hadoop-2.6.5.tar.gz</code>到<code>/opt</code>目录</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 apps]<span class="comment"># tar -zxvf hadoop-2.6.5.tar.gz -C /opt</span></span><br></pre></td></tr></table></div></figure>
+<p>4、删除<code>hadoop-2.6.5/share/</code>下的doc目录，doc里面是一些页面和文档，在Linux上没用，删除以后我们把这个hadoop复制到其他服务器上速度比较快</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 hadoop-2.6.5]<span class="comment"># pwd</span></span><br><span class="line">/opt/hadoop-2.6.5</span><br><span class="line">[root@layne1 hadoop-2.6.5]<span class="comment"># cd share</span></span><br><span class="line">[root@layne1 share]<span class="comment"># ls</span></span><br><span class="line">doc  hadoop</span><br><span class="line">[root@layne1 share]<span class="comment"># rm -rf doc</span></span><br><span class="line">[root@layne1 share]<span class="comment"># ls</span></span><br><span class="line">hadoop</span><br></pre></td></tr></table></div></figure>
+<p>5、添加hadoop环境变量</p>
+<p>将<code>HADOOP_HOME</code>以及<code>HADOOP_HOME/bin</code>和<code>HADOOP_HOME/sbin</code>添加到环境变量，在<code>/etc/profile</code>里最后一行添加：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">export</span> HADOOP_HOME=/opt/hadoop-2.6.5</span><br><span class="line"><span class="built_in">export</span> PATH=<span class="variable">$PATH</span>:<span class="variable">$HADOOP_HOME</span>/bin:<span class="variable">$HADOOP_HOME</span>/sbin</span><br></pre></td></tr></table></div></figure>
+<p>再执行<code>source /etc/profile</code>使其立即生效。</p>
+<p>6、hadoop-env.sh配置</p>
+<p>由于通过SSH远程启动进程的时候默认不会加载<code>/etc/profile</code>设置，JAVA_HOME变量就加载不到，需要手动指定。</p>
+<p>在<code>/opt/hadoop-2.6.5</code>下，输入<code>vim ./etc/hadoop/hadoop-env.sh</code>，找到JAVA_HOME所在的行，并改为<code>export JAVA_HOME=/usr/java/default</code>。</p>
+<figure class="highlight"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 hadoop-2.6.5]# pwd</span><br><span class="line">/opt/hadoop-<span class="number">2.6</span><span class="number">.5</span></span><br><span class="line">[root@layne1 hadoop-2.6.5]# cd ./etc/hadoop/</span><br><span class="line">[root@layne1 hadoop]# vim hadoop-env.sh</span><br></pre></td></tr></table></div></figure>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210317200315.png"  alt="" />
+      </p>
+<p>7、配置core-site.xml</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 hadoop]<span class="comment"># pwd</span></span><br><span class="line">/opt/hadoop-2.6.5/etc/hadoop</span><br><span class="line">[root@layne1 hadoop]<span class="comment"># vim core-site.xml</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>这个文件指定的是namenode的访问</strong></p>
+<figure class="highlight xml"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 指定访问HDFS的时候路径的默认前缀  /  hdfs://layne1:9000/ --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>fs.defaultFS<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://layne1:9000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 指定hadoop的临时目录位置，它会给namenode、secondarynamenode以及datanode的存储目录指定前缀 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>hadoop.tmp.dir<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>/var/layne/hadoop/pseudo<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></div></figure>
+<p>配置文件拷贝后格式不美观，可以通过以下方式格式化：</p>
+<ol>
+<li>在vim命令按ESC回报命令模式，把光标定位在<code>&lt;configuration&gt;</code>行首</li>
+<li>输入<code>Ctrl+V</code></li>
+<li>按键盘上的下箭头按钮，直到<code>&lt;configuration/&gt;</code></li>
+<li>输入<code>:!xmllint -format -</code>，然后回车</li>
+<li>删除<code>&lt;configuration&gt;</code>上一行多出的<code>&lt;?xml version=&quot;1.0&quot;?&gt;</code></li>
+</ol>
+<p>值得一提的是，这些配置都可以在<code>hadoop-2.6.5\share\doc\hadoop\index.html</code>里面找到，最好用IE浏览器打开，否则可能不识别。</p>
+<p>在windows上用IE浏览器打开<code>hadoop-2.6.5\share\doc\hadoop\index.html</code>，点击进入core-default.xml</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316205007.png"  alt="" />
+      </p>
+<p>可以看到，<code>hadoop.tmp.dir</code>的默认配置为<code>/tmp/hadoop-${user.name}</code>，即在Linux的临时文件下保存，所以我们要修改配置</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316205112.png"  alt="" />
+      </p>
+<p>要记住：</p>
+<ul>
+<li><code>core-default.xml</code>中的所有配置都可以在<code>core-site.xml</code> 中进行配置。</li>
+<li><code>hdsf-default.xml</code>中的所有配置都可以在<code>hdfs-site.xml</code> 中进行配置。</li>
+</ul>
+<p>8、配置hdfs-site.xml</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 hadoop]<span class="comment"># pwd</span></span><br><span class="line">/opt/hadoop-2.6.5/etc/hadoop</span><br><span class="line">[root@layne1 hadoop]<span class="comment"># vim hdfs-site.xml</span></span><br></pre></td></tr></table></div></figure>
+<p>加入以下内容：</p>
+<figure class="highlight xml"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 指定block副本数 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.replication<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">value</span>&gt;</span>1<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 指定secondarynamenode所在的位置 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.namenode.secondary.http-address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">value</span>&gt;</span>layne1:50090<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></div></figure>
+<p>9、配置slaves</p>
+<p>这里是配置datanode结点</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 hadoop]<span class="comment"># pwd</span></span><br><span class="line">/opt/hadoop-2.6.5/etc/hadoop</span><br><span class="line">[root@layne1 hadoop]<span class="comment"># vim slaves</span></span><br><span class="line">layne1</span><br></pre></td></tr></table></div></figure>
+<p>即在<code>slaves</code>输入<code>layne1</code>。</p>
+<p>10、格式化hadoop</p>
+<p>下面可以看到，第7步配置的临时目录位置不存在</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 hadoop]<span class="comment"># ls /var/layne/hadoop/pseudo</span></span><br><span class="line">ls: cannot access /var/layne/hadoop/pseudo: No such file or directory</span><br></pre></td></tr></table></div></figure>
+<p>现在输入</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs  namenode  -format</span><br></pre></td></tr></table></div></figure>
+<p>再次查看日志</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 hadoop]<span class="comment"># ls /var/layne/hadoop/pseudo</span></span><br><span class="line">dfs</span><br><span class="line">[root@layne1 hadoop]<span class="comment"># cd /var/layne/hadoop/pseudo/dfs</span></span><br><span class="line">[root@layne1 dfs]<span class="comment"># ls</span></span><br><span class="line">name</span><br><span class="line">[root@layne1 dfs]<span class="comment"># cd name</span></span><br><span class="line">[root@layne1 name]<span class="comment"># ls</span></span><br><span class="line">current</span><br><span class="line">[root@layne1 name]<span class="comment"># cd current</span></span><br><span class="line">[root@layne1 current]<span class="comment"># ls</span></span><br><span class="line">fsimage_0000000000000000000  fsimage_0000000000000000000.md5  seen_txid  VERSION</span><br><span class="line">[root@layne1 current]<span class="comment"># pwd</span></span><br><span class="line">/var/layne/hadoop/pseudo/dfs/name/current</span><br></pre></td></tr></table></div></figure>
+<p>11、启动hadoop</p>
+<p>输入以下命令启动hadoop</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start-dfs.sh</span><br></pre></td></tr></table></div></figure>
+<p>启动过程如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 current]<span class="comment"># start-dfs.sh</span></span><br><span class="line">21/03/16 21:19:40 WARN util.NativeCodeLoader: Unable to load native-hadoop library <span class="keyword">for</span> your platform... using <span class="built_in">builtin</span>-java classes <span class="built_in">where</span> applicable</span><br><span class="line">Starting namenodes on [layne1]</span><br><span class="line">layne1: starting namenode, logging to /opt/hadoop-2.6.5/logs/hadoop-root-namenode-layne1.out</span><br><span class="line">layne1: starting datanode, logging to /opt/hadoop-2.6.5/logs/hadoop-root-datanode-layne1.out</span><br><span class="line">Starting secondary namenodes [layne1]</span><br><span class="line">layne1: starting secondarynamenode, logging to /opt/hadoop-2.6.5/logs/hadoop-root-secondarynamenode-layne1.out</span><br><span class="line">21/03/16 21:20:15 WARN util.NativeCodeLoader: Unable to load native-hadoop library <span class="keyword">for</span> your platform... using <span class="built_in">builtin</span>-java classes <span class="built_in">where</span> applicable</span><br></pre></td></tr></table></div></figure>
+<p>12、查看hadoop进程</p>
+<p>输入jps</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 current]<span class="comment"># jps</span></span><br><span class="line">1623 SecondaryNameNode</span><br><span class="line">1467 DataNode</span><br><span class="line">1389 NameNode</span><br><span class="line">1741 Jps</span><br></pre></td></tr></table></div></figure>
+<p>说明进程都正常启动了，然后网页访问：</p>
+<p><span class="exturl"><a class="exturl__link"   href="http://layne1:50070"  target="_blank" rel="noopener">http://layne1:50070</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316212658.png"  alt="" />
+      </p>
+<p>进入文件系统</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316213025.png"  alt="" />
+      </p>
+<p>下图可以看出，文件系统为空</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316213104.png"  alt="" />
+      </p>
+<p>13、上传文件</p>
+<p>我们试着上传一个文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 apps]<span class="comment"># ll</span></span><br><span class="line">total 387548</span><br><span class="line">-rw-r--r-- 1 root root 199635269 Mar 16 19:30 hadoop-2.6.5.tar.gz</span><br><span class="line">-rw-r--r-- 1 root root 179505388 Feb 23 13:34 jdk-8u221-linux-x64.rpm</span><br><span class="line">-rw-r--r-- 1 root root  17699306 Feb 23 13:34 zookeeper-3.4.6.tar.gz</span><br><span class="line">[root@layne1 apps]<span class="comment"># hdfs dfs -put hadoop-2.6.5.tar.gz /</span></span><br><span class="line">21/03/16 21:29:03 WARN util.NativeCodeLoader: Unable to load native-hadoop library <span class="keyword">for</span> your platform... using <span class="built_in">builtin</span>-java classes <span class="built_in">where</span> applicable</span><br></pre></td></tr></table></div></figure>
+<p>现在可以看到上传的文件</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316213104.png"  alt="" />
+      </p>
+<p>点击文件名称，可以看到该文件被分为两个block块，第一个block为128M（没有指定block，默认大小为128M）</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316213303.png"  alt="" />
+      </p>
+<p>然后，我们自己生成一个文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 apps]<span class="comment"># pwd</span></span><br><span class="line">/opt/apps</span><br><span class="line">[root@layne1 apps]<span class="comment"># for i in `seq 100000`; do echo "hello layne $i" &gt;&gt; hh.txt; done</span></span><br></pre></td></tr></table></div></figure>
+<p>上传生成的<code>hh.txx</code>文件，文件block块大小为1048576字节，重复数为1：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -D dfs.blocksize=1048576 -D dfs.replication=1 -put hh.txt /</span><br></pre></td></tr></table></div></figure>
+<p>再次刷新，就能看到上传的文件了。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210316215355.png"  alt="" />
+      </p>
+<p>从上图可以看出，刚刚上传的<code>hh.txx</code>文件块大小为1M，这是因为<code>1024x1024=1048576</code>，<code>dfs.blocksize</code>单位是字节，即bytes，<code>1KB=1024bytes</code>，所以<code>1024x1024bytes=1048576bytes=1024KB=1M</code></p>
+<p><code>-D dfs.replication=1</code>指定副本数为1，如果不指定，默认按照第8步<code>dfs.replication</code>配置的副本数。一般来说，可以将不重要的文件的副本数设置小一点。</p>
+<p>在上传文件时，<code>-D dfs.blocksize</code>和<code>-D dfs.replication</code>可以不指定，所以上传文件的格式为：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs dfs -put 被上传的文件全路径名或相对路径名 放置的hdfs目录</span><br></pre></td></tr></table></div></figure>
+<p>比如，<code>hdfs dfs -put test.txt /a/b</code>，就是将当前目录下的test.txt文件，上传到hdfs的<code>a/b</code>目录下，这个前提是<code>a/b</code>目录一定要存在。</p>
+<p>14、查看hdfs中的文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 apps]<span class="comment"># hdfs dfs -ls /</span></span><br><span class="line">21/03/16 21:55:34 WARN util.NativeCodeLoader: Unable to load native-hadoop library <span class="keyword">for</span> your platform... using <span class="built_in">builtin</span>-java classes <span class="built_in">where</span> applicable</span><br><span class="line">Found 2 items</span><br><span class="line">-rw-r--r--   1 root supergroup  199635269 2021-03-16 21:29 /hadoop-2.6.5.tar.gz</span><br><span class="line">-rw-r--r--   1 root supergroup    1788895 2021-03-16 21:53 /hh.txt</span><br></pre></td></tr></table></div></figure>
+<p>当然，也可以在浏览器中查看。</p>
+<p>15、查看hadoop存储目录</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 dfs]<span class="comment"># pwd</span></span><br><span class="line">/var/layne/hadoop/pseudo/dfs</span><br><span class="line">[root@layne1 dfs]<span class="comment"># ls</span></span><br><span class="line">data  name  namesecondary</span><br></pre></td></tr></table></div></figure>
+<p>查看生成的块</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 subdir0]<span class="comment"># pwd</span></span><br><span class="line">/var/layne/hadoop/pseudo/dfs/data/current/BP-603651742-192.168.218.51-1615900416149/current/finalized/subdir0/subdir0</span><br><span class="line">[root@layne1 subdir0]<span class="comment"># ll -h</span></span><br><span class="line">total 194M</span><br><span class="line">-rw-r--r-- 1 root root 128M Mar 16 21:29 blk_1073741825</span><br><span class="line">-rw-r--r-- 1 root root 1.1M Mar 16 21:29 blk_1073741825_1001.meta</span><br><span class="line">-rw-r--r-- 1 root root  63M Mar 16 21:29 blk_1073741826</span><br><span class="line">-rw-r--r-- 1 root root 500K Mar 16 21:29 blk_1073741826_1002.meta</span><br><span class="line">-rw-r--r-- 1 root root 1.0M Mar 16 21:53 blk_1073741827</span><br><span class="line">-rw-r--r-- 1 root root 8.1K Mar 16 21:53 blk_1073741827_1003.meta</span><br><span class="line">-rw-r--r-- 1 root root 723K Mar 16 21:53 blk_1073741828</span><br><span class="line">-rw-r--r-- 1 root root 5.7K Mar 16 21:53 blk_1073741828_1004.meta</span><br></pre></td></tr></table></div></figure>
+<p>查看datanode相关信息</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@layne1 current]<span class="comment"># pwd</span></span><br><span class="line">/var/layne/hadoop/pseudo/dfs/data/current</span><br><span class="line">[root@layne1 current]<span class="comment"># cat VERSION </span></span><br><span class="line"><span class="comment">#Tue Mar 16 21:20:02 CST 2021</span></span><br><span class="line">storageID=DS-bd5deff9-13b7-4c66-bf6f-b044da77d527</span><br><span class="line">clusterID=CID-18a01d3b-2057-4277-9220-3476626cd9a8</span><br><span class="line">cTime=0</span><br><span class="line">datanodeUuid=6e4f5a59-386e-48d2-a4dd-aa4c36b723e0</span><br><span class="line">storageType=DATA_NODE</span><br><span class="line">layoutVersion=-56</span><br></pre></td></tr></table></div></figure>
+<p>16、关闭hadoop</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stop-dfs.sh</span><br></pre></td></tr></table></div></figure>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/03/16/191640/">https://wxler.gitee.io/2021/03/16/191640/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/hadoop/">hadoop</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/03/17/200228/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">hadoop完全分布式集群搭建</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/03/08/203219/"><span class="paginator-prev__text">一致性算法2PC、3PC、Paxos、Raft、ZAB</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#基础设施"><span class="toc-text">
+          基础设施</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#操作步骤"><span class="toc-text">
+          操作步骤</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">98</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">18</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">52</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
