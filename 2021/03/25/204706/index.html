@@ -1,0 +1,631 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="Scala之模式匹配">
+<meta property="og:type" content="article">
+<meta property="og:title" content="六、Scala之模式匹配">
+<meta property="og:url" content="https://wxler.gitee.io/2021/03/25/204706/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="Scala之模式匹配">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210325205655.png">
+<meta property="article:published_time" content="2021-03-25T12:47:06.000Z">
+<meta property="article:modified_time" content="2021-03-26T07:40:16.316Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="scala">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210325205655.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>六、Scala之模式匹配 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/03/25/204706/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">六、Scala之模式匹配</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-25</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-03-26</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">4.1k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">32分</span></span></div></header><div class="post-body"><p>Scala之模式匹配</p>
+<a id="more"></a>
+<p><strong>文章目录</strong></p>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-match">1. match</a></li>
+<li><a href="#2-%E5%AE%88%E5%8D%AB">2. 守卫</a></li>
+<li><a href="#3-%E6%A8%A1%E5%BC%8F%E4%B8%AD%E7%9A%84%E5%8F%98%E9%87%8F">3. 模式中的变量</a></li>
+<li><a href="#4-%E7%B1%BB%E5%9E%8B%E5%8C%B9%E9%85%8D">4. 类型匹配</a></li>
+<li><a href="#5-%E5%8C%B9%E9%85%8D%E6%95%B0%E7%BB%84">5. 匹配数组</a></li>
+<li><a href="#6-%E5%8C%B9%E9%85%8D%E5%88%97%E8%A1%A8">6. 匹配列表</a></li>
+<li><a href="#7-%E5%8C%B9%E9%85%8D%E5%85%83%E7%BB%84">7. 匹配元组</a></li>
+<li><a href="#8-%E5%AF%B9%E8%B1%A1%E5%8C%B9%E9%85%8D">8. 对象匹配</a></li>
+<li><a href="#9-%E5%8F%98%E9%87%8F%E5%A3%B0%E6%98%8E%E4%B8%AD%E7%9A%84%E6%A8%A1%E5%BC%8F">9. 变量声明中的模式</a></li>
+<li><a href="#10-for%E8%A1%A8%E8%BE%BE%E5%BC%8F%E4%B8%AD%E7%9A%84%E6%A8%A1%E5%BC%8F">10. for表达式中的模式</a></li>
+<li><a href="#11-%E6%A0%B7%E4%BE%8B%E6%A8%A1%E6%9D%BF%E7%B1%BB">11. 样例(模板)类</a></li>
+<li><a href="#12-case%E8%AF%AD%E5%8F%A5%E7%9A%84%E4%B8%AD%E7%BD%AE%E7%BC%80%E8%A1%A8%E8%BE%BE%E5%BC%8F">12. case语句的中置(缀)表达式</a></li>
+<li><a href="#13-%E5%8C%B9%E9%85%8D%E5%B5%8C%E5%A5%97%E7%BB%93%E6%9E%84%E6%A1%88%E4%BE%8B%E8%AF%B4%E6%98%8E">13. 匹配嵌套结构【案例说明】</a></li>
+</ul>
+</p>
+
+        <h2 id="1-match"   >
+          <a href="#1-match" class="heading-link"><i class="fas fa-link"></i></a>1. match</h2>
+      
+<p>Scala中的模式匹配类似于Java中的switch语法，但是更加强大。</p>
+<p>模式匹配语法中，采用match关键字声明，每个分支采用case关键字进行声明，当需要匹配时，会从第一个case分支开始，如果匹配成功，那么执行对应的逻辑代码，如果匹配不成功，继续执行下一个分支进行判断。如果所有case都不匹配，那么会执行case _ 分支，类似于Java中default语句。</p>
+<p><strong>Java Switch的简单回顾</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java</span></span><br><span class="line">int i = <span class="number">1</span>;</span><br><span class="line">switch ( i ) &#123;</span><br><span class="line"><span class="keyword">case</span> <span class="number">0</span> :</span><br><span class="line">	<span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">case</span> <span class="number">1</span> :</span><br><span class="line">	<span class="keyword">break</span>;</span><br><span class="line"><span class="keyword">default</span> :</span><br><span class="line">	<span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p><strong>Scala的模式匹配</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 模式匹配，类似于Java的switch语法</span></span><br><span class="line"><span class="keyword">val</span> oper = '#'</span><br><span class="line"><span class="keyword">val</span> n1 = <span class="number">20</span></span><br><span class="line"><span class="keyword">val</span> n2 = <span class="number">10</span></span><br><span class="line"><span class="keyword">var</span> res = <span class="number">0</span></span><br><span class="line">oper <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> '+' =&gt; res = n1 + n2</span><br><span class="line">    <span class="keyword">case</span> '-' =&gt; res = n1 - n2</span><br><span class="line">    <span class="keyword">case</span> '*' =&gt; res = n1 * n2</span><br><span class="line">    <span class="keyword">case</span> '/' =&gt; res = n1 / n2</span><br><span class="line">    <span class="keyword">case</span> _ =&gt; println(<span class="string">"oper error"</span>)</span><br><span class="line">&#125;</span><br><span class="line">println(<span class="string">"res="</span> + res)</span><br></pre></td></tr></table></div></figure>
+<p><strong>match的细节和注意事项</strong></p>
+<ol>
+<li>如果所有case都不匹配，那么会执行case _ 分支，类似于Java中default语句</li>
+<li>如果所有case都不匹配，又没有写case _ 分支，那么会抛出MatchError</li>
+<li>每个case中，不用break语句，<strong>自动中断case</strong></li>
+<li>可以在match中使用其它类型，而不仅仅是字符</li>
+</ol>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210325205655.png"  alt="" />
+      </p>
+<ol start="5">
+<li>=&gt; 等价于 java swtich 的 <code>:</code></li>
+<li>=&gt; 后面的代码块到下一个 case， 是作为一个整体执行，可以使用{} 扩起来，也可以不扩。</li>
+</ol>
+
+        <h2 id="2-守卫"   >
+          <a href="#2-守卫" class="heading-link"><i class="fas fa-link"></i></a>2. 守卫</h2>
+      
+<p>如果想要表达<strong>匹配某个范围的数据</strong>，就需要在模式匹配中增加条件守卫</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (ch &lt;- <span class="string">"+-3!"</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> sign = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> digit = <span class="number">0</span></span><br><span class="line">    ch <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> '+' =&gt; sign = <span class="number">1</span></span><br><span class="line">        <span class="keyword">case</span> '-' =&gt; sign = <span class="number">-1</span></span><br><span class="line">        <span class="comment">// 说明..</span></span><br><span class="line">        <span class="keyword">case</span> _ <span class="keyword">if</span> ch.toString.equals(<span class="string">"3"</span>) =&gt; digit = <span class="number">3</span></span><br><span class="line">        <span class="keyword">case</span> _ =&gt; sign = <span class="number">2</span></span><br><span class="line">    &#125;</span><br><span class="line"> println(<span class="string">"ch="</span> + ch + <span class="string">" "</span> + <span class="string">"sign="</span> + sign + <span class="string">" "</span> + <span class="string">"digit="</span> + digit)</span><br></pre></td></tr></table></div></figure>
+<p>输出</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ch=+ sign=1 digit=0</span><br><span class="line">ch=- sign=-1 digit=0</span><br><span class="line">ch=3 sign=0 digit=3</span><br><span class="line">ch=! sign=2 digit=0</span><br></pre></td></tr></table></div></figure>
+<p>再来看一个例子</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (ch &lt;- <span class="string">"+-3!"</span>) &#123;</span><br><span class="line">    <span class="keyword">var</span> sign = <span class="number">0</span></span><br><span class="line">    <span class="keyword">var</span> digit = <span class="number">0</span></span><br><span class="line">    ch <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> _ =&gt; digit = <span class="number">3</span> <span class="comment">//匹配到这个，后面的就不执行了</span></span><br><span class="line">        <span class="keyword">case</span> '+' =&gt; sign = <span class="number">1</span></span><br><span class="line">        <span class="keyword">case</span> '-' =&gt; sign = <span class="number">-1</span></span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"ch="</span> + ch + <span class="string">" "</span> + <span class="string">"sign="</span> + sign + <span class="string">" "</span> + <span class="string">"digit="</span> + digit)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>输出：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ch=+ sign=0 digit=3</span><br><span class="line">ch=- sign=0 digit=3</span><br><span class="line">ch=3 sign=0 digit=3</span><br><span class="line">ch=! sign=0 digit=3</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="3-模式中的变量"   >
+          <a href="#3-模式中的变量" class="heading-link"><i class="fas fa-link"></i></a>3. 模式中的变量</h2>
+      
+<p>如果在case关键字后跟变量名，那么match前表达式的值会赋给那个变量</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> ch = '<span class="type">V</span>'</span><br><span class="line">ch <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> '+' =&gt; println(<span class="string">"ok~"</span>)</span><br><span class="line">    <span class="keyword">case</span> mychar =&gt; println(<span class="string">"ok~"</span> + mychar) <span class="comment">//这一个执行，输出：ok~V</span></span><br><span class="line">    <span class="keyword">case</span> _ =&gt; println(<span class="string">"ok~~"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>match是一个表达式，因此有返回值</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> ch1 = '+'</span><br><span class="line"><span class="keyword">val</span> res = ch1 <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> '+' =&gt; ch1 + <span class="string">"hello"</span></span><br><span class="line">    <span class="keyword">case</span> '-' =&gt; println(<span class="string">"12311"</span>)</span><br><span class="line">&#125;</span><br><span class="line">println(res)<span class="comment">//输出 +hello</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="4-类型匹配"   >
+          <a href="#4-类型匹配" class="heading-link"><i class="fas fa-link"></i></a>4. 类型匹配</h2>
+      
+<p>可以匹配对象的任意类型，这样做避免了使用isInstanceOf和asInstanceOf方法</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 类型匹配, obj 可能有如下的类型</span></span><br><span class="line"><span class="keyword">val</span> a = <span class="number">7</span></span><br><span class="line"><span class="keyword">val</span> obj = <span class="keyword">if</span> (a == <span class="number">1</span>) <span class="number">1</span></span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">2</span>) <span class="string">"2"</span></span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">3</span>) <span class="type">BigInt</span>(<span class="number">3</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">4</span>) <span class="type">Map</span>(<span class="string">"aa"</span> -&gt; <span class="number">1</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">5</span>) <span class="type">Map</span>(<span class="number">1</span> -&gt; <span class="string">"aa"</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">6</span>) <span class="type">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">7</span>) <span class="type">Array</span>(<span class="string">"aa"</span>, <span class="number">1</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (a == <span class="number">8</span>) <span class="type">Array</span>(<span class="string">"aa"</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">//1. 根据Object的类型来匹配</span></span><br><span class="line"><span class="comment">// a:Int是一个变量，如果匹配到了，会把obj赋值给a</span></span><br><span class="line"><span class="keyword">val</span> result = obj <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> a: <span class="type">Int</span> =&gt; a</span><br><span class="line">    <span class="keyword">case</span> b: <span class="type">Map</span>[<span class="type">String</span>, <span class="type">Int</span>] =&gt; <span class="string">"对象是一个字符串-数字的Map集合"</span></span><br><span class="line">    <span class="keyword">case</span> c: <span class="type">Map</span>[<span class="type">Int</span>, <span class="type">String</span>] =&gt; <span class="string">"对象是一个数字-字符串的Map集合"</span></span><br><span class="line">    <span class="keyword">case</span> d: <span class="type">Array</span>[<span class="type">String</span>] =&gt; <span class="string">"对象是一个字符串数组"</span></span><br><span class="line">    <span class="keyword">case</span> e: <span class="type">Array</span>[<span class="type">Int</span>] =&gt; <span class="string">"对象是一个数字数组"</span></span><br><span class="line">    <span class="keyword">case</span> f: <span class="type">BigInt</span> =&gt; <span class="type">Int</span>.<span class="type">MaxValue</span></span><br><span class="line">    <span class="keyword">case</span> _ =&gt; <span class="string">"啥也不是"</span></span><br><span class="line">&#125;</span><br><span class="line">println(result) <span class="comment">//输出：啥也不是</span></span><br></pre></td></tr></table></div></figure>
+<p>类型匹配注意事项</p>
+<ol>
+<li>Map[String, Int] 和Map[Int, String]是两种不同的类型，其它类推。</li>
+<li>在进行类型匹配时，<strong>编译器会预先检测是否有可能的匹配</strong>，如果没有则报错.</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> obj = <span class="number">10</span></span><br><span class="line"><span class="comment">// val obj=Map("hell0"-&gt;12)</span></span><br><span class="line"><span class="keyword">val</span> result = obj <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> a: <span class="type">Int</span> =&gt; a</span><br><span class="line">    <span class="keyword">case</span> b: <span class="type">Map</span>[<span class="type">String</span>, <span class="type">Int</span>] =&gt; <span class="string">"Map集合"</span></span><br><span class="line">    <span class="keyword">case</span> _ =&gt; <span class="string">"啥也不是"</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//说明：编译器报错</span></span><br></pre></td></tr></table></div></figure>
+<ol start="3">
+<li>一个说明:</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> result = obj <span class="keyword">match</span> &#123;</span><br><span class="line"><span class="keyword">case</span> i : <span class="type">Int</span> =&gt; i</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>上述代码中的 <code>case i : Int =&gt; i</code>表示 将 <code>i = obj</code> (其它类推)，然后再判断类型</p>
+<ol start="4">
+<li>如果 <code>case _</code> 出现在match 中间，则表示隐藏变量名，即不使用，而不是表示默认匹配，如下所示</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 类型匹配, obj 可能有如下的类型</span></span><br><span class="line"><span class="keyword">val</span> a = <span class="number">7</span></span><br><span class="line"><span class="keyword">val</span> obj = <span class="keyword">if</span>(a == <span class="number">1</span>) <span class="number">1</span></span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(a == <span class="number">2</span>) <span class="string">"2"</span></span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(a == <span class="number">3</span>) <span class="type">BigInt</span>(<span class="number">3</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(a == <span class="number">4</span>) <span class="type">Map</span>(<span class="string">"aa"</span> -&gt; <span class="number">1</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(a == <span class="number">5</span>) <span class="type">Map</span>(<span class="number">1</span> -&gt; <span class="string">"aa"</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(a == <span class="number">6</span>) <span class="type">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(a == <span class="number">7</span>) <span class="type">Array</span>(<span class="string">"aa"</span>, <span class="number">1</span>)</span><br><span class="line"><span class="keyword">else</span> <span class="keyword">if</span>(a == <span class="number">8</span>) <span class="type">Array</span>(<span class="string">"aa"</span>)</span><br><span class="line"><span class="keyword">val</span> result = obj <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="keyword">case</span> a : <span class="type">Int</span> =&gt; a</span><br><span class="line">    <span class="keyword">case</span> _ : <span class="type">BigInt</span> =&gt; <span class="type">Int</span>.<span class="type">MaxValue</span> <span class="comment">//看这里!</span></span><br><span class="line">    <span class="keyword">case</span> b : <span class="type">Map</span>[<span class="type">String</span>, <span class="type">Int</span>] =&gt; <span class="string">"对象是一个字符串-数字的Map集合"</span></span><br><span class="line">    <span class="keyword">case</span> c : <span class="type">Map</span>[<span class="type">Int</span>, <span class="type">String</span>] =&gt; <span class="string">"对象是一个数字-字符串的Map集合"</span></span><br><span class="line">    <span class="keyword">case</span> d : <span class="type">Array</span>[<span class="type">String</span>] =&gt; <span class="string">"对象是一个字符串数组"</span></span><br><span class="line">    <span class="keyword">case</span> e : <span class="type">Array</span>[<span class="type">Int</span>] =&gt; <span class="string">"对象是一个数字数组"</span></span><br><span class="line">    <span class="keyword">case</span> _ =&gt; <span class="string">"啥也不是"</span></span><br><span class="line">&#125;</span><br><span class="line">println(result)</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="5-匹配数组"   >
+          <a href="#5-匹配数组" class="heading-link"><i class="fas fa-link"></i></a>5. 匹配数组</h2>
+      
+<ol>
+<li>Array(0) 匹配只有一个元素且为0的数组。</li>
+<li>Array(x,y) 匹配数组有两个元素，并将两个元素赋值为x和y。当然可以依次类推Array(x,y,z) 匹配数组有3个元素的等等…</li>
+<li><code>Array(0,_*)</code>匹配数组以0开始</li>
+</ol>
+<p>应用案例</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (arr &lt;- <span class="type">Array</span>(<span class="type">Array</span>(<span class="number">0</span>), <span class="type">Array</span>(<span class="number">1</span>, <span class="number">0</span>), <span class="type">Array</span>(<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>),</span><br><span class="line">                  <span class="type">Array</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>), <span class="type">Array</span>(<span class="number">1</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">1</span>))) &#123;</span><br><span class="line">    <span class="keyword">val</span> result = arr <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="type">Array</span>(<span class="number">0</span>) =&gt; <span class="string">"0"</span></span><br><span class="line">        <span class="keyword">case</span> <span class="type">Array</span>(x, y) =&gt; x + <span class="string">"="</span> + y</span><br><span class="line">        <span class="keyword">case</span> <span class="type">Array</span>(<span class="number">0</span>, _*) =&gt; <span class="string">"以0开头和数组"</span></span><br><span class="line">        <span class="keyword">case</span> _ =&gt; <span class="string">"什么集合都不是"</span></span><br><span class="line">    &#125;</span><br><span class="line">    println(<span class="string">"result = "</span> + result)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>输出</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">result = 0</span><br><span class="line">result = 1=0</span><br><span class="line">result = 以0开头和数组</span><br><span class="line">result = 什么集合都不是</span><br><span class="line">result = 什么集合都不是</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="6-匹配列表"   >
+          <a href="#6-匹配列表" class="heading-link"><i class="fas fa-link"></i></a>6. 匹配列表</h2>
+      
+<p>案例</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (list &lt;- <span class="type">Array</span>(<span class="type">List</span>(<span class="number">0</span>), <span class="type">List</span>(<span class="number">1</span>, <span class="number">0</span>), <span class="type">List</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="type">List</span>(<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>))) &#123;</span><br><span class="line">    <span class="keyword">val</span> result = list <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span> :: <span class="type">Nil</span> =&gt; <span class="string">"0"</span> <span class="comment">//返回只有一个0的列表</span></span><br><span class="line">        <span class="keyword">case</span> x :: y :: <span class="type">Nil</span> =&gt; x + <span class="string">" "</span> + y <span class="comment">//匹配两个元素列表</span></span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span> :: tail =&gt; <span class="string">"0 ..."</span> <span class="comment">//以0开头，后面有任意个元素，tail表示后面有任意</span></span><br><span class="line">        <span class="keyword">case</span> _ =&gt; <span class="string">"something else"</span></span><br><span class="line">    &#125;</span><br><span class="line">    println(result)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>输出</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0</span><br><span class="line">1 0</span><br><span class="line">0 ...</span><br><span class="line">something else</span><br></pre></td></tr></table></div></figure>
+<p>请思考，如果要匹配 List(88) 这样的只含有一个元素的列表,并原值返回.应该怎么写?</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (list &lt;- <span class="type">Array</span>(<span class="type">List</span>(<span class="number">99</span>), <span class="type">List</span>(<span class="number">88</span>), <span class="type">List</span>(<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>), <span class="type">List</span>(<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>))) &#123;</span><br><span class="line">    <span class="keyword">val</span> result = list <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="number">88</span> :: <span class="type">Nil</span> =&gt; <span class="string">"88"</span> <span class="comment">//返回只有一个88的列表</span></span><br><span class="line">        <span class="keyword">case</span> x :: y :: <span class="type">Nil</span> =&gt; x + <span class="string">" "</span> + y <span class="comment">//匹配两个元素列表</span></span><br><span class="line">        <span class="keyword">case</span> <span class="number">0</span> :: tail =&gt; <span class="string">"0 ..."</span> <span class="comment">//以0开头，后面有任意个元素，tail表示后面有任意</span></span><br><span class="line">        <span class="keyword">case</span> _ =&gt; <span class="string">"something else"</span></span><br><span class="line">    &#125;</span><br><span class="line">    println(result)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>输出</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">something else</span><br><span class="line">88</span><br><span class="line">0 ...</span><br><span class="line">something else</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="7-匹配元组"   >
+          <a href="#7-匹配元组" class="heading-link"><i class="fas fa-link"></i></a>7. 匹配元组</h2>
+      
+<p>案例</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 元组匹配</span></span><br><span class="line"><span class="comment">// 元组匹配</span></span><br><span class="line"><span class="keyword">for</span> (pair &lt;- <span class="type">Array</span>((<span class="number">0</span>, <span class="number">1</span>),(<span class="number">0</span>,<span class="number">1</span>,<span class="number">1</span>), (<span class="number">1</span>, <span class="number">0</span>), (<span class="number">1</span>, <span class="number">1</span>), (<span class="number">1</span>, <span class="number">0</span>, <span class="number">2</span>))) &#123;</span><br><span class="line">    <span class="keyword">val</span> result = pair <span class="keyword">match</span> &#123; <span class="comment">//</span></span><br><span class="line">        <span class="keyword">case</span> (<span class="number">0</span>, _) =&gt; <span class="string">"0 ..."</span> <span class="comment">//匹配以0开头的二元组，但是第二个元素我舍弃，以后我不用它</span></span><br><span class="line">        <span class="keyword">case</span> (y, <span class="number">0</span>) =&gt; y <span class="comment">//匹配一个二元组，但是第二个元素必须是0</span></span><br><span class="line">        <span class="keyword">case</span> _ =&gt; <span class="string">"other"</span> <span class="comment">//.</span></span><br><span class="line">    &#125;</span><br><span class="line">    println(result)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>输出</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">0 ...</span><br><span class="line">other</span><br><span class="line">1</span><br><span class="line">other</span><br><span class="line">other</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="8-对象匹配"   >
+          <a href="#8-对象匹配" class="heading-link"><i class="fas fa-link"></i></a>8. 对象匹配</h2>
+      
+<p>对象匹配，什么才算是匹配呢？，规则如下:</p>
+<ol>
+<li>case中的对象的unapply方法( 对象提取器 )返回Some集合则为匹配成功</li>
+<li>返回none集合则为匹配失败</li>
+</ol>
+<p>应用案例1</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> dataStructure.mapPack</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T9</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line"></span><br><span class="line">    <span class="class"><span class="keyword">object</span> <span class="title">Square</span> </span>&#123;</span><br><span class="line">      <span class="comment">//Option也是一个集合</span></span><br><span class="line">      <span class="comment">//unapply对象提取器，返回Option[Double]类型</span></span><br><span class="line">      <span class="function"><span class="keyword">def</span> <span class="title">unapply</span></span>(z: <span class="type">Double</span>): <span class="type">Option</span>[<span class="type">Double</span>] = <span class="type">Some</span>(math.sqrt(z))</span><br><span class="line"></span><br><span class="line">      <span class="function"><span class="keyword">def</span> <span class="title">apply</span></span>(z: <span class="type">Double</span>): <span class="type">Double</span> = z * z</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 模式匹配使用：</span></span><br><span class="line">    <span class="keyword">val</span> number: <span class="type">Double</span> = <span class="number">36.0</span></span><br><span class="line">    number <span class="keyword">match</span> &#123;</span><br><span class="line">      <span class="comment">//当匹配到case Square(n) 时，会调用Square的unapply方法，这时n会传给unapply的参数z</span></span><br><span class="line">      <span class="comment">//如果unapply方法返回的是Some(6)，则表示匹配成功，同时将这个8 赋给 Square(n)里面的n</span></span><br><span class="line">      <span class="keyword">case</span> <span class="type">Square</span>(n) =&gt; println(n) <span class="comment">//输出6.0</span></span><br><span class="line">      <span class="keyword">case</span> _ =&gt; println(<span class="string">"nothing matched"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>应用案例1的小结</p>
+<ol>
+<li>构建对象时apply会被调用 ，比如 <code>val n1 = Square(5)</code></li>
+<li>当将 Square(n) 写在 case 后时，如<code>case Square(n) =&gt; xxx</code>，会默认调用unapply 方法(对象提取器)</li>
+<li>number 会被 传递给<code>def unapply(z: Double)</code> 的 z 形参</li>
+<li>如果返回的是Some集合，则unapply提取器返回的结果会返回给 n 这个形参</li>
+<li>case中对象的unapply方法(提取器)返回some集合则为匹配成功</li>
+<li>返回none集合则为匹配失败</li>
+</ol>
+<p><strong>应用案例2</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> dataStructure.mapPack</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T11</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="class"><span class="keyword">object</span> <span class="title">Names</span> </span>&#123;</span><br><span class="line">      <span class="function"><span class="keyword">def</span> <span class="title">unapplySeq</span></span>(str: <span class="type">String</span>): <span class="type">Option</span>[<span class="type">Seq</span>[<span class="type">String</span>]] = &#123;</span><br><span class="line">        <span class="keyword">if</span> (str.contains(<span class="string">","</span>)) <span class="type">Some</span>(str.split(<span class="string">","</span>))</span><br><span class="line">        <span class="keyword">else</span> <span class="type">None</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">val</span> namesString = <span class="string">"Alice,Bob,Thomas"</span></span><br><span class="line">    <span class="comment">//说明</span></span><br><span class="line">    namesString <span class="keyword">match</span> &#123;</span><br><span class="line">      <span class="keyword">case</span> <span class="type">Names</span>(first, second, third) =&gt; &#123;</span><br><span class="line">        println(<span class="string">"the string contains three people's names"</span>)</span><br><span class="line">        <span class="comment">// 打印字符串</span></span><br><span class="line">        println(<span class="string">s"<span class="subst">$first</span> <span class="subst">$second</span> <span class="subst">$third</span>"</span>)</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">case</span> _ =&gt; println(<span class="string">"nothing matched"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>输出</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">the string contains three people's names</span><br><span class="line">Alice Bob Thomas</span><br></pre></td></tr></table></div></figure>
+<p>应用案例2的小结</p>
+<ol>
+<li>当case 后面的对象提取器方法的参数为多个，则会默认调用<code>def unapplySeq()</code> 方法</li>
+<li>如果unapplySeq返回是Some，获取其中的值,判断得到的sequence中的元素的个数是否是三个,如果是三个，则把三个元素分别取出，赋值给first，second和third</li>
+<li>其它的规则不变.</li>
+</ol>
+
+        <h2 id="9-变量声明中的模式"   >
+          <a href="#9-变量声明中的模式" class="heading-link"><i class="fas fa-link"></i></a>9. 变量声明中的模式</h2>
+      
+<p>match中每一个case都可以单独提取出来，意思是一样的.</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> (x, y) = (<span class="number">1</span>, <span class="number">2</span>) <span class="comment">//相等于定义了两个变量</span></span><br><span class="line"><span class="keyword">val</span> (q, r) = <span class="type">BigInt</span>(<span class="number">10</span>) /% <span class="number">3</span>  <span class="comment">//说明  q = BigInt(10) / 3 ，r = BigInt(10) % 3</span></span><br><span class="line"><span class="keyword">val</span> arr = <span class="type">Array</span>(<span class="number">1</span>, <span class="number">7</span>, <span class="number">2</span>, <span class="number">9</span>)</span><br><span class="line"><span class="keyword">val</span> <span class="type">Array</span>(first, second, _*) = arr <span class="comment">// 提出arr的前两个元素</span></span><br><span class="line">println(first, second) <span class="comment">//(1,7)</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="10-for表达式中的模式"   >
+          <a href="#10-for表达式中的模式" class="heading-link"><i class="fas fa-link"></i></a>10. for表达式中的模式</h2>
+      
+<p>for循环也可以进行模式匹配</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> map = <span class="type">Map</span>(<span class="string">"A"</span> -&gt; <span class="number">1</span>, <span class="string">"B"</span> -&gt; <span class="number">0</span>, <span class="string">"C"</span> -&gt; <span class="number">3</span>)</span><br><span class="line"><span class="keyword">for</span> ((k, v) &lt;- map) &#123;</span><br><span class="line">    println(k + <span class="string">" -&gt; "</span> + v)</span><br><span class="line">&#125;</span><br><span class="line">println(<span class="string">"================="</span>)</span><br><span class="line"><span class="comment">//说明 匹配val为0的键值对</span></span><br><span class="line"><span class="keyword">for</span> ((k, <span class="number">0</span>) &lt;- map) &#123;</span><br><span class="line">    println(k + <span class="string">" --&gt; "</span> + <span class="number">0</span>)</span><br><span class="line">&#125;</span><br><span class="line">println(<span class="string">"================="</span>)</span><br><span class="line"><span class="comment">//说明 匹配val为0的键值对</span></span><br><span class="line"><span class="keyword">for</span> ((k, v) &lt;- map <span class="keyword">if</span> v == <span class="number">0</span>) &#123;</span><br><span class="line">    println(k + <span class="string">" ---&gt; "</span> + v)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>输出</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">A -&gt; 1</span><br><span class="line">B -&gt; 0</span><br><span class="line">C -&gt; 3</span><br><span class="line">=================</span><br><span class="line">B --&gt; 0</span><br><span class="line">=================</span><br><span class="line">B ---&gt; 0</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="11-样例模板类"   >
+          <a href="#11-样例模板类" class="heading-link"><i class="fas fa-link"></i></a>11. 样例(模板)类</h2>
+      
+<p><strong>引入</strong></p>
+<p>如果一个类中没有任何内容，那么后面的{}可以省略，样例类也是如此</p>
+<p>比如</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span></span>&#123;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//等同于</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Dog</span></span></span><br></pre></td></tr></table></div></figure>
+<p><strong>样例类快速入门</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Amount</span></span></span><br><span class="line"><span class="class"><span class="title">case</span> <span class="title">class</span> <span class="title">Dollar</span>(<span class="params">value: <span class="type">Double</span></span>) <span class="keyword">extends</span> <span class="title">Amount</span></span></span><br><span class="line"><span class="class"><span class="title">case</span> <span class="title">class</span> <span class="title">Currency</span>(<span class="params">value: <span class="type">Double</span>, unit: <span class="type">String</span></span>) <span class="keyword">extends</span> <span class="title">Amount</span></span></span><br><span class="line"><span class="class"><span class="title">case</span> <span class="title">object</span> <span class="title">NoAmount</span> <span class="keyword">extends</span> <span class="title">Amount</span></span></span><br></pre></td></tr></table></div></figure>
+<p>说明: 这里的 Dollar，Currencry, NoAmount  是样例类。</p>
+<p><strong>基本介绍</strong></p>
+<ol>
+<li>样例类仍然是类</li>
+<li>样例类用case关键字进行声明。</li>
+<li>样例类是为模式匹配而优化的类</li>
+<li>构造器中的每一个参数都成为val——除非它被显式地声明为var（不建议这样做）</li>
+<li>在样例类对应的伴生对象中提供apply方法让，你不用new关键字就能构造出相应的对象</li>
+<li>提供unapply方法让模式匹配可以工作</li>
+<li>将自动生成toString、equals、hashCode和copy方法(有点类似模板类，直接给生成，供程序员使用)</li>
+<li>除上述外，样例类和其他类完全一样。你可以添加方法和字段，扩展它们</li>
+</ol>
+<p><strong>样例类最佳实践1:</strong></p>
+<p>当我们有一个类型为Amount的对象时，可以用模式匹配来匹配他的类型，并将属性值绑定到变量(即：把样例类对象的属性值提取到某个变量,该功能有用)</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> dataStructure.mapPack</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T12</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">for</span> (amt &lt;- <span class="type">Array</span>(<span class="type">Dollar</span>(<span class="number">1000.0</span>), <span class="type">Currency</span>(<span class="number">1000.0</span>, <span class="string">"RMB"</span>), <span class="type">NoAmount</span>)) &#123;</span><br><span class="line">      <span class="keyword">val</span> result = amt <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="comment">//说明</span></span><br><span class="line">        <span class="keyword">case</span> <span class="type">Dollar</span>(v) =&gt; <span class="string">"$"</span> + v</span><br><span class="line">        <span class="comment">//说明</span></span><br><span class="line">        <span class="keyword">case</span> <span class="type">Currency</span>(v, u) =&gt; v + <span class="string">" "</span> + u</span><br><span class="line">        <span class="keyword">case</span> <span class="type">NoAmount</span> =&gt; <span class="string">""</span></span><br><span class="line">      &#125;</span><br><span class="line">      println(amt + <span class="string">": "</span> + result)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Amount</span></span></span><br><span class="line"><span class="class"><span class="title">case</span> <span class="title">class</span> <span class="title">Dollar</span>(<span class="params">value: <span class="type">Double</span></span>) <span class="keyword">extends</span> <span class="title">Amount</span></span></span><br><span class="line"><span class="class"><span class="title">case</span> <span class="title">class</span> <span class="title">Currency</span>(<span class="params">value: <span class="type">Double</span>, unit: <span class="type">String</span></span>) <span class="keyword">extends</span> <span class="title">Amount</span></span></span><br><span class="line"><span class="class"><span class="title">case</span> <span class="title">object</span> <span class="title">NoAmount</span> <span class="keyword">extends</span> <span class="title">Amount</span></span></span><br></pre></td></tr></table></div></figure>
+<p>输出</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Dollar(1000.0): <span class="formula">$1000.0</span></span><br><span class="line"><span class="formula">Currency(1000.0,RMB): 1000.0 RMB</span></span><br><span class="line"><span class="formula">NoAmount:</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>样例类最佳实践2:</strong></p>
+<p>样例类的copy方法和带名参数</p>
+<p>copy创建一个与现有对象值相同的新对象，并可以通过带名参数来修改某些属性。</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T13</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> amt = <span class="type">Currency</span>(<span class="number">29.95</span>, <span class="string">"RMB"</span>)</span><br><span class="line">    <span class="keyword">val</span> amt1 = amt.copy() <span class="comment">//创建了一个新的对象，但是属性值一样</span></span><br><span class="line">    <span class="keyword">val</span> amt2 = amt.copy(value = <span class="number">19.95</span>) <span class="comment">//创建了一个新对象，但是修改了货币单位</span></span><br><span class="line">    <span class="keyword">val</span> amt3 = amt.copy(unit = <span class="string">"英镑"</span>)<span class="comment">//..</span></span><br><span class="line">    println(amt)</span><br><span class="line">    println(amt2)</span><br><span class="line">    println(amt3)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Currency</span>(<span class="params">value: <span class="type">Double</span>, unit: <span class="type">String</span></span>) <span class="keyword">extends</span> <span class="title">Amount</span></span></span><br></pre></td></tr></table></div></figure>
+<p>输出</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Currency(29.95,RMB)</span><br><span class="line">Currency(19.95,RMB)</span><br><span class="line">Currency(29.95,英镑)</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="12-case语句的中置缀表达式"   >
+          <a href="#12-case语句的中置缀表达式" class="heading-link"><i class="fas fa-link"></i></a>12. case语句的中置(缀)表达式</h2>
+      
+<p>什么是中置表达式？</p>
+<p><code>1 + 2</code>，这就是一个中置表达式。可以在case语句中使用中置表示法，比如可以匹配一个List序列</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">List</span>(<span class="number">1</span>, <span class="number">3</span>, <span class="number">5</span>, <span class="number">9</span>) <span class="keyword">match</span> &#123; <span class="comment">//修改并测试</span></span><br><span class="line">    <span class="comment">//1.两个元素间::叫中置表达式,至少first，second两个匹配才行.注意：这里的名字随意</span></span><br><span class="line">    <span class="comment">//2.first 匹配第一个 second 匹配第二个, rest 匹配剩余部分List(5, 9)</span></span><br><span class="line">    <span class="keyword">case</span> first :: second :: rest =&gt; &#123;</span><br><span class="line">        println(first +<span class="string">","</span>+ second +<span class="string">","</span>+ rest.length) <span class="comment">//1,3,2</span></span><br><span class="line">        println(rest) <span class="comment">//List(5, 9)</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">case</span> _ =&gt; println(<span class="string">"匹配不到..."</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="13-匹配嵌套结构案例说明"   >
+          <a href="#13-匹配嵌套结构案例说明" class="heading-link"><i class="fas fa-link"></i></a>13. 匹配嵌套结构【案例说明】</h2>
+      
+<p>操作原理类似于正则表达式</p>
+<p><strong>最佳实践案例-商品捆绑打折出售</strong></p>
+<p>现在有一些商品，请使用Scala设计相关的样例类，完成商品捆绑打折出售。要求</p>
+<ol>
+<li>商品捆绑可以是单个商品，也可以是多个商品。</li>
+<li>打折时按照折扣x元进行设计.</li>
+<li>能够统计出所有捆绑商品打折后的最终价格</li>
+</ol>
+<p>（1）创建样例类</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Item</span> <span class="title">//</span> <span class="title">项</span></span></span><br><span class="line"><span class="class"><span class="title">case</span> <span class="title">class</span> <span class="title">Book</span>(<span class="params">description: <span class="type">String</span>, price: <span class="type">Double</span></span>) <span class="keyword">extends</span> <span class="title">Item</span></span></span><br><span class="line"><span class="class"><span class="title">//Bundle</span> <span class="title">捆</span> <span class="title">，</span> <span class="title">discount</span></span>: <span class="type">Double</span> 折扣 ， item: <span class="type">Item</span>* ,</span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Bundle</span>(<span class="params">description: <span class="type">String</span>, discount: <span class="type">Double</span>, item: <span class="type">Item</span>*</span>) <span class="keyword">extends</span> <span class="title">Item</span></span></span><br></pre></td></tr></table></div></figure>
+<p>（2）匹配嵌套结构(就是Bundle的对象)</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//给出案例表示有一捆数，单本漫画（40-10） +文学作品(两本书)（80+30-20）= 30 + 90 = 120.0</span></span><br><span class="line"><span class="keyword">val</span> sale = <span class="type">Bundle</span>(<span class="string">"书籍"</span>, <span class="number">10</span>,  <span class="type">Book</span>(<span class="string">"漫画"</span>, <span class="number">40</span>), <span class="type">Bundle</span>(<span class="string">"文学作品"</span>, <span class="number">20</span>, <span class="type">Book</span>(<span class="string">"《阳关》"</span>, <span class="number">80</span>), <span class="type">Book</span>(<span class="string">"《围城》"</span>, <span class="number">30</span>)))</span><br></pre></td></tr></table></div></figure>
+<p>（3）知识点1-description绑定到第一个Book的描述</p>
+<p>请思考：如何取出“漫画”</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//使用case语句，得到"漫画"</span></span><br><span class="line"><span class="keyword">val</span> res = sale <span class="keyword">match</span>  &#123;</span><br><span class="line">    <span class="comment">//如果我们进行对象匹配时，不想接受某些值，则使用_ 忽略即可，_* 表示所有</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Bundle</span>(_, _, <span class="type">Book</span>(desc, _), _*) =&gt; desc</span><br><span class="line">&#125;</span><br><span class="line">println(<span class="string">"res="</span>+res) <span class="comment">//res=漫画</span></span><br></pre></td></tr></table></div></figure>
+<p>（4）知识点2-通过<code>@</code>表示法将嵌套的值绑定到变量。_*绑定剩余Item到rest</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//得到一个元祖</span></span><br><span class="line"><span class="keyword">val</span> result2 = sale <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="comment">//@ Book(_, _)直接返回整个对象</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Bundle</span>(_, _, art @ <span class="type">Book</span>(_, _), rest @ _*) =&gt; (art, rest)</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">println(result2)</span><br><span class="line">println(<span class="string">"art ="</span> + result2._1)<span class="comment">//art =Book(漫画,40.0)</span></span><br><span class="line"><span class="comment">//外面一层有WrappedArray</span></span><br><span class="line">println(<span class="string">"rest="</span> + result2._2)<span class="comment">//rest=WrappedArray(Bundle(文学作品,20.0,WrappedArray(Book(《阳关》,80.0), Book(《围城》,30.0))))</span></span><br></pre></td></tr></table></div></figure>
+<p>（5）知识点3-不使用_*绑定剩余Item到rest</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> result3 = sale <span class="keyword">match</span> &#123;</span><br><span class="line">    <span class="comment">//说明因为没有使用 _* 即明确说明没有多个Bundle,所以返回的rest，就不是WrappedArray了。</span></span><br><span class="line">    <span class="keyword">case</span> <span class="type">Bundle</span>(_, _, art @ <span class="type">Book</span>(_, _), rest) =&gt; (art, rest)</span><br><span class="line">&#125;</span><br><span class="line">println(result3)</span><br><span class="line">println(<span class="string">"art ="</span> + result3._1) <span class="comment">//art =Book(漫画,40.0)</span></span><br><span class="line"><span class="comment">//外面一层没有WrappedArray了</span></span><br><span class="line">println(<span class="string">"rest="</span> + result3._2) <span class="comment">//rest=Bundle(文学作品,20.0,WrappedArray(Book(《阳关》,80.0), Book(《围城》,30.0)))</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>最佳实践案例-商品捆绑打折出售</strong></p>
+<p>现在有一些商品，请使用Scala设计相关的样例类，完成商品可以捆绑打折出售。<br />
+要求</p>
+<ol>
+<li>商品捆绑可以是单个商品，也可以是多个商品。</li>
+<li>打折时按照折扣xx元进行设计.</li>
+<li>能够统计出所有捆绑商品打折后的最终价格</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">price</span></span>(it: <span class="type">Item</span>): <span class="type">Double</span> = &#123;</span><br><span class="line">    it <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="comment">//如果是一本书，则只关心价格</span></span><br><span class="line">        <span class="keyword">case</span> <span class="type">Book</span>(_, p) =&gt; p</span><br><span class="line">        <span class="comment">//如果是一个Bundle，则获取折扣disc和后面的东西</span></span><br><span class="line">        <span class="comment">//its.map(price) 指 再次调用price方法，递归的去计算，从而获取所有的价格和折扣</span></span><br><span class="line">        <span class="comment">//计算完了之后再求和，并减去折扣</span></span><br><span class="line">        <span class="keyword">case</span> <span class="type">Bundle</span>(_, disc, its @ _*) =&gt; its.map(price).sum - disc</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>最终代码</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> dataStructure.lizi</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T1</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">price</span></span>(it: <span class="type">Item</span>): <span class="type">Double</span> = &#123;</span><br><span class="line">      it <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> <span class="type">Book</span>(_, p) =&gt; p</span><br><span class="line">        <span class="comment">//生成一个新的集合,_是将its中每个循环的元素传递到price中it中。递归操作,分析一个简单的流程</span></span><br><span class="line">        <span class="keyword">case</span> <span class="type">Bundle</span>(_, disc, its@_*) =&gt; its.map(price _).sum - disc</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> sale = <span class="type">Bundle</span>(<span class="string">"书籍"</span>, <span class="number">10</span>, <span class="type">Book</span>(<span class="string">"漫画"</span>, <span class="number">40</span>), <span class="type">Bundle</span>(<span class="string">"文学作品"</span>, <span class="number">20</span>, <span class="type">Book</span>(<span class="string">"《阳关》"</span>, <span class="number">80</span>), <span class="type">Book</span>(<span class="string">"《围城》"</span>, <span class="number">30</span>)))</span><br><span class="line"></span><br><span class="line">    println(<span class="string">"price: "</span>+price(sale))<span class="comment">//120.0，答案正确</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Item</span> <span class="title">//</span> <span class="title">项</span></span></span><br><span class="line"><span class="class"><span class="title">case</span> <span class="title">class</span> <span class="title">Book</span>(<span class="params">description: <span class="type">String</span>, price: <span class="type">Double</span></span>) <span class="keyword">extends</span> <span class="title">Item</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class"><span class="title">//Bundle</span> <span class="title">捆</span> <span class="title">，</span> <span class="title">discount</span></span>: <span class="type">Double</span> 折扣 ， item: <span class="type">Item</span>* ,</span><br><span class="line"><span class="keyword">case</span> <span class="class"><span class="keyword">class</span> <span class="title">Bundle</span>(<span class="params">description: <span class="type">String</span>, discount: <span class="type">Double</span>, item: <span class="type">Item</span>*</span>) <span class="keyword">extends</span> <span class="title">Item</span></span></span><br></pre></td></tr></table></div></figure>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/03/25/204706/">https://wxler.gitee.io/2021/03/25/204706/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/scala/">scala</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/03/26/103737/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">七、Scala之函数式编程（高级部分）</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/03/25/111145/"><span class="paginator-prev__text">hashCode、identityHashCode、equals和==的原理详解</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-match"><span class="toc-text">
+          1. match</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-守卫"><span class="toc-text">
+          2. 守卫</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-模式中的变量"><span class="toc-text">
+          3. 模式中的变量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-类型匹配"><span class="toc-text">
+          4. 类型匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-匹配数组"><span class="toc-text">
+          5. 匹配数组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-匹配列表"><span class="toc-text">
+          6. 匹配列表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-匹配元组"><span class="toc-text">
+          7. 匹配元组</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-对象匹配"><span class="toc-text">
+          8. 对象匹配</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-变量声明中的模式"><span class="toc-text">
+          9. 变量声明中的模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-for表达式中的模式"><span class="toc-text">
+          10. for表达式中的模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-样例模板类"><span class="toc-text">
+          11. 样例(模板)类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-case语句的中置缀表达式"><span class="toc-text">
+          12. case语句的中置(缀)表达式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-匹配嵌套结构案例说明"><span class="toc-text">
+          13. 匹配嵌套结构【案例说明】</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">108</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">19</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">53</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

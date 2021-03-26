@@ -1,0 +1,595 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="Scala之函数式编程（高级部分）">
+<meta property="og:type" content="article">
+<meta property="og:title" content="七、Scala之函数式编程（高级部分）">
+<meta property="og:url" content="https://wxler.gitee.io/2021/03/26/103737/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="Scala之函数式编程（高级部分）">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-03-26T02:37:37.000Z">
+<meta property="article:modified_time" content="2021-03-26T07:42:04.693Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="scala">
+<meta name="twitter:card" content="summary"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>七、Scala之函数式编程（高级部分） | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/03/26/103737/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">七、Scala之函数式编程（高级部分）</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-26</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-03-26</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">4.1k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">29分</span></span></div></header><div class="post-body"><p>Scala之函数式编程（高级部分）</p>
+<a id="more"></a>
+<p><strong>文章目录</strong></p>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-%E5%81%8F%E5%87%BD%E6%95%B0">1. 偏函数</a></li>
+<li><a href="#2-%E4%BD%9C%E4%B8%BA%E5%8F%82%E6%95%B0%E7%9A%84%E5%87%BD%E6%95%B0">2. 作为参数的函数</a></li>
+<li><a href="#3-%E5%8C%BF%E5%90%8D%E5%87%BD%E6%95%B0">3. 匿名函数</a></li>
+<li><a href="#4-%E9%AB%98%E9%98%B6%E5%87%BD%E6%95%B0">4. 高阶函数</a></li>
+<li><a href="#5-%E5%8F%82%E6%95%B0%E7%B1%BB%E5%9E%8B%E6%8E%A8%E6%96%AD">5. 参数(类型)推断</a></li>
+<li><a href="#6-%E9%97%AD%E5%8C%85closure">6. 闭包(closure)</a></li>
+<li><a href="#7-%E5%87%BD%E6%95%B0%E6%9F%AF%E9%87%8C%E5%8C%96curry">7. 函数柯里化(curry)</a></li>
+<li><a href="#8-%E6%8E%A7%E5%88%B6%E6%8A%BD%E8%B1%A1">8. 控制抽象</a></li>
+</ul>
+</p>
+
+        <h2 id="1-偏函数"   >
+          <a href="#1-偏函数" class="heading-link"><i class="fas fa-link"></i></a>1. 偏函数</h2>
+      
+<p>先看一个需求<br />
+给你一个集合<code>val list = List(1, 2, 3, 4, &quot;abc&quot;)</code>，请完成如下要求:</p>
+<ol>
+<li>将集合list中的所有数字+1，并返回一个新的集合</li>
+<li>要求忽略掉 非数字 的元素，即返回的 新的集合 形式为 (2, 3, 4, 5)</li>
+</ol>
+<p><strong>思路1-map+fliter方式</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> list = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="string">"abc"</span>)</span><br><span class="line"><span class="comment">//思路1,使用map+fliter的思路</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f1</span></span>(n:<span class="type">Any</span>): <span class="type">Boolean</span> = &#123;</span><br><span class="line">n.isInstanceOf[<span class="type">Int</span>]</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f2</span></span>(n:<span class="type">Int</span>): <span class="type">Int</span> = &#123;</span><br><span class="line">n + <span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f3</span></span>(n:<span class="type">Any</span>): <span class="type">Int</span> =&#123;</span><br><span class="line">n.asInstanceOf[<span class="type">Int</span>]</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">val</span> list2 = list.filter(f1).map(f3).map(f2)</span><br><span class="line">println(<span class="string">"list2="</span> + list2)</span><br></pre></td></tr></table></div></figure>
+<p><strong>思路2-模式匹配</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">addOne</span></span>( i : <span class="type">Any</span> ): <span class="type">Any</span> = &#123;</span><br><span class="line">    i <span class="keyword">match</span> &#123;</span><br><span class="line">        <span class="keyword">case</span> x: <span class="type">Int</span> =&gt; x + <span class="number">1</span></span><br><span class="line">        <span class="keyword">case</span> _ =&gt;  <span class="comment">//什么都不做</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">val</span> list = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="string">"abc"</span>)</span><br><span class="line"><span class="keyword">val</span> list2 = list.map(addOne)</span><br><span class="line">println(<span class="string">"list2="</span> + list2) <span class="comment">//list2=List(2, 3, 4, 5, ()) ，多了一个()</span></span><br></pre></td></tr></table></div></figure>
+<p>可以看到，上面思路2的输出多了一个<code>()</code></p>
+<p><strong>偏函数</strong></p>
+<ol>
+<li>在对<strong>符合某个条件</strong>，而不是所有情况进行逻辑操作时，使用偏函数是一个不错的选择</li>
+<li>将包在大括号内的一组case语句封装为函数，我们称之为偏函数，它<strong>只对会作用于指定类型的参数或指定范围值的参数实施计算</strong>，超出范围的值会忽略（未必会忽略，这取决于你打算怎样处理）</li>
+<li>偏函数在Scala中是一个特质（trait）：PartialFunction</li>
+</ol>
+<p><strong>使用偏函数解决前面的问题</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> list = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="string">"abc"</span>)</span><br><span class="line"><span class="comment">//说明 定义一个偏函数</span></span><br><span class="line"><span class="comment">//1. PartialFunction[Any, Int] 表示偏函数接收的参数类型是Any，返回类型是Int</span></span><br><span class="line"><span class="comment">//2. isDefinedAt(x: Any)如果返回true,就会调用apply构建对象实例，如果是false，过滤掉</span></span><br><span class="line"><span class="comment">//3. apply 构造器，对传入的值+1并返回</span></span><br><span class="line"><span class="keyword">val</span> addOne3= <span class="keyword">new</span> <span class="type">PartialFunction</span>[<span class="type">Any</span>, <span class="type">Int</span>]  &#123;</span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">isDefinedAt</span></span>(x: <span class="type">Any</span>): <span class="type">Boolean</span> = &#123;</span><br><span class="line">        <span class="comment">//或直接：x.isInstanceOf[Int]</span></span><br><span class="line">        <span class="keyword">if</span> (x.isInstanceOf[<span class="type">Int</span>])</span><br><span class="line">        <span class="literal">true</span></span><br><span class="line">        <span class="keyword">else</span> <span class="literal">false</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">apply</span></span>(v1: <span class="type">Any</span>): <span class="type">Int</span> = v1.asInstanceOf[<span class="type">Int</span>]+<span class="number">1</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//使用偏函数</span></span><br><span class="line"><span class="comment">//说明：如果是使用偏函数，则不能使用map,应该用collect</span></span><br><span class="line"><span class="keyword">val</span> list3 = list.collect(addOne3) <span class="comment">//list3=List(2, 3, 4, 5)</span></span><br><span class="line">println(<span class="string">"list3="</span> + list3)</span><br></pre></td></tr></table></div></figure>
+<p><strong>偏函数的小结</strong></p>
+<ol>
+<li>使用构建特质的实现类(使用的方式是PartialFunction的匿名子类)</li>
+<li>PartialFunction 是个特质(看源码)</li>
+<li>构建偏函数时，参数形式   [Any, Int]是泛型，第一个表示参数类型，第二个表示返回参数</li>
+<li>当使用偏函数时，会遍历集合的所有元素，编译器执行流程时先执行<code>isDefinedAt()</code>如果为true ,就会执行 apply, 构建一个新的Int 对象返回</li>
+<li>执行isDefinedAt() 为false 就过滤掉这个元素，即不构建新的Int对象.</li>
+<li>map函数不支持偏函数，因为map底层的机制就是所有循环遍历，无法过滤处理原来集合的元素</li>
+<li>collect函数支持偏函数</li>
+</ol>
+<p><strong>偏函数简化形式</strong></p>
+<p>声明偏函数，需要重写特质中的方法，有的时候会略显麻烦，而Scala其实提供了简单的方法</p>
+<ol>
+<li>简化形式1</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f2</span></span>: <span class="type">PartialFunction</span>[<span class="type">Any</span>, <span class="type">Int</span>] = &#123;</span><br><span class="line">	<span class="keyword">case</span> i: <span class="type">Int</span> =&gt; i + <span class="number">1</span> <span class="comment">// case语句可以自动转换为偏函数</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">val</span> list2 = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>,<span class="string">"ABC"</span>).collect(f2)</span><br></pre></td></tr></table></div></figure>
+<ol start="2">
+<li>简化形式2</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> list3 = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>,<span class="string">"ABC"</span>).collect&#123; <span class="keyword">case</span> i: <span class="type">Int</span> =&gt; i + <span class="number">1</span> &#125;</span><br><span class="line">println(list3)</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="2-作为参数的函数"   >
+          <a href="#2-作为参数的函数" class="heading-link"><i class="fas fa-link"></i></a>2. 作为参数的函数</h2>
+      
+<p>函数作为一个变量传入到了另一个函数中，那么该<strong>作为参数的函数的类型</strong>是：function1，即：(参数类型) =&gt; 返回类型</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">plus</span></span>(x: <span class="type">Int</span>) = <span class="number">3</span> + x</span><br><span class="line"><span class="comment">//说明 下面三种形式相同</span></span><br><span class="line"><span class="keyword">val</span> result1 = <span class="type">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>).map(plus(_))</span><br><span class="line"><span class="keyword">val</span> result2 = <span class="type">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>).map(plus)</span><br><span class="line"><span class="keyword">val</span> result3 = <span class="type">Array</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>).map(plus _)</span><br><span class="line">println(result1.mkString(<span class="string">","</span>))<span class="comment">//"4,5,6,7"</span></span><br><span class="line">println(result2.mkString(<span class="string">","</span>))<span class="comment">//"4,5,6,7"</span></span><br><span class="line">println(result3.mkString(<span class="string">","</span>)) <span class="comment">//4,5,6,7</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//scala中，函数也是有类型的</span></span><br><span class="line"><span class="comment">//plus _中的_是指：本身不执行这个方法，而是把这个方法的类型或引用拿出来</span></span><br><span class="line">println(<span class="string">"plus的函数类型："</span>+(plus _))</span><br><span class="line"><span class="comment">//效果同上</span></span><br><span class="line">println(<span class="string">"plus的函数类型："</span>+plus)</span><br></pre></td></tr></table></div></figure>
+<ol>
+<li><code>map(plus(_))</code> 中的<code>plus(_)</code>就是将plus这个函数当做一个参数传给了map，<code>_</code>这里代表从集合中遍历出来的一个元素，这个下换线和<code>plus _</code>中的下换线含义是不一样的</li>
+<li><code>plus(_)</code> 这里也可以写成 plus ，表示对 Array(1,2,3,4) 遍历，将每次遍历的元素传给plus的 x</li>
+<li>进行 3 + x 运算后，返回新的Int ，并加入到新的集合 result1中</li>
+<li><code>def map[B, That](f: A =&gt; B)</code>的声明中的<code>f: A =&gt; B</code> 一个函数，A表示传入函数的参数类型，B表示传入函数的返回类型</li>
+</ol>
+
+        <h2 id="3-匿名函数"   >
+          <a href="#3-匿名函数" class="heading-link"><i class="fas fa-link"></i></a>3. 匿名函数</h2>
+      
+<p>没有名字的函数就是匿名函数，可以通过函数表达式来设置匿名函数</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> triple = (x: <span class="type">Double</span>) =&gt; <span class="number">3</span> * x</span><br><span class="line">println(triple(<span class="number">3</span>))</span><br></pre></td></tr></table></div></figure>
+<p>说明<br />
+1)<code>(x: Double) =&gt; 3 * x</code> 就是匿名函数<br />
+2) <code>(x: Double)</code> 是形参列表， =&gt; 是规定语法表示后面是函数体，<code>3 * x</code>就是函数体，如果有多行，可以 {} 换行写.<br />
+3) triple 是指向匿名函数的变量。</p>
+<p>请编写一个匿名函数，可以返回2个整数的和，并输出该匿名函数的类型</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> f1 = (n1: <span class="type">Int</span>, n2: <span class="type">Int</span> ) =&gt; &#123;</span><br><span class="line">    println(<span class="string">"匿名函数被调用"</span>)</span><br><span class="line">    n1 + n2</span><br><span class="line">&#125;</span><br><span class="line">println(<span class="string">"f1类型="</span> + f1)</span><br><span class="line">println(f1(<span class="number">10</span>, <span class="number">30</span>))</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="4-高阶函数"   >
+          <a href="#4-高阶函数" class="heading-link"><i class="fas fa-link"></i></a>4. 高阶函数</h2>
+      
+<p>能够接受函数作为参数的函数，叫做高阶函数 (higher-order function)。可使应用程序更加健壮。</p>
+<p><strong>高阶函数基本使用</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//test 就是一个高阶函数，它可以接收f: Double =&gt;</span></span><br><span class="line"><span class="type">Double</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span></span>(f: <span class="type">Double</span> =&gt; <span class="type">Double</span>, n1: <span class="type">Double</span>) = &#123;</span><br><span class="line">    f(n1)</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//sum 是接收一个Double,返回一个Double</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">sum</span></span>(d: <span class="type">Double</span>): <span class="type">Double</span> = &#123;</span><br><span class="line">    d + d</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">val</span> res = test(sum, <span class="number">6.0</span>)</span><br><span class="line">println(<span class="string">"res="</span> + res)<span class="comment">//res=12.0</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>高阶函数可以返回函数类型</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//minusxy返回了一个匿名函数，该匿名函数是 (y: Int) =&gt; x - y</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">minusxy</span></span>(x: <span class="type">Int</span>) = &#123;</span><br><span class="line">    (y: <span class="type">Int</span>) =&gt; x - y <span class="comment">//匿名函数</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> result3 = minusxy(<span class="number">3</span>)(<span class="number">5</span>)</span><br><span class="line"><span class="comment">/*</span></span><br><span class="line"><span class="comment">    分步写</span></span><br><span class="line"><span class="comment">    val result3 = minusxy(3)</span></span><br><span class="line"><span class="comment">    result3(5)</span></span><br><span class="line"><span class="comment">    println(result3)//输出函数，而不是输出值</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">println(result3)<span class="comment">//2</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>高级函数案例的小结</strong></p>
+<p>说明: <code>def minusxy(x: Int) = (y: Int) =&gt; x - y</code></p>
+<ol>
+<li>函数名为 minusxy</li>
+<li>该函数返回一个匿名函数<code>(y: Int) = &gt; x -y</code></li>
+</ol>
+<p>说明val result3 = minusxy(3)(5)</p>
+<ol>
+<li>minusxy(3)执行<code>minusxy(x: Int)</code>得到<code>(y: Int) =&gt; 3 - y</code> 这个匿名函</li>
+<li>minusxy(3)(5)执行<code>(y: Int) =&gt; x - y</code> 这个匿名函数</li>
+<li>也可以分步执行:<code>val f1 = minusxy(3); val res = f1(90)</code></li>
+</ol>
+
+        <h2 id="5-参数类型推断"   >
+          <a href="#5-参数类型推断" class="heading-link"><i class="fas fa-link"></i></a>5. 参数(类型)推断</h2>
+      
+<p>参数推断省去类型信息（在某些情况下[需要有应用场景]，参数类型是可以推断出来的，如</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> list = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line">list.map()<span class="comment">//这里因为list中所有的数据都是Int，所以map中接收的参数自动推断为Int，同时也可以进行简写</span></span><br></pre></td></tr></table></div></figure>
+<p>map中函数参数类型是可以推断的，同时也可以进行相应的简写。</p>
+<ol>
+<li>参数类型是可以推断时，<strong>可以省略参数类型</strong></li>
+<li>当传入的函数，只有单个参数时，<strong>可以省去括号</strong></li>
+<li>如果变量只在<code>=&gt;</code>右边只出现一次，可以用<code>_</code>来代替</li>
+</ol>
+<p><strong>应用案例</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//分别说明</span></span><br><span class="line"><span class="keyword">val</span> list = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line"><span class="comment">//1. 直接传入一个匿名函数：(x:Int)=&gt;x + 1</span></span><br><span class="line">println(list.map((x:<span class="type">Int</span>)=&gt;x + <span class="number">1</span>)) <span class="comment">//List(2, 3, 4, 5)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//2.因为map已经推断出来接收的参数是Int，所以匿名函数中的Int可以去掉</span></span><br><span class="line">println(list.map((x)=&gt;x + <span class="number">1</span>)) <span class="comment">//List(2, 3, 4, 5)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//3. 当传入的函数，只有单个参数时，()可以去掉</span></span><br><span class="line">println(list.map(x=&gt;x + <span class="number">1</span>)) <span class="comment">// List(2, 3, 4, 5)</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//4.因为x在 =&gt; 的右边只出现了一次，所以可以用_代替，同时左侧的就不需要了</span></span><br><span class="line">println(list.map(_ + <span class="number">1</span>)) <span class="comment">//// List(2, 3, 4, 5)</span></span><br></pre></td></tr></table></div></figure>
+<ol>
+<li>map是一个高阶函数，因此也可以直接传入一个匿名函数，完成map</li>
+<li>当遍历list时，参数类型是可以推断出来的，可以省略数据类型Int，即<code>list.map((x)=&gt;x + 1)</code></li>
+<li>当传入的函数，只有单个参数时，可以省去括号，即<code>list.map(x=&gt;x + 1)</code></li>
+<li>如果变量只在<code>=&gt;</code>右边只出现一次，可以用<code>_</code>来代替<code>list.map(_ + 1)</code></li>
+</ol>
+<p>再来看一个案例</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">f1</span></span>(n1: <span class="type">Int</span>, n2: <span class="type">Int</span>): <span class="type">Int</span> = &#123;</span><br><span class="line">    n1 + n2</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">val</span> list = <span class="type">List</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>)</span><br><span class="line"><span class="comment">//reduce默认是reduceLift</span></span><br><span class="line">println(list.reduce(f1)) <span class="comment">//10</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//写成匿名函数</span></span><br><span class="line">println(list.reduce((n1: <span class="type">Int</span>, n2: <span class="type">Int</span>) =&gt; n1 + n2))<span class="comment">//10</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//因为map已经推断出来接收的参数是Int，所以匿名函数中的Int可以去掉</span></span><br><span class="line">println(list.reduce((n1, n2) =&gt; n1 + n2))<span class="comment">//10</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//因为n1,n2在 =&gt; 的右边只出现了一次，所以可以用_代替，同时左侧的就不需要了</span></span><br><span class="line">println(list.reduce(_+_))<span class="comment">//10</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="6-闭包closure"   >
+          <a href="#6-闭包closure" class="heading-link"><i class="fas fa-link"></i></a>6. 闭包(closure)</h2>
+      
+<p>基本介绍：闭包就是一个函数和与其相关的引用环境组合的一个整体(实体)</p>
+<p><strong>案例演示</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">minusxy</span></span>(x: <span class="type">Int</span>) = (y: <span class="type">Int</span>) =&gt; x - y</span><br><span class="line"><span class="comment">//f函数就是闭包.</span></span><br><span class="line"><span class="keyword">val</span> f = minusxy(<span class="number">20</span>)</span><br><span class="line">println(<span class="string">"f(1)="</span> + f(<span class="number">1</span>)) <span class="comment">// 19</span></span><br><span class="line">println(<span class="string">"f(2)="</span> + f(<span class="number">2</span>)) <span class="comment">// 18</span></span><br></pre></td></tr></table></div></figure>
+<p>代码小结</p>
+<ol>
+<li>第1点<code>(y: Int) =&gt; x – y</code><br />
+返回的是一个匿名函数 ，因为该函数引用到到函数外的 x,那么  该函数和x整体形成一个闭包<br />
+如：这里 <code>val f = minusxy(20)</code> 的f函数就是闭包</li>
+<li>你可以这样理解，返回函数是一个对象，而x就是该对象的一个字段，他们共同形成一个闭包</li>
+<li>当多次调用f时（可以理解多次调用闭包），发现使用的是同一个x, 所以x不变。</li>
+<li>在使用闭包时，主要搞清楚返回函数引用了函数外的哪些变量，因为他们会组合成一个整体(实体),形成一个闭包</li>
+</ol>
+<p><strong>闭包的最佳实践</strong></p>
+<p>请编写一个程序，具体要求如下</p>
+<ol>
+<li>编写一个函数 <code>makeSuffix(suffix: String)</code>  可以接收一个文件后缀名(比如.jpg)，并返回一个闭包</li>
+<li>调用闭包，可以传入一个文件名，如果该文件名没有指定的后缀(比如<code>.jpg</code>) ,则返回 <code>文件名.jpg</code>, 如果已经有<code>.jpg</code>后缀，则返回原文件名。</li>
+<li>要求使用闭包的方式完成<br />
+4)提示： <code>String.endsWith(xx)</code></li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> myfunPack</span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T8</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*</span></span><br><span class="line"><span class="comment">    请编写一个程序，具体要求如下</span></span><br><span class="line"><span class="comment">    1.编写一个函数 makeSuffix(suffix: String)  可以接收一个文件后缀名(比如.jpg)，     并返回一个闭包</span></span><br><span class="line"><span class="comment">    2.调用闭包，可以传入一个文件名，如果该文件名没有指定的后缀(比如.jpg) ,则返回 文件名.jpg , 如果已经有.jpg后缀，则返回原文件名。</span></span><br><span class="line"><span class="comment">     比如 文件名 是 dog =&gt;dog.jpg</span></span><br><span class="line"><span class="comment">     比如  文件名 是 cat.jpg =&gt; cat.jpg</span></span><br><span class="line"><span class="comment">    3.要求使用闭包的方式完成,提示：String.endsWith(xx)</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//使用并测试</span></span><br><span class="line">    <span class="keyword">val</span> f = makeSuffix(<span class="string">".jpg"</span>)</span><br><span class="line">    println(f(<span class="string">"dog.jpg"</span>)) <span class="comment">// dog.jpg</span></span><br><span class="line">    println(f(<span class="string">"cat"</span>)) <span class="comment">// cat.jpg</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">makeSuffix</span></span>(suffix: <span class="type">String</span>) = &#123;</span><br><span class="line">    <span class="comment">//返回一个匿名函数，回使用到suffix</span></span><br><span class="line">    (filename:<span class="type">String</span>) =&gt; &#123;</span><br><span class="line">      <span class="keyword">if</span> (filename.endsWith(suffix)) &#123;</span><br><span class="line">        filename</span><br><span class="line">      &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        filename + suffix</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p><strong>体会闭包的好处</strong></p>
+<p>1)返回的匿名函数和 <code>makeSuffix (suffix string)</code>的 suffix 变量 组合成一个闭包，因为 返回的函数引用到suffix这个变量</p>
+<p>2)我们体会一下闭包的好处，如果使用传统的方法，也可以轻松实现这个功能，但是传统方法需要每次都传入 后缀名，比如 .jpg ,而闭包因为可以保留上次引用的某个值，所以我们传入一次就可以反复使用。</p>
+
+        <h2 id="7-函数柯里化curry"   >
+          <a href="#7-函数柯里化curry" class="heading-link"><i class="fas fa-link"></i></a>7. 函数柯里化(curry)</h2>
+      
+<ol>
+<li>
+<p>函数编程中，<strong>接受多个参数的函数都可以转化为接受单个参数的函数</strong>，这个转化过程就叫柯里化</p>
+</li>
+<li>
+<p>柯里化就是证明了函数只需要一个参数而已。其实我们刚才的学习过程中，已经涉及到了柯里化操作。</p>
+</li>
+<li>
+<p>不用设立柯里化存在的意义这样的命题。柯里化就是以函数为主体这种思想发展的必然产生的结果。(即：柯里化是面向函数思想的必然产生结果)</p>
+</li>
+</ol>
+<p><strong>函数柯里化快速入门</strong></p>
+<p>编写一个函数，接收两个整数，可以返回两个数的乘积，要求:</p>
+<ol>
+<li>使用常规的方式完成</li>
+<li>使用闭包的方式完成</li>
+<li>使用函数柯里化完成<br />
+注意观察编程方式的变化。</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//说明</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">mul</span></span>(x: <span class="type">Int</span>, y: <span class="type">Int</span>) = x * y</span><br><span class="line">println(mul(<span class="number">10</span>, <span class="number">10</span>))</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">mulCurry</span></span>(x: <span class="type">Int</span>) = (y: <span class="type">Int</span>) =&gt; x * y</span><br><span class="line">println(mulCurry(<span class="number">10</span>)(<span class="number">9</span>))</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">mulCurry2</span></span>(x: <span class="type">Int</span>)(y:<span class="type">Int</span>) = x * y</span><br><span class="line">println(mulCurry2(<span class="number">10</span>)(<span class="number">8</span>))</span><br></pre></td></tr></table></div></figure>
+<p><strong>函数柯里化最佳实践</strong></p>
+<p>比较两个字符串在忽略大小写的情况下是否相等，注意，这里是两个任务：</p>
+<ol>
+<li>全部转大写（或小写）</li>
+<li>比较是否相等<br />
+针对这两个操作，我们用一个函数去处理的思想，其实也变成了两个函数处理的思想（柯里化）</li>
+</ol>
+<p>方式1: 简单的方式,使用一个函数完成.</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">eq2</span></span>(s1: <span class="type">String</span>)(s2: <span class="type">String</span>): <span class="type">Boolean</span> = &#123;</span><br><span class="line">    s1.toLowerCase == s2.toLowerCase</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>方式2：使用稍微高级的用法(隐式类)：形式为 str.方法()</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> myfunPack</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T9</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">eq</span></span>(s1: <span class="type">String</span>, s2: <span class="type">String</span>): <span class="type">Boolean</span> = &#123;</span><br><span class="line">      s1.equals(s2)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">implicit</span> <span class="class"><span class="keyword">class</span> <span class="title">TestEq</span>(<span class="params">s: <span class="type">String</span></span>) </span>&#123;</span><br><span class="line">      <span class="comment">//将字符串比较分解成两个任务完成</span></span><br><span class="line">      <span class="comment">//1. checkEq 完成转换大小写</span></span><br><span class="line">      <span class="comment">//2. f函数完成比较任务</span></span><br><span class="line">      <span class="function"><span class="keyword">def</span> <span class="title">checkEq</span></span>(ss: <span class="type">String</span>)(f: (<span class="type">String</span>, <span class="type">String</span>) =&gt; <span class="type">Boolean</span>): <span class="type">Boolean</span> = &#123;</span><br><span class="line">        f(s.toLowerCase, ss.toLowerCase)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> str1=<span class="string">"hello"</span></span><br><span class="line">    println(str1.checkEq(<span class="string">"HELLO"</span>)(eq))  <span class="comment">//true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>看一个上面的简写形式</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> myfunPack</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T9</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">implicit</span> <span class="class"><span class="keyword">class</span> <span class="title">TestEq</span>(<span class="params">s: <span class="type">String</span></span>) </span>&#123;</span><br><span class="line">      <span class="comment">//将字符串比较分解成两个任务完成</span></span><br><span class="line">      <span class="comment">//1. checkEq 完成转换大小写</span></span><br><span class="line">      <span class="comment">//2. f函数完成比较任务</span></span><br><span class="line">      <span class="function"><span class="keyword">def</span> <span class="title">checkEq</span></span>(ss: <span class="type">String</span>)(f: (<span class="type">String</span>, <span class="type">String</span>) =&gt; <span class="type">Boolean</span>): <span class="type">Boolean</span> = &#123;</span><br><span class="line">        f(s.toLowerCase, ss.toLowerCase)</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">val</span> str1 = <span class="string">"hello"</span></span><br><span class="line"></span><br><span class="line">    str1.checkEq(<span class="string">"HELLO"</span>)((s1: <span class="type">String</span>, s2: <span class="type">String</span>) =&gt; s1.equals(s2))</span><br><span class="line"></span><br><span class="line">    <span class="comment">//因为比较的时候会自动推断String类型，所以String可以去掉</span></span><br><span class="line">    str1.checkEq(<span class="string">"HELLO"</span>)((s1, s2) =&gt; s1.equals(s2))</span><br><span class="line"></span><br><span class="line">    <span class="comment">//因为参数s1,s2在=&gt;的右边只出现了一次，所以可以用_代替，同时=&gt;左侧就可以省略不写了</span></span><br><span class="line">    str1.checkEq(<span class="string">"HELLO"</span>)(_.equals(_))</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="8-控制抽象"   >
+          <a href="#8-控制抽象" class="heading-link"><i class="fas fa-link"></i></a>8. 控制抽象</h2>
+      
+<p><strong>看一个需求</strong><br />
+如何实现将一段代码(从形式上看)，作为参数传递给高阶函数，在高阶函数内部执行这段代码. 其使用的形式如 <code>breakable{}</code>。</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> myfunPack</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> scala.util.control.<span class="type">Breaks</span>.&#123;<span class="keyword">break</span>, breakable&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T10</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> n = <span class="number">10</span></span><br><span class="line">    breakable &#123;</span><br><span class="line">      <span class="keyword">while</span> (n &lt;= <span class="number">20</span>) &#123;</span><br><span class="line">        n += <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> (n == <span class="number">18</span>) &#123;</span><br><span class="line">          <span class="keyword">break</span>()</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p><strong>控制抽象基本介绍</strong></p>
+<p>控制抽象是这样的函数，满足如下条件</p>
+<ol>
+<li>参数是函数</li>
+<li><strong>函数参数没有输入值也没有返回值</strong></li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> myfunPack</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T11</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="comment">//myRunInThread 就是一个抽象控制</span></span><br><span class="line">    <span class="comment">//因为 myRunInThread 是没有输入， 也没有输出的函数 f1: () =&gt; Unit</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">myRunInThread</span></span>(f1: () =&gt; <span class="type">Unit</span>) = &#123;</span><br><span class="line">      <span class="keyword">new</span> <span class="type">Thread</span> &#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">run</span></span>(): <span class="type">Unit</span> = &#123;</span><br><span class="line">          f1() <span class="comment">//只写了 f1</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;.start()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//myRunInThread(匿名函数)，写入多行是()用&#123;&#125;代替</span></span><br><span class="line">    myRunInThread &#123;</span><br><span class="line">      () =&gt;</span><br><span class="line">        println(<span class="string">"干活咯！5秒完成..."</span>)</span><br><span class="line">        <span class="type">Thread</span>.sleep(<span class="number">5000</span>)</span><br><span class="line">        println(<span class="string">"干完咯！"</span>)</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//简写形式  ：f1: () =&gt; Unit 简写为 f1: () =&gt; Unit</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">myRunInThread2</span></span>(f1:  =&gt; <span class="type">Unit</span>) = &#123;</span><br><span class="line">      <span class="keyword">new</span> <span class="type">Thread</span> &#123;</span><br><span class="line">        <span class="keyword">override</span> <span class="function"><span class="keyword">def</span> <span class="title">run</span></span>(): <span class="type">Unit</span> = &#123;</span><br><span class="line">          f1 <span class="comment">//只写了 f1</span></span><br><span class="line">        &#125;</span><br><span class="line">      &#125;.start()</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//对于没有输入，也没有返回值函数，可以简写成如下形式，即() =&gt; 可以省略</span></span><br><span class="line">    myRunInThread2 &#123;</span><br><span class="line">      println(<span class="string">"干活咯！5秒完成...~~~"</span>)</span><br><span class="line">      <span class="type">Thread</span>.sleep(<span class="number">5000</span>)</span><br><span class="line">      println(<span class="string">"干完咯！~~~"</span>)</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p><strong>进阶用法：实现类似while的until函数</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> x=<span class="number">10</span></span><br><span class="line"><span class="keyword">while</span>(x&gt;<span class="number">0</span>)&#123;</span><br><span class="line">    x -= <span class="number">1</span></span><br><span class="line">    println(<span class="string">"x="</span>+x)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>用抽象控制实现</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> myfunPack</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">T12</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> x = <span class="number">10</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">//说明</span></span><br><span class="line">    <span class="comment">//1 函数名为 until , 实现了类似 while循环的效果</span></span><br><span class="line">    <span class="comment">//2. condition: =&gt; Boolean 是后一个没有输入值，返回Boolean类型函数</span></span><br><span class="line">    <span class="comment">//3. block: =&gt; Unit 没有输入值，也没有返回值的韩</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">mywhile</span></span>(condition: =&gt; <span class="type">Boolean</span>)(block: =&gt; <span class="type">Unit</span>): <span class="type">Unit</span> = &#123;</span><br><span class="line">      <span class="comment">//类似while循环，递归</span></span><br><span class="line">      <span class="keyword">if</span>(condition) &#123;</span><br><span class="line">        block <span class="comment">// x= 9 ,x = 8 x =7 ....</span></span><br><span class="line">        mywhile(condition)(block)</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//第一个匿名函数：()=&gt; x&gt;0 简写为 x&gt;0</span></span><br><span class="line">    <span class="comment">//第二个匿名函数简写&#123;&#125;里面的代码块</span></span><br><span class="line">    mywhile(x &gt; <span class="number">0</span>) &#123;</span><br><span class="line">      x -= <span class="number">1</span></span><br><span class="line">      println(<span class="string">"x="</span> + x )</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/03/26/103737/">https://wxler.gitee.io/2021/03/26/103737/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/scala/">scala</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/03/26/141800/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">八、Scala编程之递归思想</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/03/25/204706/"><span class="paginator-prev__text">六、Scala之模式匹配</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-偏函数"><span class="toc-text">
+          1. 偏函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-作为参数的函数"><span class="toc-text">
+          2. 作为参数的函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-匿名函数"><span class="toc-text">
+          3. 匿名函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-高阶函数"><span class="toc-text">
+          4. 高阶函数</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-参数类型推断"><span class="toc-text">
+          5. 参数(类型)推断</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-闭包closure"><span class="toc-text">
+          6. 闭包(closure)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-函数柯里化curry"><span class="toc-text">
+          7. 函数柯里化(curry)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-控制抽象"><span class="toc-text">
+          8. 控制抽象</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">108</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">19</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">53</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>

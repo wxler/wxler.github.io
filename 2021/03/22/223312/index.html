@@ -1,0 +1,876 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="Scala基础之变量、运算符、程序流程控制">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一、Scala基础之变量、运算符、程序流程控制">
+<meta property="og:url" content="https://wxler.gitee.io/2021/03/22/223312/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="Scala基础之变量、运算符、程序流程控制">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322233141.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322223724.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322223800.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322234626.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322234827.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322235339.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322235416.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323095641.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323095710.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323095903.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323100007.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323100049.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323100228.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323100517.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323102131.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323102330.png">
+<meta property="article:published_time" content="2021-03-22T14:33:12.000Z">
+<meta property="article:modified_time" content="2021-03-26T07:20:50.554Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="scala">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322233141.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>一、Scala基础之变量、运算符、程序流程控制 | Layne's Blog</title><link ref="canonical" href="https://wxler.gitee.io/2021/03/22/223312/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">一、Scala基础之变量、运算符、程序流程控制</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-22</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-03-26</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">4k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">27分</span></span></div></header><div class="post-body"><p>Scala基础之变量、运算符、程序流程控制</p>
+<a id="more"></a>
+<p><strong>文章目录</strong></p>
+<p><ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-%E5%8F%98%E9%87%8F">一、变量</a>
+<ul>
+<li><a href="#11-scala%E5%8F%98%E9%87%8F%E4%BD%BF%E7%94%A8%E8%AF%B4%E6%98%8E">1.1 Scala变量使用说明</a></li>
+<li><a href="#12-scala%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B">1.2 scala数据类型</a></li>
+<li><a href="#13-unit%E7%B1%BB%E5%9E%8B-null%E7%B1%BB%E5%9E%8B%E5%92%8Cnothing%E7%B1%BB%E5%9E%8B">1.3 Unit类型、Null类型和Nothing类型</a></li>
+<li><a href="#14-%E5%80%BC%E7%B1%BB%E5%9E%8B%E9%9A%90%E5%BC%8F%E8%BD%AC%E6%8D%A2">1.4 值类型隐式转换</a></li>
+<li><a href="#15-%E5%BC%BA%E5%88%B6%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2">1.5 强制类型转换</a></li>
+<li><a href="#16-%E5%80%BC%E7%B1%BB%E5%9E%8B%E5%92%8Cstring%E7%B1%BB%E5%9E%8B%E7%9A%84%E8%BD%AC%E6%8D%A2">1.6 值类型和String类型的转换</a></li>
+<li><a href="#17-%E6%A0%87%E8%AF%86%E7%AC%A6%E7%9A%84%E5%91%BD%E5%90%8D%E8%A7%84%E8%8C%83">1.7 标识符的命名规范</a></li>
+</ul>
+</li>
+<li><a href="#%E4%BA%8C-%E8%BF%90%E7%AE%97%E7%AC%A6">二、运算符</a>
+<ul>
+<li><a href="#21-%E7%AE%97%E6%9C%AF%E8%BF%90%E7%AE%97%E7%AC%A6">2.1 算术运算符</a></li>
+<li><a href="#22-%E5%85%B3%E7%B3%BB%E8%BF%90%E7%AE%97%E7%AC%A6%E6%AF%94%E8%BE%83%E8%BF%90%E7%AE%97%E7%AC%A6">2.2 关系运算符(比较运算符)</a></li>
+<li><a href="#23-%E9%80%BB%E8%BE%91%E8%BF%90%E7%AE%97%E7%AC%A6">2.3 逻辑运算符</a></li>
+<li><a href="#24-%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6">2.4 赋值运算符</a></li>
+<li><a href="#25-%E4%BD%8D%E8%BF%90%E7%AE%97%E7%AC%A6">2.5 位运算符</a></li>
+<li><a href="#26-%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BC%98%E5%85%88%E7%BA%A7">2.6 运算符优先级</a></li>
+<li><a href="#27-%E9%94%AE%E7%9B%98%E8%BE%93%E5%85%A5%E8%AF%AD%E5%8F%A5">2.7 键盘输入语句</a></li>
+<li><a href="#28-%E5%A4%9A%E7%A7%8Dprint%E8%BE%93%E5%87%BA%E6%96%B9%E5%BC%8F">2.8 多种print输出方式</a></li>
+</ul>
+</li>
+<li><a href="#%E4%B8%89-%E7%A8%8B%E5%BA%8F%E6%B5%81%E7%A8%8B%E6%8E%A7%E5%88%B6">三、程序流程控制</a>
+<ul>
+<li><a href="#31-%E5%88%86%E6%94%AF%E6%8E%A7%E5%88%B6if-else">3.1 分支控制if-else</a></li>
+<li><a href="#32-switch%E5%88%86%E6%94%AF%E7%BB%93%E6%9E%84">3.2 switch分支结构</a></li>
+<li><a href="#33-for%E5%BE%AA%E7%8E%AF%E6%8E%A7%E5%88%B6">3.3 for循环控制</a></li>
+<li><a href="#34-while%E5%BE%AA%E7%8E%AF%E6%8E%A7%E5%88%B6">3.4 while循环控制</a></li>
+<li><a href="#35-dowhile%E5%BE%AA%E7%8E%AF%E6%8E%A7%E5%88%B6">3.5 do…while循环控制</a></li>
+<li><a href="#36-for%E6%88%96while%E5%BE%AA%E7%8E%AF%E7%9A%84%E4%B8%AD%E6%96%AD">3.6 for或while循环的中断</a></li>
+</ul>
+</li>
+</ul>
+</p>
+
+        <h2 id="一-变量"   >
+          <a href="#一-变量" class="heading-link"><i class="fas fa-link"></i></a>一、变量</h2>
+      
+
+        <h3 id="11-scala变量使用说明"   >
+          <a href="#11-scala变量使用说明" class="heading-link"><i class="fas fa-link"></i></a>1.1 Scala变量使用说明</h3>
+      
+<p>变量声明基本语法</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var | val 变量名 [: 变量类型] = 变量值</span><br></pre></td></tr></table></div></figure>
+<p>注意事项</p>
+<ol>
+<li>
+<p>声明变量时，类型可以省略（编译器自动推导,即类型推导）</p>
+</li>
+<li>
+<p>类型确定后，就不能修改，<strong>说明Scala 是强数据类型语言</strong></p>
+</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a:<span class="type">Int</span>=<span class="number">10</span></span><br><span class="line">a=<span class="number">10.5</span> <span class="comment">//报错，类型确定后就不能修改</span></span><br></pre></td></tr></table></div></figure>
+<ol start="3">
+<li>
+<p>在声明/定义一个变量时，可以使用var 或者 val 来修饰， var 修饰的变量可改变，val 修饰的变量不可改</p>
+</li>
+<li>
+<p>val修饰的变量在编译后，等同于加上final，通过反编译看下底层代码。</p>
+</li>
+<li>
+<p>var 修饰的<strong>对象引用</strong>可以改变，val 修饰的则不可改变，但对象的状态或属性(值)却是可以改变的。(比如: 自定义对象、数组、集合等等) ，因此一般用val修饰对象。</p>
+</li>
+<li>
+<p>变量声明时，需要初始值</p>
+</li>
+</ol>
+
+        <h3 id="12-scala数据类型"   >
+          <a href="#12-scala数据类型" class="heading-link"><i class="fas fa-link"></i></a>1.2 scala数据类型</h3>
+      
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322233141.png"  alt="" />
+      </p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322223724.png"  alt="" />
+      </p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322223800.png"  alt="" />
+      </p>
+<p>1）Scala各类型数据有固定的表数范围和字段长度，不受具体OS的影响，以保证Scala程序的可移植性。</p>
+<p>2） Scala的整型 常量/字面量  默认为 Int 型，声明Long型 常量/字面量 须后加<code>l</code>或<code>L</code></p>
+<p>3）Scala的浮点型常量默认为Double型，声明Float型常量，须后加<code>f</code>或<code>F</code></p>
+<p>4）浮点型常量有两种表示形式<br />
+十进制数形式：如：<code>5.12 512.0f .512 (必须有小数点）</code><br />
+科学计数法形式:如：<code>5.12e2 = 5.12乘以10的2次方 5.12E-2 = 5.12除以10的2次方</code></p>
+
+        <h3 id="13-unit类型-null类型和nothing类型"   >
+          <a href="#13-unit类型-null类型和nothing类型" class="heading-link"><i class="fas fa-link"></i></a>1.3 Unit类型、Null类型和Nothing类型</h3>
+      
+<ol>
+<li>Null类只有一个实例对象，null，类似于Java中的null引用。<strong>null可以赋值给任意引用类型(AnyRef)</strong>，但是不能赋值给值类型(AnyVal: 比如 Int, Float, Char,Boolean, Long, Double, Byte, Short)。</li>
+</ol>
+<p>注意：Int被反编译为int，<strong>因此Scala中的AnyVal都是值类型</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> a:<span class="type">StringOps</span>=<span class="literal">null</span></span><br><span class="line"><span class="keyword">val</span> b:<span class="type">String</span>=<span class="literal">null</span><span class="comment">//说明String是引用类型</span></span><br><span class="line">println(<span class="string">s"a=<span class="subst">$&#123;a&#125;</span>,b=<span class="subst">$&#123;b&#125;</span>"</span>)<span class="comment">//a=null,b=null</span></span><br><span class="line"><span class="keyword">val</span> c:<span class="type">Int</span>=<span class="literal">null</span><span class="comment">//报错</span></span><br></pre></td></tr></table></div></figure>
+<ol start="2">
+<li>Unit类型用来标识过程，也就是没有明确返回值的函数。由此可见，Unit类似于Java里的void。Unit只有一个实例，()，这个实例也没有实质的意义</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">  println(fun())<span class="comment">//输出()</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fun</span></span>():<span class="type">Unit</span>=&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>3）Nothing，可以作为没有正常返回值的方法的返回类型，<strong>非常直观的告诉你这个方法不会正常返回</strong>，而且由于Nothing是其他任意类型的子类，他还能跟要求返回值的方法兼容。</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">  test()<span class="comment">//抛出异常</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">test</span></span>():<span class="type">Nothing</span>=&#123;</span><br><span class="line">  <span class="keyword">throw</span> <span class="keyword">new</span> <span class="type">Exception</span>(<span class="string">"一个异常"</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="14-值类型隐式转换"   >
+          <a href="#14-值类型隐式转换" class="heading-link"><i class="fas fa-link"></i></a>1.4 值类型隐式转换</h3>
+      
+<p>Scala程序在进行赋值或者运算时，精度小的类型自动转换为精度大的数据类型，这个就是自动类型转换(隐式转换)。</p>
+<p>数据类型按精度(容量)大小排序为</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322234626.png"  alt="" />
+      </p>
+<ol>
+<li>
+<p>有多种类型的数据混合运算时，系统首先自动将所有数据转换成容量最大的那种数据类型，然后再进行计算，如<code>5.6 + 10 = 》double</code></p>
+</li>
+<li>
+<p>当我们把精度(容量)大 的数据类型赋值给精度(容量)小 的数据类型时，就会报错，反之就会进行自动类型转换。</p>
+</li>
+<li>
+<p>(byte, short) 和 char之间不会相互自动转换。</p>
+</li>
+<li>
+<p>byte，short，char  他们三者可以计算，<strong>在计算时首先转换为int类型</strong>。</p>
+</li>
+</ol>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322234827.png"  alt="" />
+      </p>
+<ol start="5">
+<li>自动提升原则： 表达式结果的类型自动提升为 操作数中最大的类型</li>
+</ol>
+
+        <h3 id="15-强制类型转换"   >
+          <a href="#15-强制类型转换" class="heading-link"><i class="fas fa-link"></i></a>1.5 强制类型转换</h3>
+      
+<p>自动类型转换的逆过程，将容量大的数据类型转换为容量小的数据类型。使用时要加上强制转函数，但可能造成精度降低或溢出，格外要注意。</p>
+<p>java  : <code>int num = (int)2.5</code><br />
+scala :  <code>var num : Int = 2.7.toInt</code>  （scala中所有的基本类型数据都是一个对象，这点和java不同）</p>
+<p>强转符号只针对于最近的操作数有效，往往会使用小括号提升优先级</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> num1: <span class="type">Int</span> = <span class="number">10</span> * <span class="number">3.5</span>.toInt + <span class="number">6</span> * <span class="number">1.5</span>.toInt  <span class="comment">// 36</span></span><br><span class="line"><span class="keyword">val</span> num2: <span class="type">Int</span> = (<span class="number">10</span> * <span class="number">3.5</span> + <span class="number">6</span> * <span class="number">1.5</span>).toInt <span class="comment">// 44</span></span><br><span class="line">println(num1 + <span class="string">" "</span> + num2)</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="16-值类型和string类型的转换"   >
+          <a href="#16-值类型和string类型的转换" class="heading-link"><i class="fas fa-link"></i></a>1.6 值类型和String类型的转换</h3>
+      
+<p>在程序开发中，我们经常需要将基本数据类型转成String 类型，或者将String类型转成基本数据类型。</p>
+<p><strong>基本类型转String类型</strong><br />
+语法： 将基本类型的值+&quot;&quot; 即可<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322235339.png"  alt="" />
+      </p>
+<p><strong>String类型转基本数据类型</strong></p>
+<p>语法：通过基本类型的String的 toXxx方法即可</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210322235416.png"  alt="" />
+      </p>
+<p>在将String 类型转成 基本数据类型时，要确保String类型能够转成有效的数据，比如 我们可以把 “123” , 转成一个整数，但是不能把 “hello” 转成一个整数。</p>
+
+        <h3 id="17-标识符的命名规范"   >
+          <a href="#17-标识符的命名规范" class="heading-link"><i class="fas fa-link"></i></a>1.7 标识符的命名规范</h3>
+      
+<ol>
+<li>Scala 对各种变量、方法、函数等命名时使用的字符序列称为标识符</li>
+<li>凡是自己可以起名字的地方都叫标识符</li>
+</ol>
+<p>Scala中的标识符声明，基本和Java是一致的，<strong>但是细节上会有所变化</strong>。</p>
+<ol>
+<li>
+<p>首字符为字母，后续字符任意字母和数字，美元符号，可后接下划线_</p>
+</li>
+<li>
+<p>数字不可以开头。</p>
+</li>
+<li>
+<p>首字符为操作符(比如+ - * / )，后续字符也需跟操作符 ,至少一个</p>
+</li>
+<li>
+<p>操作符(比如±*/)不能在标识符中间和最后</p>
+</li>
+<li>
+<p>用反引号`…`包括的任意字符串，即使是关键字(39个)也可以，如</p>
+</li>
+</ol>
+<p>标识符举例说明</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">`public` //ok</span><br><span class="line">hello    // ok</span><br><span class="line">hello12 // ok</span><br><span class="line">1hello  // error</span><br><span class="line">h-b   // error</span><br><span class="line">x h   // error</span><br><span class="line">h_4   // ok</span><br><span class="line">_ab   // ok</span><br><span class="line">Int    // ok, 在scala中，Int 不是关键字，而是预定义标识符,可以用，但是不推荐</span><br><span class="line">Float  // ok</span><br><span class="line">_   // 不可以，因为在scala中，_ 有很多其他的作用，因此不能使用</span><br><span class="line">Abc    // ok</span><br><span class="line">+*-   // ok</span><br><span class="line">+a  // error</span><br></pre></td></tr></table></div></figure>
+<p>一定要注意：</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> ++ = <span class="number">10</span> <span class="comment">//ok，这里++为变量名</span></span><br><span class="line"><span class="keyword">var</span> ++= <span class="number">10</span> <span class="comment">//error，因为+=是数学运算</span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="二-运算符"   >
+          <a href="#二-运算符" class="heading-link"><i class="fas fa-link"></i></a>二、运算符</h2>
+      
+<p>运算符是一种特殊的符号，用以表示数据的运算、赋值和比较等。</p>
+<ol>
+<li>算术运算符</li>
+<li>赋值运算符</li>
+<li>比较运算符(关系运算符)</li>
+<li>逻辑运算符</li>
+<li>位运算符</li>
+</ol>
+
+        <h3 id="21-算术运算符"   >
+          <a href="#21-算术运算符" class="heading-link"><i class="fas fa-link"></i></a>2.1 算术运算符</h3>
+      
+<p>算术运算符(arithmetic)是对<strong>数值类型的变量进行运算的</strong>，在Scala程序中使用的非常多。</p>
+<p>算数运算符的运算规则和Java一样。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323095641.png"  alt="" />
+      </p>
+<p>Scala中没有++、–操作符，需要通过+=、-=来实现同样的效果</p>
+
+        <h3 id="22-关系运算符比较运算符"   >
+          <a href="#22-关系运算符比较运算符" class="heading-link"><i class="fas fa-link"></i></a>2.2 关系运算符(比较运算符)</h3>
+      
+<ol>
+<li>
+<p>关系运算符的结果都是boolean型，也就是要么是true，要么是false</p>
+</li>
+<li>
+<p>关系表达式 经常用在 if结构的条件中或循环结构的条件中</p>
+</li>
+<li>
+<p>关系运算符的使用和java一样</p>
+</li>
+<li>
+<p>使用陷阱: 如果两个浮点数进行比较，应当保证数据类型一致</p>
+</li>
+</ol>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323095710.png"  alt="" />
+      </p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> a = <span class="number">9</span></span><br><span class="line"><span class="keyword">var</span> b = <span class="number">8</span></span><br><span class="line">println(a&gt;b)  <span class="comment">// true</span></span><br><span class="line">println(a&gt;=b) <span class="comment">// true</span></span><br><span class="line">println(a&lt;=b) <span class="comment">// false</span></span><br><span class="line">println(a&lt;b) <span class="comment">// false</span></span><br><span class="line">println(a==b) <span class="comment">// false</span></span><br><span class="line">println(a!=b) <span class="comment">// true</span></span><br><span class="line"><span class="keyword">var</span> flag : <span class="type">Boolean</span> = a&gt;b  <span class="comment">// true</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="23-逻辑运算符"   >
+          <a href="#23-逻辑运算符" class="heading-link"><i class="fas fa-link"></i></a>2.3 逻辑运算符</h3>
+      
+<p>用于连接多个条件（一般来讲就是关系表达式），最终的结果也是一个Boolean值。</p>
+<p>假定变量 A 为 true，B 为 false</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323095903.png"  alt="" />
+      </p>
+
+        <h3 id="24-赋值运算符"   >
+          <a href="#24-赋值运算符" class="heading-link"><i class="fas fa-link"></i></a>2.4 赋值运算符</h3>
+      
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323100007.png"  alt="" />
+      </p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323100049.png"  alt="" />
+      </p>
+<p>这部分的赋值运算涉及到二进制相关知识，其运行的规则和Java一样。</p>
+
+        <h3 id="25-位运算符"   >
+          <a href="#25-位运算符" class="heading-link"><i class="fas fa-link"></i></a>2.5 位运算符</h3>
+      
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323100228.png"  alt="" />
+      </p>
+<p>说明: 位运算符的规则和Java一样</p>
+<p><strong>Scala不支持三目运算符</strong> , 在Scala 中使用 if – else 的方式实现。</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> num = <span class="number">5</span> &gt; <span class="number">4</span> ? <span class="number">5</span> : <span class="number">4</span>  <span class="comment">//没有</span></span><br><span class="line"><span class="keyword">val</span> num = <span class="keyword">if</span> (<span class="number">5</span>&gt;<span class="number">4</span>) <span class="number">5</span> <span class="keyword">else</span> <span class="number">4</span></span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="26-运算符优先级"   >
+          <a href="#26-运算符优先级" class="heading-link"><i class="fas fa-link"></i></a>2.6 运算符优先级</h3>
+      
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323100517.png"  alt="" />
+      </p>
+<p>运算符的优先级和Java一样。</p>
+<p>小结运算符的优先级<br />
+1.() []<br />
+2.单目运算<br />
+3.算术运算符<br />
+4.移位运算<br />
+5.比较运算符(关系运算符)<br />
+6.位运算<br />
+7.关系运算符<br />
+8.赋值运算</p>
+
+        <h3 id="27-键盘输入语句"   >
+          <a href="#27-键盘输入语句" class="heading-link"><i class="fas fa-link"></i></a>2.7 键盘输入语句</h3>
+      
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scala.io.<span class="type">StdIn</span></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">InputDemo</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> a:<span class="type">Int</span>=<span class="type">StdIn</span>.readInt()</span><br><span class="line">    <span class="keyword">var</span> b:<span class="type">Double</span>=<span class="type">StdIn</span>.readDouble()</span><br><span class="line">    <span class="keyword">var</span> c:<span class="type">String</span>=<span class="type">StdIn</span>.readLine()</span><br><span class="line">    println(a)</span><br><span class="line">    println(b)</span><br><span class="line">    println(c)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="28-多种print输出方式"   >
+          <a href="#28-多种print输出方式" class="heading-link"><i class="fas fa-link"></i></a>2.8 多种print输出方式</h3>
+      
+<p>（1）普通输出方式：</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">var</span> i:<span class="type">Int</span> = <span class="number">10</span></span><br><span class="line">    <span class="keyword">val</span> j:<span class="type">Int</span> = <span class="number">20</span></span><br><span class="line">    println(<span class="string">"Hello World"</span>)</span><br><span class="line">    println(i + j)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>（2）插值字符串输出方式：</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> name:<span class="type">String</span> = <span class="string">"hikari"</span></span><br><span class="line">    <span class="keyword">val</span> age:<span class="type">Int</span> = <span class="number">30</span></span><br><span class="line">    println(<span class="string">s"username = <span class="subst">$&#123;name&#125;</span>, age = <span class="subst">$&#123;age&#125;</span>"</span>)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>这样的好处是可以少些+号，避免字符串拼写错误出现。</p>
+<p>(3)格式化输出</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> name:<span class="type">String</span> = <span class="string">"hikari"</span></span><br><span class="line">    <span class="keyword">val</span> age:<span class="type">Int</span> = <span class="number">30</span></span><br><span class="line">    <span class="comment">//print(s"username = $name, age = $age")</span></span><br><span class="line">    printf(<span class="string">"name = %s age = %d"</span>,name,age)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>printf方法常用格式说明符列表</p>
+<p>%c 单个字符</p>
+<p>%d 十进制整数</p>
+<p>%f 十进制浮点数</p>
+<p>%o 八进制数</p>
+<p>%s 字符串</p>
+<p>%u 无符号十进制数</p>
+<p>%x 十六进制数</p>
+<p>%% 输出百分号%</p>
+<p>举例，“%s:%.2f”是格式字符串，其中“%s”表示输出字符串，“%.2f”表示输出浮点数时，限制2位有效小数，更改“%.”后面的数字，可以限制不同的小数位数输出</p>
+
+        <h2 id="三-程序流程控制"   >
+          <a href="#三-程序流程控制" class="heading-link"><i class="fas fa-link"></i></a>三、程序流程控制</h2>
+      
+<p>Scala语言中控制结构和Java语言中的控制结构基本相同，在不考虑特殊应用场景的情况下，代码书写方式以及理解方式都没有太大的区别。</p>
+<ol>
+<li>顺序控制</li>
+<li>分支控制</li>
+<li>循环控制</li>
+</ol>
+
+        <h3 id="31-分支控制if-else"   >
+          <a href="#31-分支控制if-else" class="heading-link"><i class="fas fa-link"></i></a>3.1 分支控制if-else</h3>
+      
+<p>和java完全一样</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323102131.png"  alt="" />
+      </p>
+<p>Scala中是没有三元运算符，因为可以这样简写</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java</span></span><br><span class="line">int result = flg ? <span class="number">1</span> : <span class="number">0</span></span><br><span class="line"><span class="comment">// Scala</span></span><br><span class="line"><span class="keyword">val</span> result = <span class="keyword">if</span> (flg) <span class="number">1</span> <span class="keyword">else</span> <span class="number">0</span></span><br></pre></td></tr></table></div></figure>
+<p><strong>scala中的if-else是有返回值的</strong>，因此，本身这个语言也不需要三元运算符了，并且可以写在同一行，类似 三元运算</p>
+<p>分支控制if-else 注意事项</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210323102330.png"  alt="" />
+      </p>
+<p>上面输出if-else结构的返回值</p>
+
+        <h3 id="32-switch分支结构"   >
+          <a href="#32-switch分支结构" class="heading-link"><i class="fas fa-link"></i></a>3.2 switch分支结构</h3>
+      
+<p><strong>在scala中没有switch</strong>，而是使用<strong>模式匹配</strong>来处理。<br />
+模式匹配涉及到的知识点较为综合，因此我们放在后面讲解：match-case</p>
+
+        <h3 id="33-for循环控制"   >
+          <a href="#33-for循环控制" class="heading-link"><i class="fas fa-link"></i></a>3.3 for循环控制</h3>
+      
+<p>Scala 也为for 循环这一常见的控制结构提供了非常多的特性，这些for 循环的特性被称为for 推导式（for comprehension）或for 表达式（for expression）</p>
+<p>（1）<strong>范围数据循环方式1</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i &lt;- <span class="number">1</span> to <span class="number">3</span>)&#123;</span><br><span class="line">	print(i + <span class="string">" "</span>)</span><br><span class="line">&#125;</span><br><span class="line">println()</span><br></pre></td></tr></table></div></figure>
+<p>说明</p>
+<ol>
+<li>i 表示循环的变量， <code>&lt;-</code>规定好 to 规定</li>
+<li>i 将会从 1-3 循环， <strong>前后闭合</strong></li>
+</ol>
+<p>（2）<strong>范围数据循环方式2</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i &lt;- <span class="number">1</span> until <span class="number">3</span>) &#123;</span><br><span class="line">	print(i + <span class="string">" "</span>)</span><br><span class="line">&#125;</span><br><span class="line">println()</span><br></pre></td></tr></table></div></figure>
+<p>说明:</p>
+<ol>
+<li>这种方式和前面的区别在于 i 是从1 到 3-1</li>
+<li><strong>前闭合后开的范围</strong>，和java的arr.length() 类似<code>for (int i = 0; i &lt; arr.lenght; i++){}</code></li>
+</ol>
+<p>（3）<strong>循环守卫</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i &lt;- <span class="number">1</span> to <span class="number">3</span> <span class="keyword">if</span> i != <span class="number">2</span>) &#123;</span><br><span class="line">	print(i + <span class="string">" "</span>)</span><br><span class="line">&#125;</span><br><span class="line">println()</span><br></pre></td></tr></table></div></figure>
+<ol>
+<li>循环守卫，即循环保护式（也称条件判断式，守卫）。保护式为true则进入循环体内部，为false则跳过，类似于<code>i==2</code>时执行continue</li>
+<li>上面的代码等价</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i &lt;- <span class="number">1</span> to <span class="number">3</span>) &#123;</span><br><span class="line"><span class="keyword">if</span> (i != <span class="number">2</span>) &#123;</span><br><span class="line">	println(i+<span class="string">""</span>)</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>（4）<strong>引入变量</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i &lt;- <span class="number">1</span> to <span class="number">3</span>; j = <span class="number">4</span> - i) &#123;</span><br><span class="line">	print(j + <span class="string">" "</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<ol>
+<li>没有关键字，所以范围后一定要加<code>；</code>来隔断逻辑</li>
+<li>上面的代码等价</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ( i &lt;- <span class="number">1</span> to <span class="number">3</span>) &#123;</span><br><span class="line">	<span class="keyword">val</span> j = <span class="number">4</span> –i</span><br><span class="line">	print(j+<span class="string">""</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>（5）<strong>嵌套循环</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i &lt;- <span class="number">1</span> to <span class="number">3</span>; j &lt;- <span class="number">1</span> to <span class="number">3</span>) &#123;</span><br><span class="line">	println(<span class="string">" i ="</span> + i + <span class="string">" j = "</span> + j)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<ol>
+<li>没有关键字，所以范围后一定要加<code>；</code>来隔断逻辑</li>
+<li>上面的代码等价</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> ( i &lt;- <span class="number">1</span> to <span class="number">3</span>) &#123;</span><br><span class="line">    <span class="keyword">for</span> ( j &lt;- <span class="number">1</span>to <span class="number">3</span>)&#123;</span><br><span class="line">    	println(i + <span class="string">" "</span> + j + <span class="string">" "</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>（6）<strong>循环返回值</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> res = <span class="keyword">for</span>(i &lt;- <span class="number">1</span> to <span class="number">10</span>) <span class="keyword">yield</span> i</span><br><span class="line">println(res)<span class="comment">//输出Vector(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)</span></span><br></pre></td></tr></table></div></figure>
+<ol>
+<li>将遍历过程中处理的结果返回到一个新Vector集合中，使用yield关键字</li>
+</ol>
+<p>（7）<strong>使用花括号{}代替小括号()</strong></p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i &lt;- <span class="number">1</span> to <span class="number">3</span>; j =  i * <span class="number">2</span>) &#123;</span><br><span class="line">	println(<span class="string">" i= "</span> + i + <span class="string">" j= "</span> + j)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>可以写成</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>&#123;</span><br><span class="line">    i &lt;- <span class="number">1</span> to <span class="number">3</span></span><br><span class="line">    j = i * <span class="number">2</span>&#125; &#123;</span><br><span class="line">	println(<span class="string">" i= "</span> + i + <span class="string">" j= "</span> + j)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<ol>
+<li>{}和()对于for表达式来说都可以</li>
+<li><strong>for 推导式有一个不成文的约定</strong>：当for 推导式仅包含单一表达式时使用圆括号，当其包含多个表达式时使用大括号</li>
+<li>当使用{} 来换行写表达式时，<strong>分号就不用写了</strong></li>
+</ol>
+<p>（8）<strong>注意事项和细节说明</strong></p>
+<ol>
+<li>scala 的for循环形式和java是较大差异，，但是基本的原理还是一样的。</li>
+<li>scala 的for循环的步长如何控制</li>
+</ol>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i &lt;- <span class="type">Range</span>(<span class="number">1</span>,<span class="number">10</span>,<span class="number">2</span>))<span class="comment">//Range是1至10左闭右开，步长为2</span></span><br><span class="line">    print(i+<span class="string">" "</span>) <span class="comment">//依次输出1 3 5 7 9</span></span><br></pre></td></tr></table></div></figure>
+<p>或者写成</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i &lt;- <span class="number">1</span> until <span class="number">10</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span>(i%<span class="number">2</span>!=<span class="number">0</span>)<span class="comment">//使用守卫控制步长</span></span><br><span class="line">    print(i+<span class="string">" "</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>下面这种写法是错误的，一定要注意</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(i &lt;- <span class="number">1</span> until <span class="number">10</span>) &#123;</span><br><span class="line">    i+=<span class="number">2</span><span class="comment">//因为i为val，是不允许更改的</span></span><br><span class="line">    print(i+<span class="string">" "</span>)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="34-while循环控制"   >
+          <a href="#34-while循环控制" class="heading-link"><i class="fas fa-link"></i></a>3.4 while循环控制</h3>
+      
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">循环变量初始化</span><br><span class="line">while (循环条件) &#123;</span><br><span class="line">    循环体(语句)</span><br><span class="line">    循环变量迭代</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>注意事项和细节说明</p>
+<ol>
+<li>循环条件是返回一个布尔值的表达式</li>
+<li>while循环是先判断再执行语句</li>
+<li>与If语句不同，While语句本身没有值，即整个While语句的结果是Unit类型的()</li>
+<li>因为while中没有返回值，所以当要用该语句来计算并返回结果时，就不可避免的使用变量 ，<strong>而变量需要声明在while循环的外部</strong>，<strong>那么就等同于循环的内部对外部的变量造成了影响</strong>，所以不推荐使用，而是推荐使用for循环。</li>
+</ol>
+
+        <h3 id="35-dowhile循环控制"   >
+          <a href="#35-dowhile循环控制" class="heading-link"><i class="fas fa-link"></i></a>3.5 do…while循环控制</h3>
+      
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">循环变量初始化;</span><br><span class="line">do&#123;</span><br><span class="line">    循环体(语句)</span><br><span class="line">    循环变量迭代</span><br><span class="line">&#125; while(循环条件)</span><br></pre></td></tr></table></div></figure>
+<p>注意事项和细节说明</p>
+<ol>
+<li>循环条件是返回一个布尔值的表达式</li>
+<li>do…while循环是先执行，再判断</li>
+<li>和while 一样，因为do…while中没有返回值,所以当要用该语句来计算并返回结果时,就不可避免的使用变量 ，而变量需要声明在do…while循环的外部，那么就等同于循环的内部对外部的变量造成了影响，所以不推荐使用，而是推荐使用for循环</li>
+</ol>
+
+        <h3 id="36-for或while循环的中断"   >
+          <a href="#36-for或while循环的中断" class="heading-link"><i class="fas fa-link"></i></a>3.6 for或while循环的中断</h3>
+      
+<p>Scala内置控制结构特地去掉了break和continue，是为了更好的适应函数化编程，推荐使用函数式的风格解决break和contine的功能，而不是一个关键字。</p>
+<p>（1）实现break的效果</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> scala.util.control.<span class="type">Breaks</span>.&#123;<span class="keyword">break</span>, breakable&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">object</span> <span class="title">WhileBreak</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">def</span> <span class="title">main</span></span>(args: <span class="type">Array</span>[<span class="type">String</span>]): <span class="type">Unit</span> = &#123;</span><br><span class="line">    breakable &#123;</span><br><span class="line">      <span class="keyword">for</span> (i &lt;- <span class="number">1</span> to <span class="number">3</span>) &#123;</span><br><span class="line">        print(i+<span class="string">" "</span>) <span class="comment">//依次输出1 2 </span></span><br><span class="line">        <span class="keyword">if</span> (i == <span class="number">2</span>)</span><br><span class="line">          <span class="keyword">break</span>();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    println()</span><br><span class="line">    <span class="keyword">var</span> n=<span class="number">1</span></span><br><span class="line">    breakable&#123;</span><br><span class="line">      <span class="keyword">while</span>(n&lt;=<span class="number">20</span>)&#123;</span><br><span class="line">        n+=<span class="number">1</span></span><br><span class="line">        <span class="comment">//依次输出n=2,n=3,n=4,n=5,n=6,n=7,n=8,n=9,n=10,n=11,n=12,n=13,n=14,n=15,n=16,n=17,n=18</span></span><br><span class="line">        print(<span class="string">"n="</span>+n+<span class="string">","</span>) </span><br><span class="line">        <span class="keyword">if</span>(n==<span class="number">18</span>)</span><br><span class="line">          <span class="keyword">break</span>()</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>（2）实现continue的效果</p>
+<p>Scala内置控制结构特地也去掉了continue，是为了更好的适应函数化编程，可以使用if – else 或是 循环守卫实现continue的效果</p>
+<figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i &lt;- <span class="number">1</span> to <span class="number">10</span> <span class="keyword">if</span> (i != <span class="number">2</span> &amp;&amp; i != <span class="number">3</span>)) &#123;</span><br><span class="line">	println(<span class="string">"i="</span> + i)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>等同于</p>
+<figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span>(<span class="keyword">int</span> i=<span class="number">0</span>;i&lt;=<span class="number">10</span>;i++)</span><br><span class="line">	<span class="keyword">if</span>(i==<span class="number">2</span>)</span><br><span class="line">		<span class="keyword">continue</span></span><br><span class="line">    <span class="keyword">if</span>(i==<span class="number">3</span>)</span><br><span class="line">        <span class="keyword">continue</span></span><br><span class="line">    System.out.println(<span class="string">"i="</span> + i)</span><br></pre></td></tr></table></div></figure>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.gitee.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.gitee.io/2021/03/22/223312/">https://wxler.gitee.io/2021/03/22/223312/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.gitee.io/tags/scala/">scala</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/03/22/223515/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">二、Scala之函数式编程（基础部分）</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/03/17/200228/"><span class="paginator-prev__text">hadoop完全分布式集群搭建</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-变量"><span class="toc-text">
+          一、变量</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#11-scala变量使用说明"><span class="toc-text">
+          1.1 Scala变量使用说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#12-scala数据类型"><span class="toc-text">
+          1.2 scala数据类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#13-unit类型-null类型和nothing类型"><span class="toc-text">
+          1.3 Unit类型、Null类型和Nothing类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#14-值类型隐式转换"><span class="toc-text">
+          1.4 值类型隐式转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#15-强制类型转换"><span class="toc-text">
+          1.5 强制类型转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#16-值类型和string类型的转换"><span class="toc-text">
+          1.6 值类型和String类型的转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#17-标识符的命名规范"><span class="toc-text">
+          1.7 标识符的命名规范</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-运算符"><span class="toc-text">
+          二、运算符</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-算术运算符"><span class="toc-text">
+          2.1 算术运算符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-关系运算符比较运算符"><span class="toc-text">
+          2.2 关系运算符(比较运算符)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-逻辑运算符"><span class="toc-text">
+          2.3 逻辑运算符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-赋值运算符"><span class="toc-text">
+          2.4 赋值运算符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-位运算符"><span class="toc-text">
+          2.5 位运算符</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-运算符优先级"><span class="toc-text">
+          2.6 运算符优先级</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-键盘输入语句"><span class="toc-text">
+          2.7 键盘输入语句</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-多种print输出方式"><span class="toc-text">
+          2.8 多种print输出方式</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-程序流程控制"><span class="toc-text">
+          三、程序流程控制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-分支控制if-else"><span class="toc-text">
+          3.1 分支控制if-else</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-switch分支结构"><span class="toc-text">
+          3.2 switch分支结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#33-for循环控制"><span class="toc-text">
+          3.3 for循环控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#34-while循环控制"><span class="toc-text">
+          3.4 while循环控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#35-dowhile循环控制"><span class="toc-text">
+          3.5 do…while循环控制</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#36-for或while循环的中断"><span class="toc-text">
+          3.6 for或while循环的中断</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">108</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">19</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">53</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
