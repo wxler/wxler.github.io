@@ -1,0 +1,871 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="Hadoop 运行模式">
+<meta property="og:type" content="article">
+<meta property="og:title" content="三、Hadoop 运行模式">
+<meta property="og:url" content="https://wxler.github.io/2021/03/31/191601/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="Hadoop 运行模式">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210331111804331.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210331115210217.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210331142259962.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215bGF5bmU=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210331145411961.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215bGF5bmU=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210331152137465.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210331152303326.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215bGF5bmU=,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331201500.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331202946.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331203011.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331203052.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331205308.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331213651.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331214143.png">
+<meta property="article:published_time" content="2021-03-31T11:16:01.000Z">
+<meta property="article:modified_time" content="2021-04-06T14:07:43.625Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="Hadoop">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210331111804331.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>三、Hadoop 运行模式 | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/03/31/191601/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">三、Hadoop 运行模式</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-31</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-04-06</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">6k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">50分</span></span></div></header><div class="post-body"><p>Hadoop 运行模式</p>
+<a id="more"></a>
+<p><strong>文章目录</strong></p>
+<p><ul class="markdownIt-TOC">
+<li><a href="#1-%E6%9C%AC%E5%9C%B0%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F%E5%AE%98%E6%96%B9-wordcount">1. 本地运行模式（官方 WordCount）</a></li>
+<li><a href="#2-%E5%AE%8C%E5%85%A8%E5%88%86%E5%B8%83%E5%BC%8F%E8%BF%90%E8%A1%8C%E6%A8%A1%E5%BC%8F%E5%BC%80%E5%8F%91%E9%87%8D%E7%82%B9">2.  完全分布式运行模式（开发重点）</a>
+<ul>
+<li><a href="#21-%E7%BC%96%E5%86%99%E9%9B%86%E7%BE%A4%E5%88%86%E5%8F%91%E8%84%9A%E6%9C%AC-xsync">2.1 编写集群分发脚本 xsync</a></li>
+<li><a href="#22-ssh-%E6%97%A0%E5%AF%86%E7%99%BB%E5%BD%95%E9%85%8D%E7%BD%AE">2.2 SSH 无密登录配置</a></li>
+<li><a href="#23-%E9%9B%86%E7%BE%A4%E9%85%8D%E7%BD%AE">2.3 集群配置</a></li>
+<li><a href="#24-%E7%BE%A4%E8%B5%B7%E9%9B%86%E7%BE%A4">2.4 群起集群</a></li>
+<li><a href="#25-%E9%85%8D%E7%BD%AE%E5%8E%86%E5%8F%B2%E6%9C%8D%E5%8A%A1%E5%99%A8">2.5 配置历史服务器</a></li>
+<li><a href="#26-%E9%85%8D%E7%BD%AE%E6%97%A5%E5%BF%97%E7%9A%84%E8%81%9A%E9%9B%86">2.6 配置日志的聚集</a></li>
+<li><a href="#27-%E9%9B%86%E7%BE%A4%E5%90%AF%E5%8A%A8%E5%81%9C%E6%AD%A2%E6%96%B9%E5%BC%8F%E6%80%BB%E7%BB%93">2.7 集群启动/停止方式总结</a></li>
+<li><a href="#28-%E7%BC%96%E5%86%99-hadoop-%E9%9B%86%E7%BE%A4%E5%B8%B8%E7%94%A8%E8%84%9A%E6%9C%AC">2.8 编写 Hadoop 集群常用脚本</a></li>
+<li><a href="#29-%E5%B8%B8%E7%94%A8%E7%AB%AF%E5%8F%A3%E5%8F%B7%E8%AF%B4%E6%98%8E">2.9 常用端口号说明</a></li>
+<li><a href="#210-%E9%9B%86%E7%BE%A4%E6%97%B6%E9%97%B4%E5%90%8C%E6%AD%A5">2.10 集群时间同步</a></li>
+</ul>
+</li>
+<li><a href="#3-%E5%B8%B8%E8%A7%81%E9%94%99%E8%AF%AF%E5%8F%8A%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88">3. 常见错误及解决方案</a></li>
+</ul>
+</p>
+<p>Hadoop 官方网站：<span class="exturl"><a class="exturl__link"   href="http://hadoop.apache.org/"  target="_blank" rel="noopener">http://hadoop.apache.org/</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span><br />
+Hadoop 运行模式包括：本地模式、伪分布式模式以及完全分布式模式。<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210331111804331.png"  alt="在这里插入图片描述" />
+      </p>
+<ul>
+<li>本地模式：单机运行，只是用来演示一下官方案例。生产环境不用。</li>
+<li>伪分布式模式：也是单机运行，但是具备 Hadoop 集群的所有功能，一台服务器模拟一个分布式的环境。个别缺钱的公司用来测试，生产环境不用。</li>
+<li>完全分布式模式：多台服务器组成分布式环境。生产环境使用。</li>
+</ul>
+
+        <h2 id="1-本地运行模式官方-wordcount"   >
+          <a href="#1-本地运行模式官方-wordcount" class="heading-link"><i class="fas fa-link"></i></a>1. 本地运行模式（官方 WordCount）</h2>
+      
+<p>1）创建在 hadoop-3.1.3 文件下面创建一个 wcinput 文件夹</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ mkdir wcinput</span><br></pre></td></tr></table></div></figure>
+<p>2）在 wcinput 文件下创建一个 word.txt 文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> wcinput</span><br></pre></td></tr></table></div></figure>
+<p>3）编辑 word.txt 文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim word.txt</span><br></pre></td></tr></table></div></figure>
+<p>在文件中输入如下内容</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hadoop yarn</span><br><span class="line">hadoop mapreduce</span><br><span class="line">wxler</span><br><span class="line">wxler</span><br></pre></td></tr></table></div></figure>
+<p>4）回到 Hadoop 目录/opt/module/hadoop-3.1.3<br />
+5）执行程序</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ hadoop  jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount wcinput wcoutput</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li>wcinput是输入目录</li>
+<li>wcoutput是输出目录</li>
+</ul>
+<p>6）查看结果</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ cat wcoutput/part-r-00000 </span><br><span class="line">hadoop	2</span><br><span class="line">mapreduce	1</span><br><span class="line">wxler	2</span><br><span class="line">yarn	1</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="2-完全分布式运行模式开发重点"   >
+          <a href="#2-完全分布式运行模式开发重点" class="heading-link"><i class="fas fa-link"></i></a>2.  完全分布式运行模式（开发重点）</h2>
+      
+<p>分析：<br />
+1）准备 3 台客户机（关闭防火墙、静态 IP、主机名称）<br />
+2）安装 JDK<br />
+3）配置环境变量<br />
+4）安装 Hadoop<br />
+5）配置环境变量<br />
+6）配置集群<br />
+7）单点启动<br />
+8）配置 ssh<br />
+9）群起并测试集群</p>
+
+        <h3 id="21-编写集群分发脚本-xsync"   >
+          <a href="#21-编写集群分发脚本-xsync" class="heading-link"><i class="fas fa-link"></i></a>2.1 编写集群分发脚本 xsync</h3>
+      
+<p>1）scp（secure copy）安全拷贝<br />
+（1）scp 定义<br />
+scp 可以实现服务器与服务器之间的数据拷贝。（from server1 to server2）<br />
+（2）基本语法</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">scp    -r        <span class="variable">$pdir</span>/<span class="variable">$fname</span>              <span class="variable">$user</span>@<span class="variable">$host</span>:<span class="variable">$pdir</span>/<span class="variable">$fname</span></span><br><span class="line">命令    递归      要拷贝的文件路径/名称   目的地用户@主机:目的地路径/名称</span><br></pre></td></tr></table></div></figure>
+<p>（3）案例实操<br />
+前提：在 wxler1、wxler2、wxler3都已经创建好的/opt/module、/opt/software 两个目录，并且已经把这两个目录修改为 wxler:wxler</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo  chown  wxler:wxler  -R  /opt/module</span><br></pre></td></tr></table></div></figure>
+<p>（a ）在 wxler1上，将 wxler1 中/opt/module/jdk1.8.0_212 目录拷贝到wxler2上。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 ~]$ scp  -r  /opt/module/jdk1.8.0_212 wxler@wxler2:/opt/module</span><br></pre></td></tr></table></div></figure>
+<p>（b ）在 wxler2 上，将 wxler1中/opt/module/jdk1.8.0_212 目录拷贝到wxler2上。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler2 module]$ scp  -r wxler@wxler1:/opt/module/hadoop-3.1.3 /opt/module/</span><br></pre></td></tr></table></div></figure>
+<p>（c）在 wxler2 上操作，将 wxler1中/opt/module 目录下所有目录拷贝到wxler3上。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp  -r wxler@wxler1:/opt/module/* wxler@wxler3:/opt/module</span><br></pre></td></tr></table></div></figure>
+<p>2）rsync 远程同步工具</p>
+<p>rsync 主要用于备份和镜像。具有速度快、避免复制相同内容和支持符号链接的优点</p>
+<p>rsync 和 scp 区别：用 rsync 做文件的复制要比 scp 的速度快，rsync 只对差异文件做更新。scp 是把所有文件都复制过去。</p>
+<p>（1）基本语法</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">rsync    -av       <span class="variable">$pdir</span>/<span class="variable">$fname</span>              <span class="variable">$user</span>@<span class="variable">$host</span>:<span class="variable">$pdir</span>/<span class="variable">$fname</span></span><br><span class="line">命令    选项参数    要拷贝的文件路径/名称  目的地用户@主机:目的地路径/名称</span><br></pre></td></tr></table></div></figure>
+<p>选项参数说明<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210331115210217.png"  alt="在这里插入图片描述" />
+      <br />
+（2）案例实操</p>
+<p>（a）删除 wxler2 中/opt/module/hadoop-3.1.3/wcinput</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler2 hadoop-3.1.3]$ rm -rf wcinput/</span><br></pre></td></tr></table></div></figure>
+<p>（b）同步 wxler1 中的/opt/module/hadoop-3.1.3 到 wxler2</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync  -av  hadoop-3.1.3/ wxler@wxler2:/opt/module/hadoop-3.1.3/</span><br></pre></td></tr></table></div></figure>
+<p>注意：两个服务器都要安装<code>yum install rsync -y</code></p>
+<p>3）xsync 集群分发脚本<br />
+（1）需求：循环复制文件到所有节点的相同目录下<br />
+（2）需求分析：<br />
+（a）rsync 命令原始拷贝</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rsync  -av  /opt/module        wxler@wxler2:/opt/</span><br></pre></td></tr></table></div></figure>
+<p>（b）期望脚本：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xsync 要同步的文件名称</span><br></pre></td></tr></table></div></figure>
+<p>（c）期望脚本在任何路径都能使用（脚本放在声明了全局环境变量的路径）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler2 hadoop-3.1.3]$ <span class="built_in">echo</span> <span class="variable">$PATH</span></span><br><span class="line">/usr/<span class="built_in">local</span>/bin:/usr/bin:/usr/<span class="built_in">local</span>/sbin:/usr/sbin:/home/wxler/.<span class="built_in">local</span>/bin:/home/wxler/bin</span><br></pre></td></tr></table></div></figure>
+<p>（3）脚本实现<br />
+（a）在/home/wxler/bin 目录下创建 xsync 文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ <span class="built_in">cd</span> /home/wxler</span><br><span class="line">[wxler@wxler1 ~]$ mkdir bin</span><br><span class="line">[wxler@wxler1 ~]$ <span class="built_in">cd</span> bin</span><br><span class="line">[wxler@wxler1 bin]$ vim xsync</span><br></pre></td></tr></table></div></figure>
+<p>在该文件中编写如下代码</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="comment">#1.  判断参数个数</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$#</span> -lt 1 ]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> Not Enough Arguement!</span><br><span class="line">	<span class="built_in">exit</span>;</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#2.  遍历集群所有机器</span></span><br><span class="line"><span class="keyword">for</span> host <span class="keyword">in</span> wxler1 wxler2 wxler3</span><br><span class="line"><span class="keyword">do</span></span><br><span class="line">	<span class="built_in">echo</span> ==================== <span class="variable">$host</span> ====================</span><br><span class="line">	<span class="comment">#3.  遍历所有目录，挨个发送</span></span><br><span class="line">	<span class="keyword">for</span> file <span class="keyword">in</span> <span class="variable">$@</span></span><br><span class="line">	<span class="keyword">do</span></span><br><span class="line">		<span class="comment">#4.  判断文件是否存在</span></span><br><span class="line">		<span class="keyword">if</span> [ -e <span class="variable">$file</span> ]</span><br><span class="line">			<span class="keyword">then</span></span><br><span class="line">				<span class="comment">#5.  获取父目录</span></span><br><span class="line">				pdir=$(<span class="built_in">cd</span> -P $(dirname <span class="variable">$file</span>); <span class="built_in">pwd</span>)</span><br><span class="line">				</span><br><span class="line">				<span class="comment">#6.  获取当前文件的名称</span></span><br><span class="line">				fname=$(basename <span class="variable">$file</span>)</span><br><span class="line">				ssh <span class="variable">$host</span> <span class="string">"mkdir -p <span class="variable">$pdir</span>"</span></span><br><span class="line">				rsync -av <span class="variable">$pdir</span>/<span class="variable">$fname</span> <span class="variable">$host</span>:<span class="variable">$pdir</span></span><br><span class="line">			<span class="keyword">else</span></span><br><span class="line">				<span class="built_in">echo</span> <span class="variable">$file</span> does not exists!</span><br><span class="line">		<span class="keyword">fi</span></span><br><span class="line">	<span class="keyword">done</span></span><br><span class="line"><span class="keyword">done</span></span><br></pre></td></tr></table></div></figure>
+<p>（b）修改脚本  xsync  具有执行权限</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x xsync</span><br></pre></td></tr></table></div></figure>
+<p>（c）测试脚本</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xsync /home/wxler/bin</span><br></pre></td></tr></table></div></figure>
+<p>（d）将脚本复制到/bin 中，以便全局调用</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo cp xsync /bin/</span><br></pre></td></tr></table></div></figure>
+<p>（e）同步环境变量配置（root 所有者）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo xsync /etc/profile.d/my_env.sh</span><br></pre></td></tr></table></div></figure>
+<p>让环境变量生效，在另外两台虚拟机上执行<code>source /etc/profile</code></p>
+
+        <h3 id="22-ssh-无密登录配置"   >
+          <a href="#22-ssh-无密登录配置" class="heading-link"><i class="fas fa-link"></i></a>2.2 SSH 无密登录配置</h3>
+      
+<p>1）配置 ssh<br />
+（1）基本语法</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh 另一台电脑的 IP 地址</span><br></pre></td></tr></table></div></figure>
+<p>（2）ssh 连接时出现 Host key verification failed 的解决方法</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh wxler2</span><br></pre></td></tr></table></div></figure>
+<p>如果出现如下内容</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></div></figure>
+<p>输入 yes，并回车</p>
+<p>（3）退回到 wxler1，输入<code>exit</code></p>
+<p>2）无秘钥配置<br />
+（1）免密登录原理<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210331142259962.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215bGF5bmU=,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215bGF5bmUpx;"  alt="在这里插入图片描述" />
+      <br />
+（2）生成公钥和私钥<br />
+ssh-keygen  产生公钥与私钥对.</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 ~]$ ls -a</span><br><span class="line">.  ..  a.txt  .bash_history  .bash_logout  .bash_profile  .bashrc  bin  .ssh  .viminfo</span><br><span class="line">[wxler@wxler1 ~]$ <span class="built_in">cd</span> .ssh</span><br><span class="line">[wxler@wxler1 .ssh]$ <span class="built_in">pwd</span></span><br><span class="line">/home/wxler/.ssh</span><br><span class="line">[wxler@wxler1 .ssh]$ ssh-keygen -t rsa</span><br></pre></td></tr></table></div></figure>
+<p>然后敲（三个回车），就会生成两个文件 id_rsa（私钥）、id_rsa.pub（公钥）</p>
+<p>（3）将公钥拷贝到要免密登录的目标机器上<br />
+ssh-copy-id 将本机的公钥复制到远程机器的authorized_keys文件中，ssh-copy-id也能让你有到远程机器的home, ~./ssh , 和 ~/.ssh/authorized_keys的权利</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 .ssh]$ ssh-copy-id wxler1</span><br><span class="line">[wxler@wxler1 .ssh]$ ssh-copy-id wxler2</span><br><span class="line">[wxler@wxler1 .ssh]$ ssh-copy-id wxler3</span><br><span class="line">[wxler@wxler1 .ssh]$ ssh wxler1</span><br><span class="line">[wxler@wxler1 .ssh]$ <span class="built_in">exit</span></span><br><span class="line">[wxler@wxler1 .ssh]$ ssh wxler2</span><br><span class="line">[wxler@wxler1 .ssh]$ <span class="built_in">exit</span></span><br><span class="line">[wxler@wxler1 .ssh]$ ssh wxler3</span><br><span class="line">[wxler@wxler1 .ssh]$ <span class="built_in">exit</span></span><br></pre></td></tr></table></div></figure>
+<p>然后在wxler2、wxler3上分别执行第（2）、（3）步</p>
+<p>到这里，我们用wxler用户进行了免密配置，但是用别的用户登录时（比如root用户），还是要输入密码，为了方便起见，我们在wxler1主机上再采用root账号配置一下无密登录到wxler1、wxler2、wxler3上，别的机器上用到再说。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 .ssh]$ su root</span><br><span class="line">[root@wxler1 ~]<span class="comment"># cd ~/.ssh</span></span><br><span class="line">[root@wxler1 .ssh]<span class="comment"># pwd</span></span><br><span class="line">/root/.ssh</span><br></pre></td></tr></table></div></figure>
+<p>再在wxler1主机上分别执行第（2）、（3）步即可</p>
+<p>3）.ssh 文件夹下（~/.ssh）的文件功能解释<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210331145411961.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215bGF5bmU=,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215bGF5bmUpx;"  alt="在这里插入图片描述" />
+      </p>
+
+        <h3 id="23-集群配置"   >
+          <a href="#23-集群配置" class="heading-link"><i class="fas fa-link"></i></a>2.3 集群配置</h3>
+      
+<p>以下命令均在wxler1虚拟机上执行<br />
+1）<strong>集群部署规划</strong><br />
+注意：</p>
+<ul>
+<li>NameNode 和 SecondaryNameNode 不要安装在同一台服务器</li>
+<li>ResourceManager 也很消耗内存，不要和 NameNode、SecondaryNameNode 配置在同一台机器上。</li>
+</ul>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210331152137465.png"  alt="在这里插入图片描述" />
+      </p>
+<p>2）<strong>配置文件说明</strong><br />
+Hadoop 配置文件分两类：<strong>默认配置文件和自定义配置文件</strong>，只有用户想修改某一默认配置值时，才需要修改自定义配置文件，更改相应属性值。</p>
+<p>（1）默认配置文件：<br />
+从官网上下载之后，会有这四个文件<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210331152303326.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215bGF5bmU=,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L215bGF5bmUpx;"  alt="在这里插入图片描述" />
+      <br />
+（2）自定义配置文件：<br />
+core-site.xml 、 hdfs-site.xml 、 yarn-site.xml 、 mapred-site.xml 四个配置文件存放在<code>$HADOOP_HOME/etc/hadoop</code> 这个路径上，用户可以根据项目需求重新进行修改配置。</p>
+<p>3）<strong>配置集群</strong></p>
+<p>（1）核心配置文件<br />
+配置 core-site.xml</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> <span class="variable">$HADOOP_HOME</span>/etc/hadoop</span><br><span class="line">vim core-site.xml</span><br></pre></td></tr></table></div></figure>
+<p>文件内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</span><br><span class="line">&lt;?xml-stylesheet <span class="built_in">type</span>=<span class="string">"text/xsl"</span> href=<span class="string">"configuration.xsl"</span>?&gt;</span><br><span class="line"></span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">	&lt;!--  指定 NameNode 的地址  --&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;fs.defaultFS&lt;/name&gt;</span><br><span class="line">		&lt;value&gt;hdfs://wxler1:8020&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">	&lt;!--  指定 hadoop 数据的存储目录  --&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;hadoop.tmp.dir&lt;/name&gt;</span><br><span class="line">		&lt;value&gt;/opt/module/hadoop-3.1.3/data&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">	&lt;!--  配置 HDFS 网页登录使用的静态用户为 wxler--&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;hadoop.http.staticuser.user&lt;/name&gt;</span><br><span class="line">		&lt;value&gt;wxler&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></div></figure>
+<p>注意，8020是hadoop内部通讯的端口</p>
+<p>（2）HDFS 配置文件<br />
+配置 hdfs-site.xml</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim hdfs-site.xml</span><br></pre></td></tr></table></div></figure>
+<p>文件内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</span><br><span class="line">&lt;?xml-stylesheet <span class="built_in">type</span>=<span class="string">"text/xsl"</span> href=<span class="string">"configuration.xsl"</span>?&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">	&lt;!-- nn web 端访问地址--&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">	&lt;name&gt;dfs.namenode.http-address&lt;/name&gt;</span><br><span class="line">	&lt;value&gt;wxler1:9870&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">	&lt;!-- 2nn web 端访问地址--&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">	&lt;name&gt;dfs.namenode.secondary.http-address&lt;/name&gt;</span><br><span class="line">	&lt;value&gt;wxler3:9868&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></div></figure>
+<p>（3）YARN 配置文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim yarn-site.xml</span><br></pre></td></tr></table></div></figure>
+<p>文件内容如下:</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</span><br><span class="line">&lt;?xml-stylesheet <span class="built_in">type</span>=<span class="string">"text/xsl"</span> href=<span class="string">"configuration.xsl"</span>?&gt;</span><br><span class="line"></span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">	&lt;!--  指定 MR 走 shuffle --&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.nodemanager.aux-services&lt;/name&gt;</span><br><span class="line">		&lt;value&gt;mapreduce_shuffle&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;!--  指定 ResourceManager 的地址--&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.resourcemanager.hostname&lt;/name&gt;</span><br><span class="line">		&lt;value&gt;wxler2&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">	</span><br><span class="line">	&lt;!--  环境变量的继承  --&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;yarn.nodemanager.env-whitelist&lt;/name&gt;</span><br><span class="line">		&lt;value&gt;JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_MAPRED_HOME&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></div></figure>
+<p>注意：<code>HADOOP_MAPRED_HOME</code>是比默认多的配置，这是hadoop-3.1.3的小Bug，高版本就没有这个问题了</p>
+<p>（4）MapReduce 配置文件<br />
+配置 mapred-site.xml</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim mapred-site.xml</span><br></pre></td></tr></table></div></figure>
+<p>文件内容如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span>?&gt;</span><br><span class="line">&lt;?xml-stylesheet <span class="built_in">type</span>=<span class="string">"text/xsl"</span> href=<span class="string">"configuration.xsl"</span>?&gt;</span><br><span class="line">&lt;configuration&gt;</span><br><span class="line">	&lt;!--  指定 MapReduce 程序运行在 Yarn 上  --&gt;</span><br><span class="line">	&lt;property&gt;</span><br><span class="line">		&lt;name&gt;mapreduce.framework.name&lt;/name&gt;</span><br><span class="line">		&lt;value&gt;yarn&lt;/value&gt;</span><br><span class="line">	&lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></div></figure>
+<p>4）在集群上分发配置好的 Hadoop 配置文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xsync  /opt/module/hadoop-3.1.3/etc/hadoop/</span><br></pre></td></tr></table></div></figure>
+<p>5）去 wxler2 和 wxler3上查看文件分发情况</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler2 .ssh]$ cat  /opt/module/hadoop-3.1.3/etc/hadoop/core-site.xml</span><br><span class="line">[wxler@wxler3 .ssh]$ cat  /opt/module/hadoop-3.1.3/etc/hadoop/core-site.xml</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="24-群起集群"   >
+          <a href="#24-群起集群" class="heading-link"><i class="fas fa-link"></i></a>2.4 群起集群</h3>
+      
+<p>以下命令均在wxler1虚拟机上执行<br />
+1）<strong>配置 workers</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim  /opt/module/hadoop-3.1.3/etc/hadoop/workers</span><br></pre></td></tr></table></div></figure>
+<p>在该文件中增加如下内容：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">wxler1</span><br><span class="line">wxler2</span><br><span class="line">wxler3</span><br></pre></td></tr></table></div></figure>
+<p>注意：该文件中添加的内容结尾不允许有空格，文件中不允许有空行。</p>
+<p>同步所有节点配置文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xsync /opt/module/hadoop-3.1.3/etc</span><br></pre></td></tr></table></div></figure>
+<p>2）<strong>启动集群</strong></p>
+<p>以下命令均在wxler1虚拟机上执行</p>
+<p>（1）<strong>如果集群是第一次启动</strong>，需要在 wxler1 节点格式化 NameNode（注意：格式化 NameNode，会产生新的集群 id，导致 NameNode 和 DataNode 的集群 id 不一致，集群找不到已往数据。 如果集群在运行过程中报错，需要重新格式化 NameNode 的话， 一定要先停止 namenode 和 datanode 进程，并且要删除所有机器的 data 和 logs 目录，然后再进行格式化。）<br />
+data 目录存放在：<code>/opt/module/hadoop-3.1.3/data</code><br />
+logs 目录存放在：<code>/opt/module/hadoop-3.1.3/logs</code></p>
+<p>格式化：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs namenode -format</span><br></pre></td></tr></table></div></figure>
+<p>格式化以后会在<code>/opt/module/hadoop-3.1.3/</code>目录下产生data目录存放数据</p>
+<p>（2）启动 HDFS</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ sbin/start-dfs.sh</span><br><span class="line">Starting namenodes on [wxler1]</span><br><span class="line">Starting datanodes</span><br><span class="line">wxler2: WARNING: /opt/module/hadoop-3.1.3/logs does not exist. Creating.</span><br><span class="line">wxler3: WARNING: /opt/module/hadoop-3.1.3/logs does not exist. Creating.</span><br><span class="line">Starting secondary namenodes [wxler3]</span><br><span class="line">[wxler@wxler1 hadoop-3.1.3]$ ls</span><br><span class="line">bin  data  etc  include  lib  libexec  LICENSE.txt  logs  NOTICE.txt  README.txt  sbin  share  wcinput  wcoutput</span><br></pre></td></tr></table></div></figure>
+<p>启动之后会在<code>/opt/module/hadoop-3.1.3/</code>产生logs目录<br />
+（3）在配置了 ResourceManager 的节点（wxler2）启动 YARN</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler2 hadoop-3.1.3]$ sbin/start-yarn.sh</span><br></pre></td></tr></table></div></figure>
+<p>（4）Web 端查看 HDFS 的 NameNode<br />
+（a）浏览器中输入：<code>http://wxler1:9870</code><br />
+（b）查看 HDFS 上存储的数据信息</p>
+<p>（5）Web 端查看 Y ARN 的 ResourceManager<br />
+（a）浏览器中输入：<code>http://wxler2:8088</code><br />
+（b）查看 YARN 上运行的 Job 信息</p>
+<p>3）<strong>集群基本测试</strong></p>
+<p>（1）上传文件到集群<br />
+上传小文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ hadoop fs -mkdir /input</span><br><span class="line">[wxler@wxler1 hadoop-3.1.3]$ hadoop  fs  -put <span class="variable">$HADOOP_HOME</span>/wcinput/word.txt /input</span><br><span class="line">2021-03-31 16:23:49,631 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = <span class="literal">false</span>, remoteHostTrusted = <span class="literal">false</span></span><br></pre></td></tr></table></div></figure>
+<p>上传大文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ hadoop fs -put    /opt/software/jdk-8u212-linux-x64.tar.gz  /</span><br></pre></td></tr></table></div></figure>
+<p>（2）上传文件后查看文件存放在什么位置</p>
+<p>查看 HDFS 文件存储路径</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 subdir0]$ <span class="built_in">pwd</span></span><br><span class="line">/opt/module/hadoop-3.1.3/data/dfs/data/current/BP-767171352-192.168.218.71-1617178286979/current/finalized/subdir0/subdir0</span><br></pre></td></tr></table></div></figure>
+<p>查看 HDFS 在磁盘存储文件内容</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 subdir0]$ cat blk_1073741825</span><br><span class="line">hadoop yarn</span><br><span class="line">hadoop mapreduce</span><br><span class="line">wxler</span><br><span class="line">wxler</span><br></pre></td></tr></table></div></figure>
+<p>（3）<strong>拼接</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 subdir0]$ ll</span><br><span class="line">总用量 191944</span><br><span class="line">-rw-rw-r--. 1 wxler wxler        41 3月  31 16:23 blk_1073741825</span><br><span class="line">-rw-rw-r--. 1 wxler wxler        11 3月  31 16:23 blk_1073741825_1001.meta</span><br><span class="line">-rw-rw-r--. 1 wxler wxler 134217728 3月  31 16:26 blk_1073741826</span><br><span class="line">-rw-rw-r--. 1 wxler wxler   1048583 3月  31 16:26 blk_1073741826_1002.meta</span><br><span class="line">-rw-rw-r--. 1 wxler wxler  60795424 3月  31 16:26 blk_1073741827</span><br><span class="line">-rw-rw-r--. 1 wxler wxler    474975 3月  31 16:26 blk_1073741827_1003.meta</span><br><span class="line"></span><br><span class="line">[wxler@wxler1 subdir0]$ cat blk_1073741826&gt;&gt;tmp.tar.gz</span><br><span class="line">[wxler@wxler1 subdir0]$ ls</span><br><span class="line">blk_1073741825            blk_1073741826            blk_1073741827            jdk1.8.0_212</span><br><span class="line">blk_1073741825_1001.meta  blk_1073741826_1002.meta  blk_1073741827_1003.meta  tmp.tar.gz</span><br></pre></td></tr></table></div></figure>
+<p>可以看到，解压出来就是一个jdk</p>
+<p>（4）<strong>下载</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 subdir0]$ <span class="built_in">cd</span> ~</span><br><span class="line">[wxler@wxler1 ~]$ ls</span><br><span class="line">a.txt  bin</span><br><span class="line">[wxler@wxler1 ~]$ hadoop fs  -get /jdk-8u212-linux-x64.tar.gz ./</span><br><span class="line">2021-03-31 16:38:31,931 INFO sasl.SaslDataTransferClient: SASL encryption trust check: localHostTrusted = <span class="literal">false</span>, remoteHostTrusted = <span class="literal">false</span></span><br><span class="line">[wxler@wxler1 ~]$ ls</span><br><span class="line">a.txt  bin  jdk-8u212-linux-x64.tar.gz</span><br></pre></td></tr></table></div></figure>
+<p>（5）<strong>执行 wordcount 程序</strong></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ <span class="built_in">pwd</span></span><br><span class="line">/opt/module/hadoop-3.1.3</span><br><span class="line">[wxler@wxler1 hadoop-3.1.3]$ hadoop  jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount /input /output</span><br></pre></td></tr></table></div></figure>
+<p>如果执行过程中，报如下错误，任务执行失败</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">[2021-03-31 17:26:59.903]Container killed on request. Exit code is 143</span><br><span class="line">[2021-03-31 17:26:59.963]Container exited with a non-zero <span class="built_in">exit</span> code 143. </span><br><span class="line"></span><br><span class="line">2021-03-31 17:27:09,379 INFO mapreduce.Job:  map 100% reduce 100%</span><br><span class="line">2021-03-31 17:27:10,421 INFO mapreduce.Job: Job job_1617178807949_0005 failed with state FAILED due to: Task failed task_1617178807949_0005_m_000000</span><br><span class="line">Job failed as tasks failed. failedMaps:1 failedReduces:0 killedMaps:0 killedReduces: 0</span><br><span class="line"></span><br><span class="line">2021-03-31 17:27:10,580 INFO mapreduce.Job: Counters: 13</span><br><span class="line">	Job Counters </span><br><span class="line">		Failed map tasks=4</span><br><span class="line">		Killed reduce tasks=1</span><br><span class="line">		Launched map tasks=4</span><br><span class="line">		Other <span class="built_in">local</span> map tasks=3</span><br><span class="line">		Data-local map tasks=1</span><br><span class="line">		Total time spent by all maps <span class="keyword">in</span> occupied slots (ms)=26504</span><br><span class="line">		Total time spent by all reduces <span class="keyword">in</span> occupied slots (ms)=0</span><br><span class="line">		Total time spent by all map tasks (ms)=26504</span><br><span class="line">		Total vcore-milliseconds taken by all map tasks=26504</span><br><span class="line">		Total megabyte-milliseconds taken by all map tasks=27140096</span><br><span class="line">	Map-Reduce Framework</span><br><span class="line">		CPU time spent (ms)=0</span><br><span class="line">		Physical memory (bytes) snapshot=0</span><br><span class="line">		Virtual memory (bytes) snapshot=0</span><br></pre></td></tr></table></div></figure>
+<p>解决方法：</p>
+<p>①修改配置文件 <code>/opt/module/hadoop-3.1.3/etc/hadoop/yarn-site.xml</code> 添加如下内容</p>
+<figure class="highlight xml"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--是否启动一个线程检查每个任务正使用的物理内存量，如果任务超出分配值，则直接将其杀掉，默认是true --&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.pmem-check-enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--是否启动一个线程检查每个任务正使用的虚拟内存量，如果任务超出分配值，则直接将其杀掉，默认是true --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.vmem-check-enabled<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">     <span class="tag">&lt;<span class="name">value</span>&gt;</span>false<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></div></figure>
+<p>②分发配置（支持相对路径）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xsync  /opt/module/hadoop-3.1.3/etc/hadoop/</span><br></pre></td></tr></table></div></figure>
+<p>③重启hadoop集群</p>
+
+        <h3 id="25-配置历史服务器"   >
+          <a href="#25-配置历史服务器" class="heading-link"><i class="fas fa-link"></i></a>2.5 配置历史服务器</h3>
+      
+<p>为了查看程序的历史运行情况，需要配置一下历史服务器。具体配置步骤如下：</p>
+<p>1）配置 mapred-site.xml</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop]$ <span class="built_in">pwd</span></span><br><span class="line">/opt/module/hadoop-3.1.3/etc/hadoop</span><br><span class="line">[wxler@wxler1 hadoop]$ vim mapred-site.xml</span><br></pre></td></tr></table></div></figure>
+<p>在该文件里面增加如下配置。</p>
+<figure class="highlight xml"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--  历史服务器端地址  --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.jobhistory.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">value</span>&gt;</span>wxler1:10020<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--  历史服务器 web 端地址  --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.jobhistory.webapp.address<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">value</span>&gt;</span>wxler1:19888<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br></pre></td></tr></table></div></figure>
+<ul>
+<li>10020是历史服务器内部通讯的端口</li>
+<li>19888是外部暴露的端口</li>
+</ul>
+<p>2）分发配置（支持相对路径）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xsync <span class="variable">$HADOOP_HOME</span>/etc/hadoop/mapred-site.xml</span><br></pre></td></tr></table></div></figure>
+<p>3）在 wxler1 启动历史服务器</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop]$ mapred --daemon start historyserver</span><br><span class="line">[wxler@wxler1 hadoop]$ jps</span><br><span class="line">15585 NameNode</span><br><span class="line">17313 Jps</span><br><span class="line">16658 NodeManager</span><br><span class="line">15700 DataNode</span><br><span class="line">17256 JobHistoryServer</span><br></pre></td></tr></table></div></figure>
+<ul>
+<li><code>--daemon</code>表示在后台启动</li>
+</ul>
+<p>4）查看 JobHistory</p>
+<p><code>http://wxler1:19888/jobhistory</code></p>
+
+        <h3 id="26-配置日志的聚集"   >
+          <a href="#26-配置日志的聚集" class="heading-link"><i class="fas fa-link"></i></a>2.6 配置日志的聚集</h3>
+      
+<p>日志聚集概念：应用运行完成以后，将程序运行日志信息上传到 HDFS 系统上。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331201500.png"  alt="" />
+      </p>
+<p>日志聚集功能好处：可以方便的查看到程序运行详情，方便开发调试。<br />
+注意 ：开启日志聚集功能， 需要 重新启动 NodeManager  、 ResourceManager 和HistoryServer。</p>
+<p>开启日志聚集功能具体步骤如下：</p>
+<p>1）配置 yarn-site.xml</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop]$ <span class="built_in">pwd</span></span><br><span class="line">/opt/module/hadoop-3.1.3/etc/hadoop</span><br><span class="line">[wxler@wxler1 hadoop]$ vim yarn-site.xml</span><br></pre></td></tr></table></div></figure>
+<p>在该文件里面增加如下配置。</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;!--  开启日志聚集功能  --&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;yarn.log-aggregation-enable&lt;/name&gt;</span><br><span class="line">&lt;value&gt;<span class="literal">true</span>&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line">&lt;!--  设置日志聚集服务器地址  --&gt;</span><br><span class="line">&lt;property&gt; </span><br><span class="line">&lt;name&gt;yarn.log.server.url&lt;/name&gt; </span><br><span class="line">&lt;value&gt;http://wxler1:19888/jobhistory/logs&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br><span class="line">&lt;!--  设置日志保留时间为 7 天  --&gt;</span><br><span class="line">&lt;property&gt;</span><br><span class="line">&lt;name&gt;yarn.log-aggregation.retain-seconds&lt;/name&gt;</span><br><span class="line">&lt;value&gt;604800&lt;/value&gt;</span><br><span class="line">&lt;/property&gt;</span><br></pre></td></tr></table></div></figure>
+<p>2）分发配置</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xsync  <span class="variable">$HADOOP_HOME</span>/etc/hadoop/yarnsite.xml</span><br></pre></td></tr></table></div></figure>
+<p>3）关闭 NodeManager  、ResourceManager 和 HistoryServer</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler2 hadoop]$ <span class="built_in">cd</span> /opt/module/hadoop-3.1.3/</span><br><span class="line">[wxler@wxler2 hadoop-3.1.3]$ sbin/stop-yarn.sh</span><br><span class="line">[wxler@wxler1 hadoop-3.1.3]$ mapred  --daemon  stop historyserver</span><br></pre></td></tr></table></div></figure>
+<p>注意，因为ResourceManager 是在wxler2上配置的，所以一定要在wxler2上关闭。而historyserver是在wxler1上配置的，所以historyserver要在weler1上关闭。</p>
+<p>4）启动 NodeManager  、ResourceManage 和 HistoryServer</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler2 hadoop-3.1.3]$ start-yarn.sh</span><br><span class="line">[wxler@wxler1 hadoop-3.1.3]$ mapred --daemon start historyserver</span><br></pre></td></tr></table></div></figure>
+<p>同理，启动的位置同上一步</p>
+<p>5）删除 HDFS 上已经存在的输出文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ hadoop fs -rm -r /output</span><br><span class="line">Deleted /output</span><br></pre></td></tr></table></div></figure>
+<p>6）执行 WordCount 程序</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ hadoop  jar share/hadoop/mapreduce/hadoop-mapreduce-examples-3.1.3.jar wordcount /input /output</span><br></pre></td></tr></table></div></figure>
+<p>7）查看日志</p>
+<p>（1）历史服务器地址</p>
+<p><code>http://wxler1:19888/jobhistory</code></p>
+<p>（2）历史任务列表</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331202946.png"  alt="" />
+      </p>
+<p>（3）查看任务运行日志</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331203011.png"  alt="" />
+      </p>
+<p>（4）运行日志详情</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331203052.png"  alt="" />
+      </p>
+
+        <h3 id="27-集群启动停止方式总结"   >
+          <a href="#27-集群启动停止方式总结" class="heading-link"><i class="fas fa-link"></i></a>2.7 集群启动/停止方式总结</h3>
+      
+<p>1）各个模块分开启动/停止（配置 ssh 是前提）常用</p>
+<p>（1）整体启动/停止 HDFS</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start-dfs.sh/stop-dfs.sh</span><br></pre></td></tr></table></div></figure>
+<p>（2）整体启动/停止 YARN</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start-yarn.sh/stop-yarn.sh</span><br></pre></td></tr></table></div></figure>
+<p>2）各个服务组件逐一启动/停止</p>
+<p>（1）分别启动/停止 HDFS 组件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hdfs --daemon start/stop namenode/datanode/secondarynamenode</span><br></pre></td></tr></table></div></figure>
+<p>（2）启动/停止 YARN</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn --daemon start/stop resourcemanager/nodemanager</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="28-编写-hadoop-集群常用脚本"   >
+          <a href="#28-编写-hadoop-集群常用脚本" class="heading-link"><i class="fas fa-link"></i></a>2.8 编写 Hadoop 集群常用脚本</h3>
+      
+<p>1）Hadoop 集群启停脚本（包含 HDFS，Y arn，Historyserver）：<span class="exturl"><a class="exturl__link"   href="http://myhadoop.sh"  target="_blank" rel="noopener">myhadoop.sh</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ <span class="built_in">cd</span> /home/wxler/bin</span><br><span class="line">[wxler@wxler1 bin]$ vim myhadoop.sh</span><br></pre></td></tr></table></div></figure>
+<p>输入以下内容：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#!/bin/bash</span></span><br><span class="line"><span class="keyword">if</span> [ <span class="variable">$#</span> -lt 1 ]</span><br><span class="line"><span class="keyword">then</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"No Args Input..."</span></span><br><span class="line">	<span class="built_in">exit</span> ;</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">case</span> <span class="variable">$1</span> <span class="keyword">in</span></span><br><span class="line"><span class="string">"start"</span>)</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" ===================  启动  hadoop 集群  ==================="</span></span><br><span class="line">	</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" ---------------  启动  hdfs ---------------"</span></span><br><span class="line">	ssh wxler1 <span class="string">"/opt/module/hadoop-3.1.3/sbin/start-dfs.sh"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" ---------------  启动  yarn ---------------"</span> </span><br><span class="line">	ssh wxler2 <span class="string">"/opt/module/hadoop-3.1.3/sbin/start-yarn.sh"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" ---------------  启动  historyserver ---------------"</span></span><br><span class="line">	ssh wxler1 <span class="string">"/opt/module/hadoop-3.1.3/bin/mapred  --daemon  start historyserver"</span></span><br><span class="line">;;</span><br><span class="line"><span class="string">"stop"</span>)</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" ===================  关闭  hadoop 集群  ==================="</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" ---------------  关闭  historyserver ---------------"</span></span><br><span class="line">	ssh  wxler1  <span class="string">"/opt/module/hadoop-3.1.3/bin/mapred  --daemon  stop historyserver"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" ---------------  关闭  yarn ---------------"</span></span><br><span class="line">	ssh wxler2 <span class="string">"/opt/module/hadoop-3.1.3/sbin/stop-yarn.sh"</span></span><br><span class="line">	<span class="built_in">echo</span> <span class="string">" ---------------  关闭  hdfs ---------------"</span></span><br><span class="line">	ssh wxler1 <span class="string">"/opt/module/hadoop-3.1.3/sbin/stop-dfs.sh"</span></span><br><span class="line">;;</span><br><span class="line">*)</span><br><span class="line">	<span class="built_in">echo</span> <span class="string">"Input Args Error..."</span></span><br><span class="line">;;</span><br><span class="line"><span class="keyword">esac</span></span><br></pre></td></tr></table></div></figure>
+<p>保存后退出，然后赋予脚本执行权限</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x myhadoop.sh</span><br></pre></td></tr></table></div></figure>
+<p>2）查看三台服务器 Java 进程脚本：jpsall</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 hadoop-3.1.3]$ <span class="built_in">cd</span> /home/wxler/bin</span><br><span class="line">[wxler@wxler1 bin]$ vim jpsall</span><br></pre></td></tr></table></div></figure>
+<p>输入以下内容：</p>
+<p>保存后退出，然后赋予脚本执行权限</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x jpsall</span><br></pre></td></tr></table></div></figure>
+<p>3）分发/home/atguigu/bin 目录，保证自定义脚本在三台机器上都可以使用</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 bin]$ <span class="built_in">pwd</span></span><br><span class="line">/home/wxler/bin</span><br><span class="line">[wxler@wxler1 bin]$ xsync ./</span><br></pre></td></tr></table></div></figure>
+
+        <h3 id="29-常用端口号说明"   >
+          <a href="#29-常用端口号说明" class="heading-link"><i class="fas fa-link"></i></a>2.9 常用端口号说明</h3>
+      
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331205308.png"  alt="" />
+      </p>
+
+        <h3 id="210-集群时间同步"   >
+          <a href="#210-集群时间同步" class="heading-link"><i class="fas fa-link"></i></a>2.10 集群时间同步</h3>
+      
+<p>如果服务器在公网环境（能连接外网），可以不采用集群时间同步，因为服务器会定期和公网时间进行校准；</p>
+<p>如果服务器在内网环境，必须要配置集群时间同步，否则时间久了，会产生时间偏差，导致集群执行任务时间不同</p>
+<p>步。</p>
+<p>1）<strong>需求</strong></p>
+<p>找一个机器，作为时间服务器，所有的机器与这台集群时间进行定时的同步， 生产环境根据任务对时间的准确程度要求周期同步。 测试环境为了尽快看到效果，采用 1 分钟同步一次。</p>
+<p>2）<strong>时间服务器配置</strong></p>
+<p>以下代码均在wxler1上执行</p>
+<p>（1）查看所有节点 ntpd 服务状态和开机自启动状态</p>
+<p>查看ntpd状态</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 ~]$ sudo systemctl start ntpd</span><br><span class="line">Failed to start ntpd.service: Unit not found.</span><br></pre></td></tr></table></div></figure>
+<p>安装ntpd</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 ~]$ sudo yum -y install ntp</span><br></pre></td></tr></table></div></figure>
+<p>下面依次执行</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 ~]$ sudo systemctl start ntpd  <span class="comment">#启动ntpd服务</span></span><br><span class="line">[wxler@wxler1 ~]$ sudo systemctl status ntpd <span class="comment">#查看ntpd状态</span></span><br><span class="line">[wxler@wxler1 ~]$ sudo systemctl is-enabled ntpd <span class="comment">#设置开启启动</span></span><br></pre></td></tr></table></div></figure>
+<p>（2）修改 hadoop102 的 ntp.conf 配置文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo vim /etc/ntp.conf</span><br></pre></td></tr></table></div></figure>
+<p>修改内容如下，总共修改3出</p>
+<p>（a）修改 1（授权 192.168.10.0-192.168.10.255 网段上的所有机器可以从这台机器上查询和同步时间），即都可以查询wxler1虚拟机上的时间并同步</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#restrict 192.168.1.0 mask 255.255.255.0 nomodify notrap</span></span><br></pre></td></tr></table></div></figure>
+<p>改为</p>
+<figure class="highlight plain"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">restrict 192.168.218.0 mask 255.255.255.0 nomodify notrap</span><br></pre></td></tr></table></div></figure>
+<p>（b）修改 2（集群在局域网中，不使用其他互联网上的时间）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">server 0.centos.pool.ntp.org iburst</span><br><span class="line">server 1.centos.pool.ntp.org iburst</span><br><span class="line">server 2.centos.pool.ntp.org iburst</span><br><span class="line">server 3.centos.pool.ntp.org iburst</span><br></pre></td></tr></table></div></figure>
+<p>修改为</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># server 0.centos.pool.ntp.org iburst</span></span><br><span class="line"><span class="comment"># server 1.centos.pool.ntp.org iburst</span></span><br><span class="line"><span class="comment"># server 2.centos.pool.ntp.org iburst</span></span><br><span class="line"><span class="comment"># server 3.centos.pool.ntp.org iburst</span></span><br></pre></td></tr></table></div></figure>
+<p>（c） 添加 3 （当该节点丢失网络连接，wxler1依然可以采用本地时间作为时间服务器为集群中的其他节点提供时间同步）</p>
+<p>在<code>/etc/ntp.conf</code>最后增加</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">server 127.127.1.0</span><br><span class="line">fudge 127.127.1.0 stratum 10</span><br></pre></td></tr></table></div></figure>
+<p>（3）修改 wxler1 的/etc/sysconfig/ntpd  文件</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[wxler@wxler1 ~]$ sudo vim /etc/sysconfig/ntpd</span><br></pre></td></tr></table></div></figure>
+<p>增加内容如下（让硬件时间与系统时间一起同步）</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SYNC_HWCLOCK=yes</span><br></pre></td></tr></table></div></figure>
+<p>（4）重新启动 ntpd 服务</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl restart ntpd</span><br></pre></td></tr></table></div></figure>
+<p>3）<strong>其他机器配置</strong></p>
+<p>（1）关闭所有节点上 ntp 服务和自启动</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">sudo systemctl stop ntpd</span><br><span class="line">sudo systemctl <span class="built_in">disable</span> ntpd</span><br></pre></td></tr></table></div></figure>
+<p>（2）在其他机器配置 1 分钟与时间服务器同步一次</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo crontab -e</span><br></pre></td></tr></table></div></figure>
+<p>编写定时任务如下：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">*/1 * * * * /usr/sbin/ntpdate wxler1</span><br></pre></td></tr></table></div></figure>
+<p>注意：除了wxler1之外，wxler2、wxler3都要执行</p>
+
+        <h2 id="3-常见错误及解决方案"   >
+          <a href="#3-常见错误及解决方案" class="heading-link"><i class="fas fa-link"></i></a>3. 常见错误及解决方案</h2>
+      
+<p>1）防火墙没关闭、或者没有启动 YARN</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">INFO client.RMProxy: Connecting to ResourceManager at hadoop108/192.168.10.108:8032</span><br></pre></td></tr></table></div></figure>
+<p>2）主机名称配置错误<br />
+3）IP 地址配置错误<br />
+4）ssh 没有配置好<br />
+5）root 用户和 atguigu 两个用户启动集群不统一<br />
+6）配置文件修改不细心<br />
+7）不识别主机名称</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">java.net.UnknownHostException: hadoop102: hadoop102</span><br><span class="line">at </span><br><span class="line">java.net.InetAddress.getLocalHost(InetAddress.java:1475)</span><br><span class="line">at </span><br><span class="line">org.apache.hadoop.mapreduce.JobSubmitter.submitJobInternal(Job</span><br><span class="line">Submitter.java:146)</span><br><span class="line">at org.apache.hadoop.mapreduce.Job<span class="variable">$10</span>.run(Job.java:1290)</span><br><span class="line">at org.apache.hadoop.mapreduce.Job<span class="variable">$10</span>.run(Job.java:1287)</span><br><span class="line">at  java.security.AccessController.doPrivileged(Native </span><br><span class="line">Method)</span><br><span class="line">at javax.security.auth.Subject.doAs(Subject.java:415)</span><br></pre></td></tr></table></div></figure>
+<p>解决办法：<br />
+（1）在/etc/hosts 文件中添加 192.168.10.102 wxler1<br />
+（2）主机名称不要起 hadoop、hadoop000 等特殊名称</p>
+<p>8）DataNode 和 NameNode 进程同时只能工作一个。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331213651.png"  alt="" />
+      </p>
+<p>三个步骤：</p>
+<ul>
+<li>关闭hdfs、yarn、历史服务器等</li>
+<li>删除所有节点的data和logs目录</li>
+<li>重新格式化</li>
+</ul>
+<p>9）执行命令不生效，粘贴 Word 中命令时，遇到-和长–没区分开。导致命令失效<br />
+解决办法：尽量不要粘贴 Word 中代码。</p>
+<p>10）jps 发现进程已经没有，但是重新启动集群，提示进程已经开启。<br />
+原因是在 Linux 的根目录下/tmp 目录中存在启动的进程临时文件，将集群相关进程删除掉，再重新启动集群。</p>
+<p>11）jps 不生效<br />
+原因：全局变量 hadoop java 没有生效。解决办法：需要 source /etc/profile 文件。</p>
+<p>12）8088 端口连接不上</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/hosts</span><br></pre></td></tr></table></div></figure>
+<p>注释掉如下代码</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#127.0.0.1    localhost localhost.localdomain localhost4 localhost4.localdomain4</span></span><br><span class="line"><span class="comment">#::1          hadoop102</span></span><br></pre></td></tr></table></div></figure>
+<p>13）hdfs删除文件保存</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210331214143.png"  alt="" />
+      </p>
+<p>原因是没有在core-site.xml配置HDFS 网页登录使用的静态用户，解决方法参见2.3节的 3）</p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.github.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.github.io/2021/03/31/191601/">https://wxler.github.io/2021/03/31/191601/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.github.io/tags/Hadoop/">Hadoop</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/03/31/191801/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">四、大数据技术之Hadoop（HDFS）</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/03/31/190343/"><span class="paginator-prev__text">二、Hadoop 运行环境搭建</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-本地运行模式官方-wordcount"><span class="toc-text">
+          1. 本地运行模式（官方 WordCount）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-完全分布式运行模式开发重点"><span class="toc-text">
+          2.  完全分布式运行模式（开发重点）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#21-编写集群分发脚本-xsync"><span class="toc-text">
+          2.1 编写集群分发脚本 xsync</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#22-ssh-无密登录配置"><span class="toc-text">
+          2.2 SSH 无密登录配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#23-集群配置"><span class="toc-text">
+          2.3 集群配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#24-群起集群"><span class="toc-text">
+          2.4 群起集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#25-配置历史服务器"><span class="toc-text">
+          2.5 配置历史服务器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#26-配置日志的聚集"><span class="toc-text">
+          2.6 配置日志的聚集</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#27-集群启动停止方式总结"><span class="toc-text">
+          2.7 集群启动&#x2F;停止方式总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#28-编写-hadoop-集群常用脚本"><span class="toc-text">
+          2.8 编写 Hadoop 集群常用脚本</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#29-常用端口号说明"><span class="toc-text">
+          2.9 常用端口号说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#210-集群时间同步"><span class="toc-text">
+          2.10 集群时间同步</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-常见错误及解决方案"><span class="toc-text">
+          3. 常见错误及解决方案</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">123</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">20</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">56</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
