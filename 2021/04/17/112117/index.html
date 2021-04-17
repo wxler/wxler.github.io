@@ -1,0 +1,587 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="英文名称：ACNet: Strengthening the Kernel Skeletons for Powerful CNN via Asymmetric Convolution Blocks 中文名称： 通过非对称卷积块增强CNN的核骨架 论文会议：ICCV2019 论文地址：https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;1908.03930v1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ACNet：Strengthening the Kernel Skeletons for Powerful CNN via Asymmetric Convolution Blocks">
+<meta property="og:url" content="https://wxler.github.io/2021/04/17/112117/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="英文名称：ACNet: Strengthening the Kernel Skeletons for Powerful CNN via Asymmetric Convolution Blocks 中文名称： 通过非对称卷积块增强CNN的核骨架 论文会议：ICCV2019 论文地址：https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;1908.03930v1">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417113614.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417124534.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417125643.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417130406.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417130830.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417131508.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417131729.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417131853.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417131924.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417132014.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417135319.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417135540.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417132810.png">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417141908.png">
+<meta property="article:published_time" content="2021-04-17T03:21:17.000Z">
+<meta property="article:modified_time" content="2021-04-17T06:52:31.840Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="ACNet">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417113614.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>ACNet：Strengthening the Kernel Skeletons for Powerful CNN via Asymmetric Convolution Blocks | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/04/17/112117/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">ACNet：Strengthening the Kernel Skeletons for Powerful CNN via Asymmetric Convolution Blocks</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-04-17</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-04-17</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">3.4k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">19分</span></span></div></header><div class="post-body"><ul>
+<li>英文名称：ACNet: Strengthening the Kernel Skeletons for Powerful CNN via Asymmetric Convolution Blocks</li>
+<li>中文名称： 通过非对称卷积块增强CNN的核骨架</li>
+<li>论文会议：ICCV2019</li>
+<li>论文地址：<span class="exturl"><a class="exturl__link"   href="https://arxiv.org/abs/1908.03930v1"  target="_blank" rel="noopener">https://arxiv.org/abs/1908.03930v1</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+</ul>
+<a id="more"></a>
+
+        <h2 id="一-摘要"   >
+          <a href="#一-摘要" class="heading-link"><i class="fas fa-link"></i></a>一、摘要</h2>
+      
+<p>由于在给定的应用环境中设计合适的卷积神经网络(CNN)结构需要<strong>大量的人工工作</strong>或<strong>大量的GPU资源消耗</strong>，研究界正在寻找<strong>网络结构无关的CNN结构</strong>，这种结构可以很容易地插入到多个成熟的体系结构中，以提高我们实际应用程序的性能。我们提出了<strong>非对称卷积块</strong>(ACB)作为CNN的构造块，它使用一维非对称卷积核来增强方形卷积核，我们用ACBs代替标准的方形卷积核来构造一个非堆成卷积网络ACNet，该网络可以训练到更高的精度。训练后，我们等价地将ACNet转换为相同的原始架构，因此将不需要额外的计算。实验证明，ACNet可以CIFAR和ImageNet上显著提高各种经典模型的性能。</p>
+
+        <h2 id="二-研究背景"   >
+          <a href="#二-研究背景" class="heading-link"><i class="fas fa-link"></i></a>二、研究背景</h2>
+      
+<p>卷积神经网络在视觉理解方面取得了巨大的成功，这使得其可以应用在安全系统，移动电话，汽车等各种应用中。由于前端设备通常受限于计算资源，就要求网络在保证精度的条件下要尽可能轻量。另一方面，<strong>随着CNN架构设计的相关研究增多，模型的性能得到了显著改善，但当现有的模型不能满足我们的特定需求时，要定制一种新的架构需要花费极高的成本</strong>。最近，研究者们正在寻求与架构无关的新型CNN结构，例如SE块和准六边形内核，它们可以直接和各种网络结构结合使用，以提高它们的性能。</p>
+<p>本文提出了非对称卷积块(ACB)，它是用三个并行的 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mo>×</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">d \times d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">d</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span></span></span></span> , <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><mo>×</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">1 \times d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span></span></span></span> , 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mo>×</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d \times 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">d</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 核来代替原始的 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mo>×</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">d \times d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">d</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span></span></span></span>核，如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417113614.png"  alt="" />
+      </p>
+<p>给定一个网络，我们通过将每个方形卷积核替换为ACB模块并训练网络到收敛。之后我们将每个ACB中非对称核的权值加到方形核的对应位置，将ACNet转换为和原始网络等效的结构。ACNet可以提高基准模型的性能，在CIFAR和ImageNet上优势明显。更好的是，ACNet引入了0参数，因此无需仔细调参就能将其与不同的CNN结构结合起来，并且易于在主流CNN框架上实现以及不需要额外的推理时间开销。</p>
+
+        <h2 id="三-相关工作"   >
+          <a href="#三-相关工作" class="heading-link"><i class="fas fa-link"></i></a>三、相关工作</h2>
+      
+
+        <h3 id="31-非对称卷积"   >
+          <a href="#31-非对称卷积" class="heading-link"><i class="fas fa-link"></i></a>3.1 非对称卷积</h3>
+      
+<p>先前的一些工作表明，可以将标准的<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mo>×</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">d  \times  d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">d</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span></span></span></span>卷积分解为 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mn>1</mn><mo>×</mo><mi>d</mi></mrow><annotation encoding="application/x-tex">1 \times d</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.72777em;vertical-align:-0.08333em;"></span><span class="mord">1</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault">d</span></span></span></span> , 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>d</mi><mo>×</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">d \times 1</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.77777em;vertical-align:-0.08333em;"></span><span class="mord mathdefault">d</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.64444em;vertical-align:0em;"></span><span class="mord">1</span></span></span></span> 卷积，<strong>以减少参数量</strong>。其背后的理论相当简单：如果二维卷积核的秩为1，则运算可等价地转换为一系列一维卷积。然而，由于深度网络中下学习到的核具有分布特征值，其内在秩比实际中的高，因此直接将变换应用于核会导致显著的信息损失。Jaderberg等人通过最小化重构误差，成功学习了水平核和垂直核。Jin等人应用结构约束使二维卷积可分离，在获得相当精度的条件下时间加速了2倍。另一方面，非堆成卷积也被广泛的用来做网络结构设计，例如<a href="https://wxler.github.io/2020/11/24/222612/#%E5%8D%B7%E7%A7%AF%E6%A0%B8%E6%8B%86%E5%88%86">Google的Inception v3网络结构中</a>，7*7卷积被1*7卷积和7*1卷积代替，可以处理更多，更丰富的空间特征。</p>
+
+        <h3 id="32-cnn架构中的中性结构"   >
+          <a href="#32-cnn架构中的中性结构" class="heading-link"><i class="fas fa-link"></i></a>3.2 CNN架构中的中性结构</h3>
+      
+<p>我们不打算修改CNN架构，<strong>而是使用一些与架构无关的结构来增强现有的模型</strong>。因此，我们的方法对任何网络都是有效的，可以做到即插即用，应用到CNN中的任何一个模块。例如，SE块可以附加到卷积层后，使用学习到的权重重新缩放特征图通道数，从而<strong>在合理的附加参数量和计算代价下显著提高精度</strong>。相比之下，ACNet在训练中不会引入任何超参数，<strong>并且在推理过程中不需要额外的参数和计算</strong>。因此，在实际应用中，开发人员可以使用ACNet来增强各种模型，而无需进行详细的参数调整，<strong>并且最终用户可以享受性能提升而又不会减慢推理速度</strong>。</p>
+
+        <h2 id="四-实现方法"   >
+          <a href="#四-实现方法" class="heading-link"><i class="fas fa-link"></i></a>四、实现方法</h2>
+      
+
+        <h3 id="41-原理公式"   >
+          <a href="#41-原理公式" class="heading-link"><i class="fas fa-link"></i></a>4.1 原理公式</h3>
+      
+<p>对于D个大小为<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>H</mi><mo>×</mo><mi>W</mi></mrow><annotation encoding="application/x-tex">H \times W</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.76666em;vertical-align:-0.08333em;"></span><span class="mord mathdefault" style="margin-right:0.08125em;">H</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span><span class="mbin">×</span><span class="mspace" style="margin-right:0.2222222222222222em;"></span></span><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.13889em;">W</span></span></span></span>的卷积核（F），输入<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>C</mi></mrow><annotation encoding="application/x-tex">C</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07153em;">C</span></span></span></span> 通道的特征图（M），对于这个层的第j个卷积核，相应的输出特征映射通道是：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417124534.png"  alt="" />
+      </p>
+<p>其中<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>∗</mo></mrow><annotation encoding="application/x-tex">*</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.46528em;vertical-align:0em;"></span><span class="mord">∗</span></span></span></span>是二维卷积算子。<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>M</mi><mrow><mo>:</mo><mo separator="true">,</mo><mo>:</mo><mo separator="true">,</mo><mi>k</mi></mrow></msub></mrow><annotation encoding="application/x-tex">M_{: , : , k}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.969438em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.10903em;">M</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.3361079999999999em;"><span style="top:-2.5500000000000003em;margin-left:-0.10903em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mrel mtight">:</span><span class="mpunct mtight">,</span><span class="mrel mtight">:</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span> 是特征图的第 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>k</mi></mrow><annotation encoding="application/x-tex">k</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.69444em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.03148em;">k</span></span></span></span> 个通道的特征图，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msubsup><mi>F</mi><mrow><mo>:</mo><mo separator="true">,</mo><mo>:</mo><mo separator="true">,</mo><mi>k</mi></mrow><mrow><mo stretchy="false">(</mo><mi>j</mi><mo stretchy="false">)</mo></mrow></msubsup></mrow><annotation encoding="application/x-tex">F^{(j)}_{: , : , k}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:1.4822159999999998em;vertical-align:-0.4374159999999999em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.13889em;">F</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:1.0448em;"><span style="top:-2.3986920000000005em;margin-left:-0.13889em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mrel mtight">:</span><span class="mpunct mtight">,</span><span class="mrel mtight">:</span><span class="mpunct mtight">,</span><span class="mord mathdefault mtight" style="margin-right:0.03148em;">k</span></span></span></span><span style="top:-3.2198em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span><span class="mclose mtight">)</span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.4374159999999999em;"><span></span></span></span></span></span></span></span></span></span>代表第k个通道的卷积核。在现代CNN体系结构中，批量归一化(BN)被广泛使用，以减少过度拟合，加快训练过程。通常情况下，<a href="https://wxler.github.io/2020/11/24/214400/#bn%E7%9A%84%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86">批量归一化层</a>之后通常会接一个线性变化，以增强表示能力。和公式1相比，输入变成：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417125643.png"  alt="" />
+      </p>
+<p>其中，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>μ</mi><mi mathvariant="normal">j</mi></msub></mrow><annotation encoding="application/x-tex">{\mu _{\rm{j}}}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault">μ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.317502em;"><span style="top:-2.5500000000000003em;margin-left:0em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mtight"><span class="mord mathrm mtight">j</span></span></span></span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>σ</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">{\sigma _j}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault" style="margin-right:0.03588em;">σ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.03588em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span></span> 是批量归一化的通道平均值和标准差，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>γ</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">{\gamma _j}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.716668em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault" style="margin-right:0.05556em;">γ</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.05556em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msub><mi>β</mi><mi>j</mi></msub></mrow><annotation encoding="application/x-tex">{\beta _j}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.980548em;vertical-align:-0.286108em;"></span><span class="mord"><span class="mord"><span class="mord mathdefault" style="margin-right:0.05278em;">β</span><span class="msupsub"><span class="vlist-t vlist-t2"><span class="vlist-r"><span class="vlist" style="height:0.311664em;"><span style="top:-2.5500000000000003em;margin-left:-0.05278em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mathdefault mtight" style="margin-right:0.05724em;">j</span></span></span></span><span class="vlist-s">​</span></span><span class="vlist-r"><span class="vlist" style="height:0.286108em;"><span></span></span></span></span></span></span></span></span></span></span>是缩放系数和偏移量。</p>
+
+        <h3 id="42-利用卷积的可加性"   >
+          <a href="#42-利用卷积的可加性" class="heading-link"><i class="fas fa-link"></i></a>4.2 利用卷积的可加性</h3>
+      
+<p>我们试图<strong>以不对称卷积可以等效地融合到标准方形核层中的方式来使用</strong>，这样就不会引入额外的推理时间计算负担。我们注意到卷积的一个有用性质：<strong>如果几个大小兼容的卷积核在相同的输入上以相同的步幅操作以产生相同分辨率的输出，并且它们的输出被求和，我们可以将这些核在相应的位置相加，从而得到一个产生相同输出的等效核</strong>。也就是说，二维卷积的可加性可以成立，即使核大小不同：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417130406.png"  alt="" />
+      </p>
+<p>其中 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>I</mi></mrow><annotation encoding="application/x-tex">I</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span></span></span></span> 是一个矩阵，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>K</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">K^{(1)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span></span></span></span> 和 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><msup><mi>K</mi><mrow><mo stretchy="false">(</mo><mn>1</mn><mo stretchy="false">)</mo></mrow></msup></mrow><annotation encoding="application/x-tex">K^{(1)}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.8879999999999999em;vertical-align:0em;"></span><span class="mord"><span class="mord mathdefault" style="margin-right:0.07153em;">K</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.8879999999999999em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mopen mtight">(</span><span class="mord mtight">1</span><span class="mclose mtight">)</span></span></span></span></span></span></span></span></span></span></span></span> 是具有兼容尺寸的两个2D核，<span class="katex"><span class="katex-mathml"><math><semantics><mrow><mo>⊕</mo></mrow><annotation encoding="application/x-tex">\oplus</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.66666em;vertical-align:-0.08333em;"></span><span class="mord">⊕</span></span></span></span> 在对应位置的求和操作。注意 <span class="katex"><span class="katex-mathml"><math><semantics><mrow><mi>I</mi></mrow><annotation encoding="application/x-tex">I</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.68333em;vertical-align:0em;"></span><span class="mord mathdefault" style="margin-right:0.07847em;">I</span></span></span></span> 可能会被裁剪或者执行Padding操作。这里，“兼容”意味着我们可以把较小的内核“修补”到较大的内核上。</p>
+<p>例如，3x1和1x3是和3x3兼容的。通过研究滑动窗口形式的卷积计算，可以很容易地验证这一点，如下图所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417130830.png"  alt="" />
+      </p>
+
+        <h3 id="43-acb不增加任何推理时间开销"   >
+          <a href="#43-acb不增加任何推理时间开销" class="heading-link"><i class="fas fa-link"></i></a>4.3 ACB不增加任何推理时间开销</h3>
+      
+<p>3x3卷积在现代CNN体系结构中大量使用。在给定的体系结构下，我们通过简单地将每个3x3卷积层替换为ACB来构建ACNet，该ACB模块包含三个并行层，内核大小分别为3x3，1x3，和3x1。和标准CNN的常规做法类似，在三层中的每一层之后都进行批量归一化，这被成为分子，并将三个分支的输出综合作为ACB的输出。</p>
+<p>我们可以使用与原始模型相同的配置来训练ACNet，而无需调整任何额外的超参数，训练完成后，我们尝试将每个ACB转换为产生相同输出的标准卷积层这样，与经过常规训练的对等方相比，我们可以获得不需要任何额外计算的功能更强大的网络。该转换通过两个步骤完成，即BN融合和分支融合。</p>
+<p><strong>BN融合</strong>： 卷积的同质性使得后续的BN和线性变换可以等价的融合到具有附加偏置的卷积层中，即对于每一个分支，我们都减去其均值除以方差，然后再进行融合。</p>
+<p><strong>分支融合</strong> 我们通过在平方核的相应位置加入非对称核，将三个BN融合分支合并成标准卷积层。在实际应用中，这种转换是通过建立一个原始结构的网络并使用融合的权值进行初始化来实现的，这样我们就可以在与原始结构相同的计算预算下产生与ACNet相同的输出。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417131508.png"  alt="" />
+      </p>
+<p>上图用公式表示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417131729.png"  alt="" />
+      </p>
+<p>值得注意的是，尽管可以将ACB等价地转换为标准层，但是等效值仅在推理时才成立，因为训练动态是不同的，从而导致不同的性能。训练过程的不等价性是由于内核权重的随机初始化，以及由它们参与的不同计算流得出的梯度。</p>
+
+        <h2 id="五-实验"   >
+          <a href="#五-实验" class="heading-link"><i class="fas fa-link"></i></a>五、实验</h2>
+      
+
+        <h3 id="51-acb性能的提升"   >
+          <a href="#51-acb性能的提升" class="heading-link"><i class="fas fa-link"></i></a>5.1 ACB性能的提升</h3>
+      
+<p>在CIFAR10和CIFAR100数据集，ImageNet数据集进行对比测试，结果如下所示：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417131853.png"  alt="" />
+      </p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417131924.png"  alt="" />
+      </p>
+<p>从Table1和Table2可以看到，所有模型的性能都有所提升，说明了ACB可以与各种结构相结合，提升原来模型的性能。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417132014.png"  alt="" />
+      </p>
+<p>Table3展示了ImageNet上训练的结果，Top1精度分别提升了1.52，0.78,1.18。</p>
+<p>因此在实际应用中可以使用ACnet来减少推理时间、能耗和存储空间，对于一些计算资源受限或者模型大小受限 的情况也可以使用ACnet来大幅提升精度，对于用户来说都没有增加额外的代价。</p>
+
+        <h3 id="52-acb的消融实验"   >
+          <a href="#52-acb的消融实验" class="heading-link"><i class="fas fa-link"></i></a>5.2 ACB的消融实验</h3>
+      
+<p>虽然已经证实了ACNet的有效性，我们仍然希望得到一定的解释，因此作者通过消融实验来研究ACNet的有效性。</p>
+<p>主要聚焦以下3种设计的作用：</p>
+<ul>
+<li>水平核</li>
+<li>垂直核</li>
+<li>每个分支的批归一化</li>
+</ul>
+<p>需要注意的是，如果删除了每个分支中的BN，那么会对ACB的整个输出进行批归一化，也就是将BN求和从前求和变为后求和。</p>
+<p>下面基于ImageNet训练的AlexNet和ResNet-18结构上开展消融实验</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417135319.png"  alt="" />
+      </p>
+<p>从Table 4中可以看出，去掉3种中的任何一种最终的模型精度都会有一定的降低。虽然垂直卷积和水平卷积都对性能有提升，但是但两者仍存在一些区别。比如训练过程中往往会进行随机水平变换，而不会进行随机垂直变换。如下图所示，进行垂直变换的图像，方框核将产生无意义输出，而水平核将输出和之前相同的结果（看对应位置的卷积输出结果）。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417135540.png"  alt="" />
+      </p>
+<p>从Table 4中数据，当对输入进行不同角度的变换后进行测试时，模型的精度严重下降。但是仍能看出：对于水平翻转输入，水平核的作用要高于垂直核。证明了ACB尤其是内部的水平核，可以有效的提升模型对于旋转变形的鲁棒性。</p>
+
+        <h3 id="53-卷积不同位置的重要性"   >
+          <a href="#53-卷积不同位置的重要性" class="heading-link"><i class="fas fa-link"></i></a>5.3 卷积不同位置的重要性</h3>
+      
+<p>为了观察<strong>卷积中不同位置的重要性</strong>，作者通过随机将权重置零的方式来验证。</p>
+<p>几种随机置零方式：</p>
+<ul>
+<li>corner：卷积核的四个角中随机选择权重将其置零</li>
+<li>skeleton：对骨架中的权重进行随机置零</li>
+<li>global：不区分corner还是skeleton而是卷积核中每一权重都有同样被选的概率</li>
+</ul>
+<p>下面是实验是在CIFAR-10数据集上进行的，<strong>通过观察模型准确率的下降说明卷积不同位置的重要程度</strong>。（图中的sparsity ratio计算方式是去掉的权重数/卷积核总权重数）</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417132810.png"  alt="" />
+      </p>
+<p>从上图中可以看到，对于正常的卷积核，骨架部分（中心十字）更重要，而去除四角部分（蓝色线）带来的损失更小。</p>
+<p>通过计算每个位置的平均相对重要程度，也可以发现中心位置更重要。下图c就把垂直核和水平核堆叠到方形核的右下角。</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210417141908.png"  alt="" />
+      </p>
+<p>总结一下：</p>
+<ul>
+<li>3*3卷积核的骨架部分比边角部分更加重要</li>
+<li>ACB可以增强卷积核的骨架部分，从而提高性能</li>
+<li>和常规的ACB相比，将水平和垂直核添加到边界会降低模型的性能</li>
+<li>因此，我们将ACNet的有效性部分归因于它进一步增强卷积核骨架的能力。</li>
+</ul>
+
+        <h2 id="六-总结"   >
+          <a href="#六-总结" class="heading-link"><i class="fas fa-link"></i></a>六、总结</h2>
+      
+<p>为了提高各种CNN架构的性能，我们提出了非对称卷积块（ACB），该算法将三个分别具有正方形，水平和垂直核的卷积分支的输出求和。<strong>我们通过使用ACB替换成熟体系结构中的方形核卷积层来构建非对称卷积网络</strong>（ACNet），并在训练后将其转换为原始网络结构。在CIFAR和ImageNet数据集上，通过在经典网络上使用ACNet评估我们的性能，取得了很好的结果。我们已经表明，ACNet可以以可观察的幅度增强模型对旋转失真的鲁棒性，尤其是<strong>显著增强方形卷积核的骨骼部分</strong>。</p>
+<p>【参考资料】</p>
+<ol>
+<li><span class="exturl"><a class="exturl__link"   href="https://arxiv.org/abs/1908.03930v1"  target="_blank" rel="noopener">https://arxiv.org/abs/1908.03930v1</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/qq_37151108/article/details/112173395"  target="_blank" rel="noopener">https://blog.csdn.net/qq_37151108/article/details/112173395</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://blog.csdn.net/abc13526222160/article/details/103486589"  target="_blank" rel="noopener">https://blog.csdn.net/abc13526222160/article/details/103486589</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://www.cnblogs.com/wyboooo/p/14465321.html"  target="_blank" rel="noopener">https://www.cnblogs.com/wyboooo/p/14465321.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+<li><span class="exturl"><a class="exturl__link"   href="https://mp.weixin.qq.com/s?__biz=MzUxNjcxMjQxNg==&amp;mid=2247493985&amp;idx=4&amp;sn=c98ecd11cb3ed6d6f0bf827da9187708&amp;chksm=f9a19beeced612f8b0f6fe6d78bc19d9805136cd60d376ec462dadc661fe091319be147f4698&amp;mpshare=1&amp;scene=1&amp;srcid=&amp;sharer_sharetime=1576026979860&amp;sharer_shareid=b7d4f0d181568c8ded15c40461447e48&amp;key=cd46a5853d370dc73b7b301a6a99c0be4e598af0496a521c0cbcc36b9ae361860e6840e9a6b3601a7e3833dc854442ab5319fddbd1d2072033fa3c600b240c6b304a541ae06ff1bd4d94d8a636a49a2b&amp;ascene=1&amp;uin=MTU2MjEyMjkxOA==&amp;devicetype=Windows%2010&amp;version=62070158&amp;lang=zh_CN&amp;exportkey=AfX9ImhFlflEhaRA7zUQyzw=&amp;pass_ticket=I5U2lofhtHIdqB4OfVGVowwSO4HNQwsgusS4VB1kt1vRcuAm8UCp6InQasXlOoOV"  target="_blank" rel="noopener">3*3卷积+1*3卷积+3*1卷积=白给的精度提升</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></li>
+</ol>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.github.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.github.io/2021/04/17/112117/">https://wxler.github.io/2021/04/17/112117/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.github.io/tags/ACNet/">ACNet</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-next"><a class="paginator-next__link" href="/2021/04/02/214801/"><span class="paginator-prev__text">十、Yarn案例实操</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-摘要"><span class="toc-text">
+          一、摘要</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-研究背景"><span class="toc-text">
+          二、研究背景</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-相关工作"><span class="toc-text">
+          三、相关工作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#31-非对称卷积"><span class="toc-text">
+          3.1 非对称卷积</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#32-cnn架构中的中性结构"><span class="toc-text">
+          3.2 CNN架构中的中性结构</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四-实现方法"><span class="toc-text">
+          四、实现方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#41-原理公式"><span class="toc-text">
+          4.1 原理公式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#42-利用卷积的可加性"><span class="toc-text">
+          4.2 利用卷积的可加性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#43-acb不增加任何推理时间开销"><span class="toc-text">
+          4.3 ACB不增加任何推理时间开销</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五-实验"><span class="toc-text">
+          五、实验</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#51-acb性能的提升"><span class="toc-text">
+          5.1 ACB性能的提升</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#52-acb的消融实验"><span class="toc-text">
+          5.2 ACB的消融实验</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#53-卷积不同位置的重要性"><span class="toc-text">
+          5.3 卷积不同位置的重要性</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六-总结"><span class="toc-text">
+          六、总结</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">124</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">20</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">57</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
