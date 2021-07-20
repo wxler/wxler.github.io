@@ -1,0 +1,558 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="使用yolov5训练自动驾驶目标检测数据集BDD100K！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用yolov5训练自动驾驶目标检测数据集BDD100K">
+<meta property="og:url" content="https://wxler.github.io/2021/07/20/144315/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="使用yolov5训练自动驾驶目标检测数据集BDD100K！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210720141758550.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/202107201421016.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210720142929244.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210720143149268.png">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/2021072014342027.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210720143427219.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210720143508433.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210720143535993.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70">
+<meta property="article:published_time" content="2021-07-20T06:43:15.000Z">
+<meta property="article:modified_time" content="2021-07-20T06:46:25.389Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="yolov5">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210720141758550.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>使用yolov5训练自动驾驶目标检测数据集BDD100K | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/07/20/144315/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">使用yolov5训练自动驾驶目标检测数据集BDD100K</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-07-20</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-07-20</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">3k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">20分</span></span></div></header><div class="post-body"><p>使用yolov5训练自动驾驶目标检测数据集BDD100K！</p>
+<a id="more"></a>
+<p><ul class="markdownIt-TOC">
+<li><a href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AFbdd100k">一、什么是BDD100K</a></li>
+<li><a href="#%E4%BA%8C-%E6%95%B0%E6%8D%AE%E9%A2%84%E5%A4%84%E7%90%86">二、数据预处理</a></li>
+<li><a href="#%E4%B8%89-%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE">三、环境配置</a></li>
+<li><a href="#%E5%9B%9B-%E4%BF%AE%E6%94%B9%E6%A8%A1%E5%9E%8B%E7%BB%93%E6%9E%84">四、修改模型结构</a></li>
+<li><a href="#%E4%BA%94-%E8%BF%81%E7%A7%BB%E5%AD%A6%E4%B9%A0">五、迁移学习</a></li>
+<li><a href="#%E5%85%AD-%E8%AE%AD%E7%BB%83bdd100k">六、训练BDD100K</a></li>
+<li><a href="#%E4%B8%83-%E8%AF%84%E4%BC%B0%E6%80%A7%E8%83%BD">七、评估性能</a></li>
+<li><a href="#%E5%85%AB-%E7%BB%93%E8%AF%AD">八、结语</a></li>
+</ul>
+</p>
+
+        <h2 id="一-什么是bdd100k"   >
+          <a href="#一-什么是bdd100k" class="heading-link"><i class="fas fa-link"></i></a>一、什么是BDD100K</h2>
+      
+<p>BDD100K是伯克利发布的开放式驾驶视频数据集，其中包含10万个视频和10个任务（因为把交通灯的颜色也区分了出来，实际上是13类分类任务），目的是方便评估自动驾驶图像识别算法的的进展。该数据集具有地理，环境和天气多样性，从而能让模型能够识别多种场景，具备更多的泛化能力。</p>
+<p>由于硬件限制，<strong>我只里训练其中的图片数据</strong>，数据集按Train、Valid、Test三个部分，比例可以按照7:2:1分配，共近10张图片。<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210720141758550.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+
+        <h2 id="二-数据预处理"   >
+          <a href="#二-数据预处理" class="heading-link"><i class="fas fa-link"></i></a>二、数据预处理</h2>
+      
+<p>Bdd100k的标签是由Scalabel生成的JSON格式，虽然伯克利提供Bdd100k数据集的标签查看及标签格式转化工具。由于没有直接从bdd100k转换成YOLO的工具，因此我们首先得使用将bdd100k的标签转换为coco格式，然后再将coco格式转换为yolo格式。</p>
+<p>YOLO家族独特的标签数据集格式为：每个图片文件.jpg，都有同一命名的标签文件.txt。标签文件中每个对象独占一行，格式为</p>
+<figure class="highlight xml"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">object-class</span>&gt;</span> <span class="tag">&lt;<span class="name">x</span>&gt;</span> <span class="tag">&lt;<span class="name">y</span>&gt;</span> <span class="tag">&lt;<span class="name">width</span>&gt;</span> <span class="tag">&lt;<span class="name">height</span>&gt;</span>。</span><br></pre></td></tr></table></div></figure>
+<p>其中：</p>
+<ul>
+<li><code>&lt;object-class&gt;</code> 表示对象的类别序号：从0 到 (classes-1)。</li>
+<li><code>&lt;x&gt; &lt;y&gt; &lt;width&gt; &lt;height&gt;</code> 参照图片宽度和高度的相对比例(浮点数值)，从0.0到1.0。</li>
+</ul>
+<p>注意：<x> <y>是矩形的中心，而不是左上角位置。<br />
+如下图所示：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/202107201421016.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<p>（1）bdd 转化为coco格式<br />
+我的目的是识别包括不同颜色交通灯在内的所有交通对象，因此我们需要对原版的bdd2coco.py进行一些修改，以获取交通灯颜色并产生新的类别。这是修改完的核心代码：</p>
+<figure class="highlight py"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> label <span class="keyword">in</span> i[<span class="string">'labels'</span>]:</span><br><span class="line">    annotation = dict()  </span><br><span class="line">    category=label[<span class="string">'category'</span>]  </span><br><span class="line">    <span class="keyword">if</span> (category == <span class="string">"traffic light"</span>):  </span><br><span class="line">        color = label[<span class="string">'attributes'</span>][<span class="string">'trafficLightColor'</span>]  </span><br><span class="line">        category = <span class="string">"tl_"</span> + color  </span><br><span class="line">    <span class="keyword">if</span> category <span class="keyword">in</span> id_dict.keys():  </span><br><span class="line">        empty_image = <span class="literal">False</span>  </span><br><span class="line">        annotation[<span class="string">"iscrowd"</span>] = <span class="number">0</span>  </span><br><span class="line">        annotation[<span class="string">"image_id"</span>] = image[<span class="string">'id'</span>]  </span><br><span class="line">        x1 = label[<span class="string">'box2d'</span>][<span class="string">'x1'</span>]  </span><br><span class="line">        y1 = label[<span class="string">'box2d'</span>][<span class="string">'y1'</span>]  </span><br><span class="line">        x2 = label[<span class="string">'box2d'</span>][<span class="string">'x2'</span>]  </span><br><span class="line">        y2 = label[<span class="string">'box2d'</span>][<span class="string">'y2'</span>]  </span><br><span class="line">        annotation[<span class="string">'bbox'</span>] = [x1, y1, x2-x1, y2-y1]  </span><br><span class="line">        annotation[<span class="string">'area'</span>] = float((x2 - x1) * (y2 - y1))  </span><br><span class="line">        annotation[<span class="string">'category_id'</span>] = id_dict[category]  </span><br><span class="line">        annotation[<span class="string">'ignore'</span>] = <span class="number">0</span>  </span><br><span class="line">        annotation[<span class="string">'id'</span>] = label[<span class="string">'id'</span>]  </span><br><span class="line">        annotation[<span class="string">'segmentation'</span>] = [[x1, y1, x1, y2, x2, y2, x2, y1]] </span><br><span class="line">         annotations.append(annotation)</span><br></pre></td></tr></table></div></figure>
+<p>在完成bdd100k格式到yolo格式的转换后，会获得两个文件：</p>
+<ol>
+<li>bdd100k_labels_images_det_coco_train.json</li>
+<li>bdd100k_labels_images_det_coco_val.json</li>
+</ol>
+<p>（2）Coco 转化 yolo格式<br />
+在完成先前的转换之后，我们需要将训练集和验证集的coco格式标签转换为yolo格式。注意需要分别指定训练集和验证集图片位置，对应的coco标签文件位置，及生成yolo标签的目标位置：</p>
+<figure class="highlight py"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">config_train =&#123;  </span><br><span class="line">        <span class="string">"datasets"</span>: <span class="string">"COCO"</span>,  </span><br><span class="line">        <span class="string">"img_path"</span>: <span class="string">"bdd100k_images/bdd100k/images/100k/train"</span>,  </span><br><span class="line">        <span class="string">"label"</span>: <span class="string">"labels/bdd100k_labels_images_det_coco_train.json"</span>,  </span><br><span class="line">        <span class="string">"img_type"</span>: <span class="string">".jpg"</span>,  </span><br><span class="line">        <span class="string">"manipast_path"</span>: <span class="string">"./"</span>,  </span><br><span class="line">        <span class="string">"output_path"</span>: <span class="string">"labels/trains/"</span>,  </span><br><span class="line">        <span class="string">"cls_list"</span>: <span class="string">"bdd100k.names"</span>,  </span><br><span class="line">    &#125;  </span><br><span class="line">config_valid =&#123;  </span><br><span class="line">		<span class="string">"datasets"</span>: <span class="string">"COCO"</span>,  </span><br><span class="line">		<span class="string">"img_path"</span>: <span class="string">"bdd100k_images/bdd100k/images/100k/val"</span>,  </span><br><span class="line">		<span class="string">"label"</span>: <span class="string">"labels/bdd100k_labels_images_det_coco_val.json"</span>,  </span><br><span class="line">		<span class="string">"img_type"</span>: <span class="string">".jpg"</span>,  </span><br><span class="line">		<span class="string">"manipast_path"</span>: <span class="string">"./"</span>,  </span><br><span class="line">		<span class="string">"output_path"</span>: <span class="string">"labels/valids/"</span>,  </span><br><span class="line">		<span class="string">"cls_list"</span>: <span class="string">"bdd100k.names"</span>,  </span><br><span class="line">	&#125;</span><br></pre></td></tr></table></div></figure>
+<p>除此之外，我们还得将所有的类别写入bdd100k.names文件：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">person</span><br><span class="line">rider  </span><br><span class="line">car  </span><br><span class="line">bus  </span><br><span class="line">truck  </span><br><span class="line">bike  </span><br><span class="line">motor  </span><br><span class="line">tl_green  </span><br><span class="line">tl_red  </span><br><span class="line">tl_yellow  </span><br><span class="line">tl_none  </span><br><span class="line">traffic sign  </span><br><span class="line">train</span><br></pre></td></tr></table></div></figure>
+<p>运行Bdd_preprocessing中的完整代码可以完成Bdd100k格式标签到YOLO标签格式的转换。</p>
+
+        <h2 id="三-环境配置"   >
+          <a href="#三-环境配置" class="heading-link"><i class="fas fa-link"></i></a>三、环境配置</h2>
+      
+<p>Yolov5 需要的Pytorch版本&gt;=1.5, Python版本3.7， CUDA版本10.2，可以把所需要的库放入requirement.txt文件，通过在shell中运行<code>pip install -r requirement.txt</code> 命令，可以自动安装所有依赖项。</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Cython  </span><br><span class="line">numpy==1.17  </span><br><span class="line">opencv-python  </span><br><span class="line">torch&gt;=1.5.1  </span><br><span class="line">matplotlib  </span><br><span class="line">pillow  </span><br><span class="line">tensorboard  </span><br><span class="line">PyYAML&gt;=5.3  </span><br><span class="line">torchvision  </span><br><span class="line">scipy  </span><br><span class="line">tqdm</span><br></pre></td></tr></table></div></figure>
+<p>Yolov5的默认YAML文件coco.yaml 中是coco数据集所有的类对象名称和类数量(80)。由于我是基于bdd100k数据集来训练检测少量特定交通物体的模型，不需要训练检测80类网络的模型，所以得重新创建一个uc_data.yaml文件来描述bdd100k数据集的数据特性。由于模型的输出不是coco数据集的80个类，而是13类，因此修改此处的输出类别数量为13。</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">train: bdd100k/images/train  </span><br><span class="line">val: bdd100k/images/valid  </span><br><span class="line">test: bdd100k/images/test  </span><br><span class="line">   </span><br><span class="line">nc: 13  </span><br><span class="line">names: ['person','rider','car','bus','truck','bike','motor','tl_green','tl_red','tl_yellow','tl_none','t_sign','train']</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="四-修改模型结构"   >
+          <a href="#四-修改模型结构" class="heading-link"><i class="fas fa-link"></i></a>四、修改模型结构</h2>
+      
+<p>Yolov5通过models文件家中的cfg文件<code>*.yaml</code>来调整训练模型的结构。这里需要修改模型的对象预测层输出类别数量为13，也可以直接修改YAML文件下各个组件的细节（如数字），来重新定义自己的模型架构。</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"># YOLO V5s  </span><br><span class="line"># parameters  </span><br><span class="line">nc: 13  # number of classes  </span><br><span class="line">depth_multiple: 0.33  # model depth multiple  </span><br><span class="line">width_multiple: 0.50  # layer channel multiple  </span><br><span class="line">   </span><br><span class="line"># anchors  </span><br><span class="line">anchors:  </span><br><span class="line">  - [116,90, 156,198, 373,326]  # P5/32  </span><br><span class="line">  - [30,61, 62,45, 59,119]  # P4/16  </span><br><span class="line">  - [10,13, 16,30, 33,23]  # P3/8  </span><br><span class="line">   </span><br><span class="line"># YOLOv5 backbone  </span><br><span class="line">backbone:  </span><br><span class="line">  # [from, number, module, args]  </span><br><span class="line">  [[-1, 1, Focus, [64, 3]],  # 0-P1/2  </span><br><span class="line">   [-1, 1, Conv, [128, 3, 2]],  # 1-P2/4  </span><br><span class="line">   [-1, 3, BottleneckCSP, [128]],  </span><br><span class="line">   [-1, 1, Conv, [256, 3, 2]],  # 3-P3/8  </span><br><span class="line">   [-1, 9, BottleneckCSP, [256]],  </span><br><span class="line">   [-1, 1, Conv, [512, 3, 2]],  # 5-P4/16  </span><br><span class="line">   [-1, 9, BottleneckCSP, [512]],  </span><br><span class="line">   [-1, 1, Conv, [1024, 3, 2]], # 7-P5/32  </span><br><span class="line">   [-1, 1, SPP, [1024, [5, 9, 13]]],  </span><br><span class="line">  ]  </span><br><span class="line">   </span><br><span class="line"># YOLOv5 head  </span><br><span class="line">head:  </span><br><span class="line">  [[-1, 3, BottleneckCSP, [1024, False]],  # 9  </span><br><span class="line">   </span><br><span class="line">   [-1, 1, Conv, [512, 1, 1]],  </span><br><span class="line">   [-1, 1, nn.Upsample, [None, 2, 'nearest']],  </span><br><span class="line">   [[-1, 6], 1, Concat, [1]],  # cat backbone P4  </span><br><span class="line">   [-1, 3, BottleneckCSP, [512, False]],  # 13  </span><br><span class="line">   </span><br><span class="line">   [-1, 1, Conv, [256, 1, 1]],  </span><br><span class="line">   [-1, 1, nn.Upsample, [None, 2, 'nearest']],  </span><br><span class="line">   [[-1, 4], 1, Concat, [1]],  # cat backbone P3  </span><br><span class="line">   [-1, 3, BottleneckCSP, [256, False]],  </span><br><span class="line">   [-1, 1, nn.Conv2d, [na * (nc + 5), 1, 1]],  # 18 (P3/8-small)  </span><br><span class="line">   </span><br><span class="line">   [-2, 1, Conv, [256, 3, 2]],  </span><br><span class="line">   [[-1, 14], 1, Concat, [1]],  # cat head P4  </span><br><span class="line">   [-1, 3, BottleneckCSP, [512, False]],  </span><br><span class="line">   [-1, 1, nn.Conv2d, [na * (nc + 5), 1, 1]],  # 22 (P4/16-medium)  </span><br><span class="line">   </span><br><span class="line">   [-2, 1, Conv, [512, 3, 2]],  </span><br><span class="line">   [[-1, 10], 1, Concat, [1]],  # cat head P5  </span><br><span class="line">   [-1, 3, BottleneckCSP, [1024, False]],  </span><br><span class="line">   [-1, 1, nn.Conv2d, [na * (nc + 5), 1, 1]],  # 26 (P5/32-large)  </span><br><span class="line">   </span><br><span class="line">   [[], 1, Detect, [nc, anchors]],  # Detect(P5, P4, P3)  </span><br><span class="line">  ]</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="五-迁移学习"   >
+          <a href="#五-迁移学习" class="heading-link"><i class="fas fa-link"></i></a>五、迁移学习</h2>
+      
+<p>迁移学习(Transfer learning) 顾名思义就是就是把已学训练好的模型参数迁移到新的模型来帮助新模型训练。下图为针对不同场景的迁移学习：</p>
+<p>
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210720142929244.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      </p>
+<ul>
+<li>如果训练集小，训练数据与预训练数据相似，那么我们可以冻住卷积层，直接训练全连接层。</li>
+<li>如果训练集小，训练数据与预训练数据不相似，那么必须从头训练卷积层及全连接层。</li>
+<li>如果训练集大，训练数据与预训练数据相似，那么我们可以使用预训练的权重参数初始化网络，然后从头开始训练。</li>
+<li>如果训练集大，训练数据与预训练数据不相似，那么我们可以使用预训练的权重参数初始化网络，然后从头开始训练或者完全不使用预训练权重，重新开始从头训练。</li>
+<li>值得注意的是，对于大数据集，不推荐冻住卷积层，直接训练全连接层的方式，这可能会对性能造成很大影响。</li>
+</ul>
+<p>现在的情况，符合上述第三种，通常只需要使用预训练的权重初始化网络，然后直接从头开始训练，从而更快的使模型有效收敛。但是由于之前没有人公开过对于Bdd100k数据集使用Yolov5预训练权重和不使用其训练权重的对比，并且 COCO数据集80类，而Bdd100k数据集13类，两者大部分类是不相似的。于是我分别使用YOLO V5s预训练权重和不使用其训练权重来训练基于Bdd100k数据集的对象识别网络，并对比它们的效果。<br />
+由于Bdd100k的数据集比较大，训练时间较长，因此只使用Yolov5s来训练基于Bdd100k自动驾驶数据集的对象检测深度网络。</p>
+
+        <h2 id="六-训练bdd100k"   >
+          <a href="#六-训练bdd100k" class="heading-link"><i class="fas fa-link"></i></a>六、训练BDD100K</h2>
+      
+<p>现在，就可以训练了，下面是训练的一些重要参数：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">#训练参数(基于bdd100k数据集)：  </span><br><span class="line">img: 图像尺寸640  </span><br><span class="line">batch-size：32  </span><br><span class="line">epochs：300  </span><br><span class="line">data：bdd100k数据集路径及分类数配置uc_data.yaml  </span><br><span class="line">cfg：模型文件配置custom_yolov5s.yaml，至少修改类别数量  </span><br><span class="line">weights：预训练权重  </span><br><span class="line">cache-images: 将预处理后的训练数据全部存储在RAM中，能够加快训练速度  </span><br><span class="line">optimizer：SGD  </span><br><span class="line">lr0：0.01  </span><br><span class="line">Momentum： 0.937  </span><br><span class="line">weight_decay:：0.0005  </span><br><span class="line">iou-thres：NMS的IOU阈值，设置为0.5  </span><br><span class="line">device: GPU</span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="七-评估性能"   >
+          <a href="#七-评估性能" class="heading-link"><i class="fas fa-link"></i></a>七、评估性能</h2>
+      
+<p>我将从如目标检测最常见几种指标Precision、Recal、F1 score、mAP评估模型的性能<br />
+
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210720143149268.png"  alt="在这里插入图片描述" />
+      <br />
+其中，TP、TN、FP、FN表示如下：<br />
+True positives (TP): 正样本被正确识别为正样本，<br />
+True negatives(TN): 负样本被正确识别为负样本<br />
+False positives(FP): 假的正样本，即负样本被错误识别为正样本<br />
+False negatives(FN): 假的负样本，即正样本被错误识别为负样本<br />
+Precision、Recal、F1 score、mAP、maP@0.5含义如下：</p>
+<ol>
+<li>Precision其实就是在识别出来的图片中，True positives所占的比率。</li>
+<li>Recall 是测试集中所有正样本样例中，被正确识别为正样本的比例。<br />
+Accuracy体现识别正确T的结果与全体数据样本的比例</li>
+<li>F1是P-R的调和平均</li>
+<li>AP就是Precision-recall 曲线下面的面积，通常来说一个越好的分类器，AP值越高。</li>
+<li>mAP是多个类别AP的平均值。这个mean的意思是对每个类的AP再求平均，得到的就是mAP的值。</li>
+<li>mAP@0.5：IoU阈值为0.5时的mAP</li>
+<li>mAP@0.5:0.95：表示在不同IoU阈值（从0.5到0.95，步长0.05）（0.5、0.55、0.6、0.65、0.7、0.75、0.8、0.85、0.9、0.95）上的平均mAP。</li>
+</ol>
+<p>下面是训练结果：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/2021072014342027.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210720143427219.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+在YOLOv5中，Loss分为三个部分:</p>
+<ul>
+<li>一个是边框偏移量带来的误差，也就是giou带来的loss</li>
+<li>一个是置信度带来的误差，也就是obj带来的loss</li>
+<li>最后一个是类别带来的误差，也就是class（cls）带来的loss</li>
+</ul>
+<p>这几部分Loss结果如下：<br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210720143508433.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+<strong>val loss：</strong><br />
+
+        <img     class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://img-blog.csdnimg.cn/20210720143535993.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3FxXzM3NTU1MDcx,size_16,color_FFFFFF,t_70"  style="width: image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,tepx;height: t_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3Fpx;"  alt="在这里插入图片描述" />
+      <br />
+从上面的结果中，可以看出（蓝色是迁移学习，橙色没采用迁移学习）：</p>
+<ol>
+<li>从图中可以看出，无论是采用迁移学习还是不采用迁移学习，模型都能很好的收敛。</li>
+<li>迁移学习和从头开启训练的mAP@0.5最高达到均能达到46.5%，如果增加训练次数，mAP会更高。</li>
+<li>从训练过程来看，迁移学习的收敛速度比不采用迁移学习的方式更快。</li>
+<li>从最终结果来看，迁移学习的方式与不采用迁移学习的方式相差并不大，F1和mAP两者最终结果都一样，只有迁移学习的precision和recall稍高。</li>
+<li>在分类损失(cls loss)中，epoch为230左右时，不采用迁移学习的方式loss更低，因此才某个点上，不采用迁移学习其实是更好的，原因应该是coco数据集的预训练模型与BDD100K并不是很相似。</li>
+<li>总的来说，迁移学习的方式比不采用预训练模型能一定程度上减少训练时间开销，对于和COCO数据集相近的数据集，可以采用预训练的方式，如果时间充裕，从头开始训练更为妥当。</li>
+</ol>
+
+        <h2 id="八-结语"   >
+          <a href="#八-结语" class="heading-link"><i class="fas fa-link"></i></a>八、结语</h2>
+      
+<p>至此，我基本上了解了Yolov5的网络结构，并且基于Bdd100k数据集训练了属于自己的自动驾驶对象检测模型。我认为Yolov5是个非常棒的开源对象检测网络，可能多人考虑到Yolov5的创新性不足，对Yolov5而议论纷纷，我觉得不管它现阶段配不配的上V5的名称，但既然称之为Yolov5，定有很多非常不错的地方值得我们学习。不可否认，它真的是一个快速而且强大的目标检测器。</p>
+<p>我把BDD100K数据集地址上传到网盘上了，地址如下：<br />
+链接：<span class="exturl"><a class="exturl__link"   href="https://pan.baidu.com/s/158XBxqDXIIAWkbHbja4cVQ"  target="_blank" rel="noopener">https://pan.baidu.com/s/158XBxqDXIIAWkbHbja4cVQ</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span><br />
+提取码：738o</p>
+<p>想要本文实现代码的同学，可联系博主本人！</p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.github.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.github.io/2021/07/20/144315/">https://wxler.github.io/2021/07/20/144315/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.github.io/tags/yolov5/">yolov5</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-prev"><a class="paginator-prev__link" href="/2021/07/20/161311/"><span class="paginator-prev__icon"><i class="fas fa-angle-left"></i></span><span class="paginator-prev__text">基于SA-Conv-CTC/Attention端到端语音识别模型的基本原理、实现方法和主要流程</span></a></div><div class="paginator-next"><a class="paginator-next__link" href="/2021/07/03/085110/"><span class="paginator-prev__text">Hive动态分区多种插入方式总结</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#一-什么是bdd100k"><span class="toc-text">
+          一、什么是BDD100K</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#二-数据预处理"><span class="toc-text">
+          二、数据预处理</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三-环境配置"><span class="toc-text">
+          三、环境配置</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#四-修改模型结构"><span class="toc-text">
+          四、修改模型结构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五-迁移学习"><span class="toc-text">
+          五、迁移学习</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#六-训练bdd100k"><span class="toc-text">
+          六、训练BDD100K</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#七-评估性能"><span class="toc-text">
+          七、评估性能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#八-结语"><span class="toc-text">
+          八、结语</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">131</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">21</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">60</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
