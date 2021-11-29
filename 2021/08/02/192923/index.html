@@ -1,0 +1,560 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="format-detection" content="telephone=no"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="16x16"><link rel="icon" href="/assets/logo.png?v=2.0.0" type="image/png" sizes="32x32"><meta name="description" content="Yarn Cluster任务提交分为三个部分：  用户编写好的Spark应用程序提交到Yarn上（截止到ApplicationMaster启动Driver那一步） Driver对用户的应用程序进行App-&gt;Job-&gt;Stage-&gt;Task划分 Driver分发Task到Executor上  首先，我将自己总结的详细流程介绍一下， 然后，从源码部分一步一步解释上面的具体实现。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从源码角度分区Yarn-Cluster任务提交流程">
+<meta property="og:url" content="https://wxler.github.io/2021/08/02/192923/index.html">
+<meta property="og:site_name" content="Layne&#39;s Blog">
+<meta property="og:description" content="Yarn Cluster任务提交分为三个部分：  用户编写好的Spark应用程序提交到Yarn上（截止到ApplicationMaster启动Driver那一步） Driver对用户的应用程序进行App-&gt;Job-&gt;Stage-&gt;Task划分 Driver分发Task到Executor上  首先，我将自己总结的详细流程介绍一下， 然后，从源码部分一步一步解释上面的具体实现。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20211129223313.png">
+<meta property="article:published_time" content="2021-08-02T11:29:23.000Z">
+<meta property="article:modified_time" content="2021-11-29T14:46:37.187Z">
+<meta property="article:author" content="wxler">
+<meta property="article:tag" content="Spark">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20211129223313.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>从源码角度分区Yarn-Cluster任务提交流程 | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/08/02/192923/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement('script');
+  hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
+  hm.async = true;
+
+  if (true) {
+    hm.setAttribute('data-pjax', '');
+  }
+  var s = document.getElementsByTagName('script')[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();</script><script>var Stun = window.Stun || {};
+var CONFIG = {
+  root: '/',
+  algolia: undefined,
+  fontIcon: {"prompt":{"success":"fas fa-check-circle","info":"fas fa-arrow-circle-right","warning":"fas fa-exclamation-circle","error":"fas fa-times-circle"},"copyBtn":"fas fa-copy"},
+  sidebar: {"offsetTop":"20px","tocMaxDepth":6},
+  header: {"enable":true,"showOnPost":true,"scrollDownIcon":true},
+  postWidget: {"endText":true},
+  nightMode: {"enable":true},
+  back2top: {"enable":true},
+  codeblock: {"style":"default","highlight":"ocean","wordWrap":false},
+  reward: false,
+  fancybox: false,
+  zoomImage: {"gapAside":"20px"},
+  galleryWaterfall: undefined,
+  lazyload: true,
+  pjax: {"avoidBanner":true},
+  externalLink: {"icon":{"enable":true,"name":"fas fa-external-link-alt"}},
+  shortcuts: undefined,
+  prompt: {"copyButton":"复制","copySuccess":"复制成功","copyError":"复制失败"},
+  sourcePath: {"js":"js","css":"css","images":"images"},
+};
+
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">从源码角度分区Yarn-Cluster任务提交流程</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-08-02</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-11-29</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">3.6k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">24分</span></span></div></header><div class="post-body"><p>Yarn Cluster任务提交分为三个部分：</p>
+<ol>
+<li>用户编写好的Spark应用程序提交到Yarn上（截止到ApplicationMaster启动Driver那一步）</li>
+<li>Driver对用户的应用程序进行App-&gt;Job-&gt;Stage-&gt;Task划分</li>
+<li>Driver分发Task到Executor上</li>
+</ol>
+<p>首先，我将自己总结的详细流程介绍一下，</p>
+<p>然后，从源码部分一步一步解释上面的具体实现。</p>
+<a id="more"></a>
+
+        <h2 id="yarn-cluster任务提交流程详细流程"   >
+          <a href="#yarn-cluster任务提交流程详细流程" class="heading-link"><i class="fas fa-link"></i></a>Yarn Cluster任务提交流程详细流程</h2>
+      
+<p>先来一张图：</p>
+<p>
+        <img   class="lazyload lazyload-gif"
+          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20211129223313.png"  alt="" />
+      </p>
+<p>图上不全面，但可以作为参考。</p>
+<p>（1）<strong>用户编写好的Spark应用程序提交到Yarn上</strong></p>
+<blockquote>
+<p>注意区别SparkSubmit里的main方法和用户提交的应用程序的main方法</p>
+</blockquote>
+<ol>
+<li>
+<p>用户执行spark下的<code>spark-submit</code>提交程序</p>
+</li>
+<li>
+<p><strong>SparkSubmit里的main</strong>方法开启yarnClient进程</p>
+</li>
+<li>
+<p>在yarnClient中，首先与向Yarn服务器发送请求，ResourceManager生成新的作业id后返回给yarnClient</p>
+</li>
+<li>
+<p>在yarnClient中，将Application的上下文信息封装到containerContext，然后通过yarnClient.submitApplication提交到Yarn服务器</p>
+</li>
+<li>
+<p>当ResourceManager收到yarnClien的submitApplciation() 的请求时, 就将该请求发给调度器(scheduler), 调度器分配 container, 然后ResourceManager在该container内启动ApplicationMaster进程</p>
+<blockquote>
+<p>这里注意Cluster模式下，container启动的是ExecutorLauncher进程，但不管是什么方式，它实际上都是运行的ApplicationMaster进程，只不过client模式下是从ExecutorLauncher的main方法启动ApplicationMaster，而cluster执行是启动直接ApplicationMaster进程，并且cluster模式还会在ApplicationMaster启动driver线程</p>
+</blockquote>
+</li>
+<li>
+<p>在ApplicationMaster进程中，会开启一个名为Driver的线程（等Executor注册后才会执行）。此外，ApplicationMaster还会作为client向ResourceManager进行注册以申请资源（即申请Executor），在申请资源时，ApplicationMaster首先获取已分配的资源详情（这里有机架感知和最近距离原则），然后比较应用需要的executor个数和正在运行的executor个数，如果应用需要的executor个数大于正在运行的executor个数，则通过ResourceManager在合适的Container上启动对应数量的CoarseGrainedExecutorBackend进程，以满足程序运行的需要。</p>
+</li>
+<li>
+<p>在CoarseGrainedExecutorBackend进程中，会通过setupEndpoint方法命名一个Executor通信终端，通过这个通信终端与Driver进行交互。它首先执行onStart方法反向注册到Driver上，然后Driver就知道有哪些Executor提供服务了。</p>
+</li>
+<li>
+<p>当所有的Executor全部注册完成后，Driver线程开始执行用户提交的应用程序的main方法</p>
+</li>
+</ol>
+<p>（2）<strong>Driver对用户的应用程序进行App-&gt;Job-&gt;Stage-&gt;Task划分</strong>（主要是在DAGScheduler类中执行的）</p>
+<ol>
+<li>
+<p>Driver线程执行用户提交的应用程序的main方法，它会把当前提交的作业封装成JobSubmitted对应放到eventQueue里，然后，会开启线程从eventQueue获取JobSubmitted，然后调用onReceive方法进行处理。</p>
+</li>
+<li>
+<p>在onReceive的doOnReceive中执行<code>dagScheduler.handleJobSubmitted</code>去处理提交的作业。</p>
+</li>
+<li>
+<p>在handleJobSubmitted里面会对job进行阶段划分，具体如下：<br />
+创建一个ResultStage，同时根据宽依赖来创建ShuffleMapStage，具体做法是：获取RDD最近的一个宽依赖（从后往前搜索的），再根据宽依赖创建ShufferMapStage，如果除了最近上级之外，还有祖先的宽依赖，那么把祖先宽依赖ShufferMapStage也创建了。现在所有的阶段都创建完了，然后划分Task。</p>
+</li>
+<li>
+<p>划分Task的做法是这样的：首先获取<strong>最前面的阶段</strong>（没有父阶段的阶段），根据当前阶段的类型来创建任务，如果是ShuffleMapStage，则创建ShuffleMapTask，如果是ResultStage，则创建ResultTask。<br />
+创建Task的时候，并不是一个阶段创建一个Task，而是根据当前阶段最后一个RDD的分区数遍历，根据分区来创建Task的，每一个分区创建一个Task（看上面的<code>partitionsToCompute</code>），</p>
+</li>
+<li>
+<p>创建完任务后放进集合里面去，然后做判断，如果任务数大于0，说明有Task需要处理，则会调用submitTask进行处理</p>
+</li>
+<li>
+<p>submitTasks中传入的参数是TaskSet，因此会先将所有的Task封装成TaskSet，然后在执行<strong>submitTasks</strong>提交任务，TaskSet包含的信息如下：</p>
+<ul>
+<li>有哪些Task</li>
+<li>这些Task所属于的阶段</li>
+<li>Task的优先级</li>
+</ul>
+</li>
+<li>
+<p><strong>submitTasks</strong>方法是如何执行的呢？即Driver如何分发Task到Executor上的，具体看下面：</p>
+</li>
+</ol>
+<p>（3）<strong>Driver分发Task到Executor上</strong>（主要是在<strong>TaskSchedulerImpl</strong>类中执行的）</p>
+<blockquote>
+<p>submitTasks是抽象方法，<strong>具体实现是在TaskSchedulerImpl</strong></p>
+</blockquote>
+<ol>
+<li>
+<p>在TaskScheduler，创建了TaskSetManager对TaskSet进行封装，为了方便做资源调度。</p>
+<blockquote>
+<p>底层SchedulerBackend与ExecutorBackend通信，将任务发送给Executor后，SchedulerBackend也会接收Executor端返回的消息，从而实时监测任务的运行状态，SchedulerBackend将任务的运行状态报告给TaskSetManager，如果任务运行失败了，由TaskSetManager决定将任务发送给其它的Executor。</p>
+</blockquote>
+</li>
+<li>
+<p>将封装好的TaskSetManager放到资源调度器中，driver上的任务调度器有两种类型：</p>
+<ul>
+<li>先进先出：FIFOSchedulableBuilder(默认根据FIFO进行任务调度)</li>
+<li>公平：FairSchedulableBuilder</li>
+<li>注意：这是Spark本身调度机制，即driver上任务调度器，Yarn的资源调度在启动ApplicationMaster和ExecutorBackend的时候就已经调度完了</li>
+</ul>
+</li>
+<li>
+<p>然后，调用SchedulerBackend的receiveOffers方法给driverEndpoint发送ReviveOffer消息</p>
+<blockquote>
+<p>在driver端底层通信类的实现是<code>CoarseGrainedSchedulerBackend</code>，SchedulerBackend负责提供可用资源，SchedulerBackend有多种实现，分别对接不同的资源管理系统</p>
+</blockquote>
+</li>
+<li>
+<p>driverEndpoint收到ReviveOffer消息后调用makeOffers方法，过滤出活跃状态的Executor，将Task进行序列化，发送给Executor</p>
+<blockquote>
+<p>driverEndpoint也是在SchedulerBackend中</p>
+</blockquote>
+</li>
+<li>
+<p>ExecutorBackend接收Task（在Executor端底层通信的类是<code>CoarseGrainedExecutorBackend</code>），进行反序列化，从线程池中获取线程，根据任务任务类型的不同，从而执行不同的任务，任务分为ShuffleMapTask和ResultTask</p>
+</li>
+</ol>
+
+        <h2 id="第一部分用户编写好的spark应用程序提交到yarn上"   >
+          <a href="#第一部分用户编写好的spark应用程序提交到yarn上" class="heading-link"><i class="fas fa-link"></i></a>第一部分：用户编写好的Spark应用程序提交到Yarn上</h2>
+      
+<p>需要注意的是，跟踪源码的时候添加一下依赖：</p>
+<figure class="highlight xml"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.spark<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spark-yarn_2.11<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.1.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></div></figure>
+<p>下面为了便于分析，这里只列出关键步骤。tab符号代表进入到方法里面，用<code>-、*、&gt;、~</code>代表不同的方法层级。</p>
+<p>（1）用户编写好应用程序执行提交命令：</p>
+<figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">bin/spark-submit \</span><br><span class="line">--class com.wxler.spark.WordCount \</span><br><span class="line">--master yarn \</span><br><span class="line">--deploy-mode cluster \</span><br><span class="line">WordCount.jar \</span><br><span class="line">/input \</span><br><span class="line">/output</span><br></pre></td></tr></table></div></figure>
+<p>（2）底层运行 <code>bin/java org.apache.spark.deploy.SparkSubmit &quot;$@&quot;</code></p>
+<blockquote>
+<p><code>&quot;$@&quot;</code>是把所有的参数拿过来</p>
+</blockquote>
+<p>（3）运行SparkSubmit（全类名为<code>org/apache/spark/deploy/SparkSubmit.scala</code>）</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">-main方法</span><br><span class="line">	//对参数进行封装</span><br><span class="line">	*val appArgs = new SparkSubmitArguments(args)</span><br><span class="line">	//提交</span><br><span class="line">	*submit(appArgs)</span><br><span class="line">		//准备提交环境</span><br><span class="line">		//childMainClass有两种取值</span><br><span class="line">		//cluster模式：childMainClass = "org.apache.spark.deploy.yarn.Client"</span><br><span class="line">		//client模式:	childMainClass = "com.wxler.spark.WordCount"</span><br><span class="line">		&gt;val (childArgs, childClasspath, sysProps, childMainClass) = prepareSubmitEnvironment(args)</span><br><span class="line">		</span><br><span class="line">		&gt;doRunMain()</span><br><span class="line">			&amp;runMain(childArgs, childClasspath, sysProps, childMainClass, args.verbose)</span><br><span class="line">				//根据字符串类型的全类名获取类对象</span><br><span class="line">				~ Class.forName(childMainClass)</span><br><span class="line">				//根据类对象获取当前类的main方法</span><br><span class="line">				~val mainMethod = mainClass.getMethod("main")</span><br><span class="line">				//调用指定类的主方法</span><br><span class="line">				~mainMethod.invoke(null, childArgs.toArray)	</span><br><span class="line">				//下面进入org.apache.spark.deploy.yarn.Client执行main方法</span><br></pre></td></tr></table></div></figure>
+<p>（4）运行Client（全类名为<code>org.apache.spark.deploy.yarn.Client</code>)</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">-main方法</span><br><span class="line">	//对参数进行封装</span><br><span class="line">	*val args = new ClientArguments(argStrings)</span><br><span class="line">	//运行run方法</span><br><span class="line">	*new Client(args, sparkConf).run() //此时会yarnClient = YarnClient.createYarnClient</span><br><span class="line">		//发送请求给Yarn服务器,获取AppId</span><br><span class="line">		&gt;this.appId = submitApplication() </span><br><span class="line">			//yarnClient向Yarn服务发送请求，ResourceManager分配新的作业id</span><br><span class="line">            &amp;val newApp = yarnClient.createApplication()</span><br><span class="line">            &amp;val newAppResponse = newApp.getNewApplicationResponse()</span><br><span class="line">            &amp;appId = newAppResponse.getApplicationId()</span><br><span class="line">            //创建containerContext对象，containerContext里面封装了运行Application的上下文环境</span><br><span class="line">			//这里注意在不同的模式下启动进行不同</span><br><span class="line">			//cluster模式:org.apache.spark.deploy.yarn.ApplicationMaster</span><br><span class="line">			//client模式:org.apache.spark.deploy.yarn.ExecutorLauncher</span><br><span class="line">			&amp;val containerContext = createContainerLaunchContext(newAppResponse)</span><br><span class="line">			&amp;val appContext = createApplicationSubmissionContext(newApp, containerContext)</span><br><span class="line">			//提交用户应用程序到Yarn</span><br><span class="line">			yarnClient.submitApplication(appContext)</span><br><span class="line">			//里面会和ResourceManager通讯，申请启动ApplicationMaster，随后ResourceManager分配container，在合适的NodeManager上启动ApplicationMaster进程，在ApplicationMaster启动Driver线程，具体看org.apache.spark.deploy.yarn.ApplicationMaster</span><br></pre></td></tr></table></div></figure>
+<p>（5）运行ApplicationMaster（全类名为<code>org.apache.spark.deploy.yarn.ApplicationMaster</code>）</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">-main方法</span><br><span class="line">	//对参数参数进行封装</span><br><span class="line">	*val amArgs = new ApplicationMasterArguments(args)</span><br><span class="line">	// master里维护了AMRMClient</span><br><span class="line">	*master = new ApplicationMaster(amArgs, new YarnRMClient)</span><br><span class="line">	*master.run()</span><br><span class="line">		&gt;runDriver(securityMgr)</span><br><span class="line">			&amp;userClassThread = startUserApplication()</span><br><span class="line">                //userClass即WordCount</span><br><span class="line">                ~mainMethod = userClassLoader.loadClass(args.userClass).getMethod("main")</span><br><span class="line">                //开启driver线程</span><br><span class="line">                ~userThread = new Thread</span><br><span class="line">					#mainMethod.invoke</span><br><span class="line">			&amp;registerAM()</span><br><span class="line">                //client(AM)注册到RM上，申请可用资源</span><br><span class="line">                ~allocator=client.register</span><br><span class="line">                //分配资源	</span><br><span class="line">				~allocator.allocateResources()</span><br><span class="line">					//获取需要多少资源</span><br><span class="line">					+val allocatedContainers = allocateResponse.getAllocatedContainers()</span><br><span class="line">            		//分配资源（也有最近距离原则和机架感知）</span><br><span class="line">            		+ handleAllocatedContainers(allocatedContainers)</span><br><span class="line">            			@runAllocatedContainers(containersToUse)</span><br><span class="line">            				//判断是否需要启动Executor</span><br><span class="line">            				&gt;if (numExecutorsRunning &lt; targetNumExecutors) </span><br><span class="line">            					&gt;ExecutorRunnable.run</span><br><span class="line">            						&gt;startContainer()</span><br><span class="line">            							&gt;prepareCommand()</span><br><span class="line">            								&gt;bin/java org.apache.spark.executor.CoarseGrainedExecutorBackend （粗粒度的Executor）</span><br><span class="line">            				</span><br><span class="line">            //注意这里的join，阻塞主线程</span><br><span class="line">            &amp;userClassThread.join()</span><br></pre></td></tr></table></div></figure>
+<p><code>targetNumExecutors</code>是应用需要的executor个数，<code>numExecutorsRunning</code>是正在运行的executor个数。<code>targetNumExecutors</code>的个数可以由<code>--num-executors</code>（默认为2）指定。</p>
+<p>（6）运行CoarseGrainedExecutorBackend（全类名<code>org.apache.spark.executor.CoarseGrainedExecutorBackend</code>）</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">-main方法</span><br><span class="line">	*run</span><br><span class="line">		//Executor是ExecutorBackend进程上的一个通信终端名称</span><br><span class="line">		env.rpcEnv.setupEndpoint("Executor", new CoarseGrainedExecutorBackend) </span><br><span class="line">			//在endpoint里面，通过执行onStart方法反向注册到Driver上，然后Driver就知道有哪些Executor提供服务了</span><br><span class="line">			onStart</span><br><span class="line">				logInfo("Connecting to driver: " + driverUrl)</span><br><span class="line">				rpcEnv.asyncSetupEndpointRefByURI(driverUrl).flatMap&#123;...&#125;</span><br></pre></td></tr></table></div></figure>
+<p>再补充一点，driver收到executor的消息后会给excutor回复（具体在<code>CoarseGrainedSchedulerBackend</code>类里）</p>
+<p>Executor收到Driver的回复，这就表示注册成功了，然后创建Executor对象，等drive将任务发过来后来执行task（具体在<code>CoarseGrainedExecutorBackend</code>）。</p>
+<p>到这里，我们已经把所有需要的Executor都启动完了，并且开启了driver线程来运行用户程序，下面是Driver对用户的应用程序进行App-&gt;Job-&gt;Stage-&gt;Task划分</p>
+
+        <h2 id="第二部分driver对用户的应用程序进行app-job-stage-task划分"   >
+          <a href="#第二部分driver对用户的应用程序进行app-job-stage-task划分" class="heading-link"><i class="fas fa-link"></i></a>第二部分：Driver对用户的应用程序进行App-&gt;Job-&gt;Stage-&gt;Task划分</h2>
+      
+<blockquote>
+<p>这里就不一一贴上代码了</p>
+</blockquote>
+<p>一旦遇到一个行动算子，就会提交一个job,即执行runJob操作，它会把当前提交的作业封装成JobSubmitted对应放到eventQueue里，然后，会开启线程从eventQueue获取JobSubmitted进行处理，然后调用onReceive方法进行处理。</p>
+<p>onReceive的doOnReceive中执行<code>dagScheduler.handleJobSubmitted</code>去处理提交的作业。</p>
+<p>在handleJobSubmitted里面会对job进行阶段划分，具体如下：</p>
+<p>创建一个ResultStage，同时根据宽依赖来创建ShuffleMapStage，具体做法是：获取RDD最近的一个宽依赖（从后往前搜索的），再根据宽依赖创建ShufferMapStage，如果除了最近上级之外，还有祖先的宽依赖，那么把祖先宽依赖ShufferMapStage也创建了。现在所有的阶段都创建完了，然后划分Task。</p>
+<p>首先获取最前面的阶段（没有父阶段的阶段），根据当前阶段的类型来创建任务，如下：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">//在DAGScheduler类下：</span><br><span class="line">stage match &#123;</span><br><span class="line">case stage: ShuffleMapStage =&gt;</span><br><span class="line">  partitionsToCompute.map &#123; id =&gt;</span><br><span class="line">	val locs = taskIdToLocations(id)</span><br><span class="line">	val part = stage.rdd.partitions(id)</span><br><span class="line">	new ShuffleMapTask(stage.id, stage.latestInfo.attemptId,</span><br><span class="line">	  taskBinary, part, locs, stage.latestInfo.taskMetrics, properties, Option(jobId),</span><br><span class="line">	  Option(sc.applicationId), sc.applicationAttemptId)</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">case stage: ResultStage =&gt;</span><br><span class="line">  partitionsToCompute.map &#123; id =&gt;</span><br><span class="line">	val p: Int = stage.partitions(id)</span><br><span class="line">	val part = stage.rdd.partitions(p)</span><br><span class="line">	val locs = taskIdToLocations(id)</span><br><span class="line">	new ResultTask(stage.id, stage.latestInfo.attemptId,</span><br><span class="line">	  taskBinary, part, locs, id, properties, stage.latestInfo.taskMetrics,</span><br><span class="line">	  Option(jobId), Option(sc.applicationId), sc.applicationAttemptId)</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>如果是ShuffleMapStage，则创建ShuffleMapTask，如果是ResultStage，则创建ResultTask。</p>
+<p>创建Task的时候，并不是一个阶段创建一个Task，而是根据当前阶段最后一个RDD的分区数遍历，根据分区来创建Task的，每一个分区创建一个Task（看上面的<code>partitionsToCompute</code>），</p>
+<p>创建完任务后放进集合里面去，然后做判断，如果任务数大于0，说明有Task需要处理，则会调用submitTask进行处理（如下）：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">//在DAGScheduler.scala类下：</span><br><span class="line">if (tasks.size &gt; 0) &#123;</span><br><span class="line">  logInfo("Submitting " + tasks.size + " missing tasks from " + stage + " (" + stage.rdd + ")")</span><br><span class="line">  stage.pendingPartitions ++= tasks.map(_.partitionId)</span><br><span class="line">  logDebug("New pending partitions: " + stage.pendingPartitions)</span><br><span class="line">  taskScheduler.submitTasks(new TaskSet(</span><br><span class="line">	tasks.toArray, stage.id, stage.latestInfo.attemptId, jobId, properties))</span><br><span class="line">  stage.latestInfo.submissionTime = Some(clock.getTimeMillis())</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>submitTasks中传入的参数是TaskSet，因此会先将所有的Task封装成TaskSet，然后在执行<strong>submitTasks</strong>提交任务，TaskSet包含的信息如下：</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">private[spark] class TaskSet(</span><br><span class="line">	val tasks: Array[Task[_]], //有哪些Task</span><br><span class="line">	val stageId: Int,  //这些Task的阶段</span><br><span class="line">	val stageAttemptId: Int, </span><br><span class="line">	val priority: Int,   //Task的优先级</span><br><span class="line">	val properties: Properties) &#123;</span><br><span class="line">  val id: String = stageId + "." + stageAttemptId</span><br><span class="line"></span><br><span class="line">  override def toString: String = "TaskSet " + id</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
+<p>上面这些操作都是在Driver端进行的，具体如何将任务分发到Executor执行呢？看下面<strong>Driver分发Task到Executor上</strong>，其实就是看<strong>submitTasks</strong>里面的执行细节</p>
+
+        <h2 id="第三部分driver分发task到executor上"   >
+          <a href="#第三部分driver分发task到executor上" class="heading-link"><i class="fas fa-link"></i></a>第三部分：Driver分发Task到Executor上</h2>
+      
+<p>（1）Driver提交Task到Executor（在<code>org.apache.spark.scheduler.DAGScheduler</code>类里面）</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">-执行submitMissingTasks方法</span><br><span class="line">	//每一个Task对应处理一个分区的数据，将多个Task放到TaskSet中进行提交</span><br><span class="line">	//该方法是抽象方法，具体实现在org.apache.spark.scheduler.TaskSchedulerImpl</span><br><span class="line">	*taskScheduler.submitTasks(new TaskSet)</span><br><span class="line">		//在Task之前，创建了TaskSetManager对TaskSet进行封装，为了方便做资源调度</span><br><span class="line">		&gt;val manager = createTaskSetManager(taskSet, maxTaskFailures)</span><br><span class="line">		//将封装好的TaskSetManager放到资源调度器中【这是Spark本身调度机制，即driver上任务调度器，Yarn的资源调度在启动ApplicationMaster和Executor的时候就已经调度完了】</span><br><span class="line">		//manager.taskSet.properties有两种</span><br><span class="line">		//先进先出: org.apache.spark.scheduler.FIFOSchedulableBuilder(默认根据FIFO进行任务调度)</span><br><span class="line">		//公平：org.apache.spark.scheduler.FairSchedulableBuilder</span><br><span class="line">		&gt;schedulableBuilder.addTaskSetManager(manager, manager.taskSet.properties)</span><br><span class="line">		</span><br><span class="line">		//触发底层资源调度，该方法是抽象方法，在driver端底层通信的类是CoarseGrainedSchedulerBackend</span><br><span class="line">		&gt;backend.reviveOffers()</span><br><span class="line">			//给Driver终端发送一条标记位ReviveOffers的消息，【一般是Task提交的时候，或者是资源变化的时候，会发送给driver重新做一些调度】</span><br><span class="line">			&amp;driverEndpoint.send(ReviveOffers)</span><br><span class="line">			&amp;Driver终端会通过receive的方法，接收消息并对其进行处理</span><br><span class="line">				#case ReviveOffers =&gt;makeOffers()	</span><br><span class="line">					//(下面两行）获取可用的Executor</span><br><span class="line">					~val activeExecutors = executorDataMap.filterKeys(executorIsAlive)</span><br><span class="line">					~val workOffers = activeExecutors.map</span><br><span class="line">					</span><br><span class="line">					//scheduler.resourceOffers(workOffers) 决定Task应该交给哪个Executor处理【具体分配到哪个Executor我们不用关心，现在关心的是怎么提交到Executor上去大的】</span><br><span class="line">					~运行Task launchTasks(scheduler.resourceOffers(workOffers))</span><br><span class="line">						//因为要将Task提交到Executor运行，所以需要进行序列化</span><br><span class="line">						+val serializedTask = ser.serialize(task)</span><br><span class="line">						//给Executor终端发送Task</span><br><span class="line">						+executorData.executorEndpoint.send(LaunchTask(new SerializableBuffer(serializedTask)))</span><br></pre></td></tr></table></div></figure>
+<p>（2）Executor端接收Task并运行（在Executor端底层通信的类是<code>CoarseGrainedExecutorBackend</code>）</p>
+<figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">-receive</span><br><span class="line">	//对接收到的消息类型进行匹配，匹配LaunchTask</span><br><span class="line">	*case LaunchTask(data)</span><br><span class="line">		//对接收到的Task进行反序列化</span><br><span class="line">		&gt;val taskDesc = ser.deserialize[TaskDescription](data.value)</span><br><span class="line">		//运行Task</span><br><span class="line">		&gt;executor.launchTask</span><br><span class="line">			//从线程池中获取线程，执行task</span><br><span class="line">			&amp;threadPool.execute(tr)</span><br><span class="line">				#TaskRunner.run</span><br><span class="line">					~task.run</span><br><span class="line">						+runTask(context)</span><br><span class="line">							//根据任务类型的不同，从而执行不同的任务</span><br><span class="line">							++ShuffleMapTask</span><br><span class="line">							++ResultTask</span><br></pre></td></tr></table></div></figure>
+<p><strong>思考</strong>：为什么要分不同的Task呢？<br />
+因为根据阶段的不同，运行的Task也不一样，比如一个job分两个阶段：stage0和stage1，中间要经过shuffle，<br />
+stage0处理后磁盘写数据，stage1向磁盘读数据进行处理，所以它们完成的功能不一样。</p>
+</div><footer class="post-footer"><div class="post-ending ending"><div class="ending__text">------ 本文结束，感谢您的阅读 ------</div></div><div class="post-copyright copyright"><div class="copyright-author"><span class="copyright-author__name">本文作者: </span><span class="copyright-author__value"><a href="https://wxler.github.io">wxler</a></span></div><div class="copyright-link"><span class="copyright-link__name">本文链接: </span><span class="copyright-link__value"><a href="https://wxler.github.io/2021/08/02/192923/">https://wxler.github.io/2021/08/02/192923/</a></span></div><div class="copyright-notice"><span class="copyright-notice__name">版权声明: </span><span class="copyright-notice__value">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" rel="external nofollow" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！</span></div></div><div class="post-tags"><span class="post-tags-item"><span class="post-tags-item__icon"><i class="fas fa-tag"></i></span><a class="post-tags-item__link" href="https://wxler.github.io/tags/Spark/">Spark</a></span></div><div class="post-share"><div class="social-share" data-sites="qzone, qq, weibo, wechat, douban, linkedin, facebook, twitter, google">分享到：</div></div><nav class="post-paginator paginator"><div class="paginator-next"><a class="paginator-next__link" href="/2021/07/22/191354/"><span class="paginator-prev__text">【已解决】Exception in thread &quot;main&quot; java.lang.InternalError Malformed class name</span><span class="paginator-next__icon"><i class="fas fa-angle-right"></i></span></a></div></nav></footer></div></div><div class="comments" id="comments"><div id="valine-container"></div></div></div><div class="sidebar-wrap" id="sidebar-wrap"><aside class="sidebar" id="sidebar"><div class="sidebar-nav"><span class="sidebar-nav-toc current">文章目录</span><span class="sidebar-nav-ov">站点概览</span></div><section class="sidebar-toc"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#yarn-cluster任务提交流程详细流程"><span class="toc-text">
+          Yarn Cluster任务提交流程详细流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第一部分用户编写好的spark应用程序提交到yarn上"><span class="toc-text">
+          第一部分：用户编写好的Spark应用程序提交到Yarn上</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第二部分driver对用户的应用程序进行app-job-stage-task划分"><span class="toc-text">
+          第二部分：Driver对用户的应用程序进行App-&gt;Job-&gt;Stage-&gt;Task划分</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#第三部分driver分发task到executor上"><span class="toc-text">
+          第三部分：Driver分发Task到Executor上</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">132</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">20</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">60</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+  var isXML = true;
+  var search_path = 'search.json';
+
+  if (!search_path) {
+    search_path = 'search.xml';
+  } else if (/json$/i.test(search_path)) {
+    isXML = false;
+  }
+
+  var path = '/' + search_path;
+  $.ajax({
+    url: path,
+    dataType: isXML ? 'xml' : 'json',
+    async: true,
+    success: function (res) {
+      var datas = isXML ? $('entry', res).map(function () {
+        // 将 XML 转为 JSON
+        return {
+          title: $('title', this).text(),
+          content: $('content', this).text(),
+          url: $('url', this).text()
+        };
+      }).get() : res;
+      var $input = $('.search-input input');
+      var $result = $('.search-results');
+      // 搜索对象（标题、内容）的权重，影响显示顺序
+      var WEIGHT = { title: 100, content: 1 };
+      var searchPost = function () {
+        var searchText = $input.val().toLowerCase().trim();
+        // 根据空白字符分隔关键字
+        var keywords = searchText.split(/[\s]+/);
+        // 搜索结果
+        var matchPosts = [];
+
+        // 有多个关键字时，将原文字整个保存下来
+        if (keywords.length > 1) {
+          keywords.push(searchText);
+        }
+        // 防止未输入字符时搜索
+        if (searchText.length > 0) {
+          datas.forEach(function (data) {
+            var isMatch  = false;
+            // 没有标题的文章使用预设的 i18n 变量代替
+            var title = (data.title && data.title.trim()) || '[ 文章无标题 ]';
+            var titleLower = title && title.toLowerCase();
+            // 删除 HTML 标签 和 所有空白字符
+            var content = data.content && data.content.replace(/<[^>]+>/g, '');
+            var contentLower = content && content.toLowerCase();
+            // 删除重复的 /
+            var postURL = data.url && decodeURI(data.url).replace(/\/{2,}/g, '/');
+            // 标题中匹配到的关键词
+            var titleHitSlice = [];
+            // 内容中匹配到的关键词
+            var contentHitSlice = [];
+
+            keywords.forEach(function (keyword) {
+              /**
+              * 获取匹配的关键词的索引
+              * @param {String} keyword 要匹配的关键字
+              * @param {String} text 原文字
+              * @param {Boolean} caseSensitive 是否区分大小写
+              * @param {Number} weight 匹配对象的权重。权重大的优先显示
+              * @return {Array}
+              */
+              function getIndexByword (word, text, caseSensitive, weight) {
+                if (!word || !text) {
+                  return [];
+                };
+
+                var startIndex = 0; // 每次匹配的开始索引
+                var index = -1;     // 匹配到的索引值
+                var result = [];    // 匹配结果
+
+                if (!caseSensitive) {
+                  word = word.toLowerCase();
+                  text = text.toLowerCase();
+                }
+
+                while((index = text.indexOf(word, startIndex)) !== -1) {
+                  var hasMatch = false;
+                  // 索引位置相同的关键词，保留长度较长的
+                  titleHitSlice.forEach(function (hit) {
+                    if (hit.index === index && hit.word.length < word.length) {
+                      hit.word = word;
+                      hasMatch = true;
+                    }
+                  });
+                  startIndex = index + word.length;
+                  !hasMatch && result.push({ index: index, word: word, weight: weight });
+                }
+                return result;
+              }
+              titleHitSlice = titleHitSlice.concat(getIndexByword(keyword, titleLower, false, WEIGHT.title));
+              contentHitSlice = contentHitSlice.concat(getIndexByword(keyword, contentLower, false, WEIGHT.content));
+            });
+
+            var hitTitle = titleHitSlice.length;
+            var hitContent = contentHitSlice.length;
+
+            if (hitTitle > 0 || hitContent > 0) {
+              isMatch = true;
+            }
+            if (isMatch) {
+              ;[titleHitSlice, contentHitSlice].forEach(function (hit) {
+                // 按照匹配文字的索引的递增顺序排序
+                hit.sort(function (left, right) {
+                  return left.index - right.index;
+                });
+              });
+              /**
+              * 给文本中匹配到的关键词添加标记，从而进行高亮显示
+              * @param {String} text 原文本
+              * @param {Array} hitSlice 匹配项的索引信息
+              * @param {Number} start 开始索引
+              * @param {Number} end 结束索引
+              * @return {String}
+              */
+              function highlightKeyword (text, hitSlice, start, end) {
+                if (!text || !hitSlice || !hitSlice.length) {
+                  return;
+                }
+
+                var result = '';
+                var startIndex = start;
+                var endIndex = end;
+                hitSlice.forEach(function (hit) {
+                  if (hit.index < startIndex) {
+                    return;
+                  }
+
+                  var hitWordEnd = hit.index + hit.word.length;
+                  result += text.slice(startIndex, hit.index);
+                  result += '<b>' + text.slice(hit.index, hitWordEnd) + '</b>';
+                  startIndex = hitWordEnd;
+                });
+                result += text.slice(startIndex, endIndex);
+                return result;
+              }
+
+              var postData = {};
+              // 文章总的搜索权重
+              var postWeight = titleHitSlice.length * WEIGHT.title + contentHitSlice.length * WEIGHT.content;
+              // 标记匹配关键词后的标题
+              var postTitle = highlightKeyword(title, titleHitSlice, 0, title.length) || title;
+              // 标记匹配关键词后的内容
+              var postContent;
+              // 显示内容的长度
+              var SHOW_WORD_LENGTH = 200;
+              // 命中关键词前的字符显示长度
+              var SHOW_WORD_FRONT_LENGTH = 20;
+              var SHOW_WORD_END_LENGTH = SHOW_WORD_LENGTH - SHOW_WORD_FRONT_LENGTH;
+
+              // 截取匹配的第一个字符，前后共 200 个字符来显示
+              if (contentHitSlice.length > 0) {
+                var firstIndex = contentHitSlice[0].index;
+                var start = firstIndex > SHOW_WORD_FRONT_LENGTH ? firstIndex - SHOW_WORD_FRONT_LENGTH : 0;
+                var end = firstIndex + SHOW_WORD_END_LENGTH;
+                postContent = highlightKeyword(content, contentHitSlice, start, end);
+              } else { // 未匹配到内容，直接截取前 200 个字符来显示
+                postContent = content.slice(0, SHOW_WORD_LENGTH);
+              }
+              postData.title = postTitle;
+              postData.content = postContent;
+              postData.url = postURL;
+              postData.weight = postWeight;
+              matchPosts.push(postData);
+            }
+          });
+        }
+
+        var resultInnerHtml = '';
+        if (matchPosts.length) {
+          // 按权重递增的顺序排序，使权重大的优先显示
+          matchPosts.sort(function (left, right) {
+            return right.weight - left.weight;
+          });
+          resultInnerHtml += '<ul>';
+          matchPosts.forEach(function (post) {
+            resultInnerHtml += '<li><a class="search-results-title" href="' + post.url + '">';
+            resultInnerHtml += post.title;
+            resultInnerHtml += '</a><div class="search-results-content">';
+            resultInnerHtml += post.content;
+            resultInnerHtml += '</div></li>';
+          });
+          resultInnerHtml += '</ul>';
+        } else {
+          resultInnerHtml += '<div class="search-results-none"><i class="far fa-meh"></i></div>';
+        }
+        $result.html(resultInnerHtml);
+      };
+      $input.on('input', searchPost);
+      $input.on('keyup', function (e) {
+        if (e.keyCode === Stun.utils.codeToKeyCode('Enter')) {
+          searchPost();
+        }
+      });
+    }
+  });
+}
+
+function closeSearch () {
+  $('body').css({ overflow: 'auto' });
+  $('.search-popup').css({ display: 'none' });
+  $('.search-mask').css({ display: 'none' });
+}
+
+window.addEventListener('DOMContentLoaded', function () {
+  Stun.utils.pjaxReloadLocalSearch = function () {
+    $('.header-nav-search').on('click', function (e) {
+      e.stopPropagation();
+      $('body').css('overflow', 'hidden');
+      $('.search-popup')
+        .velocity('stop')
+        .velocity('transition.expandIn', {
+          duration: 300,
+          complete: function () {
+            $('.search-popup input').focus();
+          }
+        });
+      $('.search-mask')
+        .velocity('stop')
+        .velocity('transition.fadeIn', {
+          duration: 300
+        });
+
+      initSearch();
+    });
+    $('.search-mask, .search-close').on('click', function () {
+      closeSearch();
+    });
+    $(document).on('keydown', function (e) {
+      // Escape <=> 27
+      if (e.keyCode === Stun.utils.codeToKeyCode('Escape')) {
+        closeSearch();
+      }
+    });
+  };
+
+  Stun.utils.pjaxReloadLocalSearch();
+}, false);</script><script src="https://cdn.jsdelivr.net/npm/pjax@latest/pjax.min.js"></script><script>window.addEventListener('DOMContentLoaded', function () {
+  var pjax = new Pjax({"selectors":["head title","#main",".pjax-reload"],"history":true,"scrollTo":false,"scrollRestoration":false,"cacheBust":false,"debug":false,"currentUrlFullReload":false,"timeout":0});
+  // 加载进度条的计时器
+  var loadingTimer = null;
+
+  // 重置页面 Y 方向上的滚动偏移量
+  document.addEventListener('pjax:send', function () {
+    $('.header-nav-menu').removeClass('show');
+    if (CONFIG.pjax && CONFIG.pjax.avoidBanner) {
+      $('html').velocity('scroll', {
+        duration: 500,
+        offset: $('#header').height(),
+        easing: 'easeInOutCubic'
+      });
+    }
+
+    var loadingBarWidth = 20;
+    var MAX_LOADING_WIDTH = 95;
+
+    $('.loading-bar').addClass('loading');
+    $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    clearInterval(loadingTimer);
+    loadingTimer = setInterval(function () {
+      loadingBarWidth += 3;
+      if (loadingBarWidth > MAX_LOADING_WIDTH) {
+        loadingBarWidth = MAX_LOADING_WIDTH;
+      }
+      $('.loading-bar__progress').css('width', loadingBarWidth + '%');
+    }, 500);
+  }, false);
+
+  window.addEventListener('pjax:complete', function () {
+    clearInterval(loadingTimer);
+    $('.loading-bar__progress').css('width', '100%');
+    $('.loading-bar').removeClass('loading');
+    setTimeout(function () {
+      $('.loading-bar__progress').css('width', '0');
+    }, 400);
+    $('link[rel=prefetch], script[data-pjax-rm]').each(function () {
+      $(this).remove();
+    });
+    $('script[data-pjax], #pjax-reload script').each(function () {
+      $(this).parent().append($(this).remove());
+    });
+
+    if (Stun.utils.pjaxReloadBoot) {
+      Stun.utils.pjaxReloadBoot();
+    }
+    if (Stun.utils.pjaxReloadScroll) {
+      Stun.utils.pjaxReloadScroll();
+    }
+    if (Stun.utils.pjaxReloadSidebar) {
+      Stun.utils.pjaxReloadSidebar();
+    }
+    if (false) {
+      if (Stun.utils.pjaxReloadHeader) {
+        Stun.utils.pjaxReloadHeader();
+      }
+      if (Stun.utils.pjaxReloadScrollIcon) {
+        Stun.utils.pjaxReloadScrollIcon();
+      }
+      if (Stun.utils.pjaxReloadLocalSearch) {
+        Stun.utils.pjaxReloadLocalSearch();
+      }
+    }
+  }, false);
+}, false);</script><div id="pjax-reload"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/katex.min.css" rel="stylesheet" type="text/css"><link href="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.css" rel="stylesheet" type="text/css"><script src="https://cdn.jsdelivr.net/npm/katex@0.10.2/dist/contrib/copy-tex.min.js"></script></div><script src="https://cdn.jsdelivr.net/npm/leancloud-storage@latest/dist/av-min.js"></script><script src="https://cdn.jsdelivr.net/npm/valine@latest/dist/Valine.min.js"></script><script data-pjax="">function loadValine () {
+  var GUEST_INFO = ['nick', 'mail', 'link'];
+  var guest_info = 'nick,mail';
+
+  guest_info = guest_info.split(',').filter(function(item) {
+    return GUEST_INFO.indexOf(item) > -1;
+  });
+  new Valine({
+    el: '#valine-container',
+    appId: 'kBUfBo302Sl5ViCNcWef6wYT-gzGzoHsz',
+    appKey: 'hq4rU6YND5ziczBa2PLLUBiM',
+    notify: true,
+    verify: false,
+    placeholder: '有什么需要和我说的，请填写昵称与邮箱(邮箱不会公开显示)，点击评论吧(支持匿名评论)！',
+    avatar: 'mp',
+    meta: guest_info,
+    pageSize: '15' || 10,
+    visitor: false,
+    recordIP: false,
+    lang: '' || 'zh-cn',
+    path: window.location.pathname
+  });
+}
+
+if (true) {
+  loadValine();
+} else {
+  window.addEventListener('DOMContentLoaded', loadValine, false);
+}</script><script src="/js/utils.js?v=2.0.0"></script><script src="/js/stun-boot.js?v=2.0.0"></script><script src="/js/scroll.js?v=2.0.0"></script><script src="/js/header.js?v=2.0.0"></script><script src="/js/sidebar.js?v=2.0.0"></script></body></html>
