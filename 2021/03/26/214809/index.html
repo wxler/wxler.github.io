@@ -5,35 +5,35 @@
 <meta property="og:site_name" content="Layne&#39;s Blog">
 <meta property="og:description" content="Spark 作为一个数据处理框架和计算引擎，被设计在所有常见的集群环境中运行,  在国内工作中主流的环境为Yarn，不过逐渐容器式环境也慢慢流行起来。接下来，我们就分别看看不同环境下 Spark 的运行。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210326215135.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210326222814.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210326222924.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210326223450.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327100604.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327124528.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327125039.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327125605.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327125916.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327151322.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327152008.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327154926.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327155326.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327155728.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328152100.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328152345.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328155109.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328155457.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328155556.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328160258.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328160521.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328161045.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328161149.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210326215135.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210326222814.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210326222924.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210326223450.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327100604.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327124528.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327125039.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327125605.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327125916.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327151322.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327152008.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327154926.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327155326.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327155728.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328152100.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328152345.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328155109.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328155457.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328155556.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328160258.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328160521.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328161045.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328161149.png">
 <meta property="article:published_time" content="2021-03-26T13:48:09.000Z">
-<meta property="article:modified_time" content="2021-03-28T15:34:56.045Z">
+<meta property="article:modified_time" content="2022-06-05T15:23:36.033Z">
 <meta property="article:author" content="wxler">
 <meta property="article:tag" content="Spark">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210326215135.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>二、Spark运行环境 | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/03/26/214809/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+<meta name="twitter:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210326215135.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>二、Spark运行环境 | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/03/26/214809/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement('script');
   hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
@@ -67,10 +67,10 @@ var CONFIG = {
   sourcePath: {"js":"js","css":"css","images":"images"},
 };
 
-window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">二、Spark运行环境</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-26</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-03-28</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">4k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">28分</span></span></div></header><div class="post-body"><p>Spark 作为一个数据处理框架和计算引擎，被设计在所有常见的集群环境中运行,  在国内工作中主流的环境为Yarn，不过逐渐容器式环境也慢慢流行起来。接下来，我们就分别看看不同环境下 Spark 的运行。</p>
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">二、Spark运行环境</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-26</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2022-06-05</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">4k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">28分</span></span></div></header><div class="post-body"><p>Spark 作为一个数据处理框架和计算引擎，被设计在所有常见的集群环境中运行,  在国内工作中主流的环境为Yarn，不过逐渐容器式环境也慢慢流行起来。接下来，我们就分别看看不同环境下 Spark 的运行。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210326215135.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210326215135.png"  alt="" />
       </p>
 <a id="more"></a>
 <p><strong>文章目录</strong></p>
@@ -129,7 +129,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> spark-local</span><br><span class="line">bin/spark-shell</span><br></pre></td></tr></table></div></figure>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210326222814.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210326222814.png"  alt="" />
       </p>
 <ol start="2">
 <li>启动成功后，可以输入网址进行 Web UI 监控页面访问</li>
@@ -137,7 +137,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <figure class="highlight tex"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://虚拟机地址:4040</span><br></pre></td></tr></table></div></figure>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210326222924.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210326222924.png"  alt="" />
       </p>
 
         <h2 id="3-命令行工具"   >
@@ -149,7 +149,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sc.textFile(<span class="string">"data/word.txt"</span>).flatMap(_.split(<span class="string">" "</span>)).map((_,<span class="number">1</span>)).reduceByKey(_+_).collect</span><br></pre></td></tr></table></div></figure>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210326223450.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210326223450.png"  alt="" />
       </p>
 
         <h2 id="4-退出本地模式"   >
@@ -182,7 +182,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>现在我们来实现Standalone模式，集群规划：</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327100604.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327100604.png"  alt="" />
       </p>
 <p>下面所有操作都在spark1主机上进行</p>
 
@@ -226,7 +226,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> spark-standalone/</span><br><span class="line">sbin/start-all.sh</span><br></pre></td></tr></table></div></figure>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327124528.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327124528.png"  alt="" />
       </p>
 <ol start="2">
 <li>查看三台服务器运行进程</li>
@@ -238,7 +238,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327125039.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327125039.png"  alt="" />
       </p>
 
         <h3 id="64-提交应用"   >
@@ -254,14 +254,14 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327125605.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327125605.png"  alt="" />
       </p>
 <p>执行任务时，会产生多个 Java 进程</p>
 <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@spark2 module]<span class="comment"># jps </span></span><br><span class="line">1362 CoarseGrainedExecutorBackend  //执行节点进程</span><br><span class="line">1378 Jps</span><br><span class="line">1223 Worker</span><br><span class="line">[root@spark3 spark-standalone]<span class="comment"># jps</span></span><br><span class="line">1360 Jps</span><br><span class="line">1347 CoarseGrainedExecutorBackend</span><br><span class="line">1228 Worker</span><br></pre></td></tr></table></div></figure>
 <p>执行任务时，默认采用服务器集群节点的总核数，每个节点内存 1024M。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327125916.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327125916.png"  alt="" />
       </p>
 
         <h3 id="65-提交参数说明"   >
@@ -358,7 +358,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327151322.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327151322.png"  alt="" />
       </p>
 
         <h2 id="7-配置高可用ha"   >
@@ -368,7 +368,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>现在我们来实现高可用，集群规划为：</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327152008.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327152008.png"  alt="" />
       </p>
 <p>以下指令没有特别说明，均在spark1上执行</p>
 <ol>
@@ -394,7 +394,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>在浏览器打开<code>http://spark1:8989</code>，可以看到spark1节点处于活动状态</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327154926.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327154926.png"  alt="" />
       </p>
 <ol start="6">
 <li>启动 spark2 的单独 Master 节点，此时 linux2 节点 Master 状态处于备用状态</li>
@@ -403,7 +403,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>在浏览器打开<code>http://spark2:8989</code></p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327155326.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327155326.png"  alt="" />
       </p>
 <ol start="7">
 <li>提交应用到高可用集群</li>
@@ -418,7 +418,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210327155728.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210327155728.png"  alt="" />
       </p>
 
         <h2 id="8-yarn-模式"   >
@@ -460,12 +460,12 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 </ul>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328152100.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328152100.png"  alt="" />
       </p>
 <p>查看<code>http://spark1:8088</code>页面</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328152345.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328152345.png"  alt="" />
       </p>
 
         <h3 id="85-配置历史服务器"   >
@@ -509,7 +509,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>查看<code>http://spark1:18080/</code></p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328155109.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328155109.png"  alt="" />
       </p>
 
         <h2 id="9-k8s-mesos-模式"   >
@@ -518,12 +518,12 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>Mesos 是 Apache 下的开源分布式资源管理框架，它被称为是分布式系统的内核，在Twitter 得到广泛使用，管理着 Twitter 超过 30,0000 台服务器上的应用部署，但是在国内，依然使用着传统的 Hadoop 大数据框架，所以国内使用 Mesos 框架的并不多， 但是原理其实都差不多，这里我们就不做过多讲解了。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328155457.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328155457.png"  alt="" />
       </p>
 <p>容器化部署是目前业界很流行的一项技术，基于 Docker 镜像运行能够让用户更加方便地对应用进行管理和运维。容器管理工具中最为流行的就是 Kubernetes（k8s），而 Spark也在最近的版本中支持了 k8s 部署模式。这里我也不做过多的讲解。给个链接大家自己感受一下：<span class="exturl"><a class="exturl__link"   href="https://spark.apache.org/docs/latest/running-on-kubernetes.html"  target="_blank" rel="noopener">https://spark.apache.org/docs/latest/running-on-kubernetes.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328155556.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328155556.png"  alt="" />
       </p>
 
         <h2 id="10-windows-模式"   >
@@ -545,7 +545,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328160258.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328160258.png"  alt="" />
       </p>
 <ol start="2">
 <li>在 bin 目录中创建 input 目录，并添加 word.txt 文件,  在word.txt中输入以下内容</li>
@@ -555,7 +555,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <figure class="highlight scala"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sc.textFile(<span class="string">"input/word.txt"</span>).flatMap(_.split(<span class="string">" "</span>)).map((_,<span class="number">1</span>)).reduceByKey(_+_).collect</span><br></pre></td></tr></table></div></figure>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328160521.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328160521.png"  alt="" />
       </p>
 
         <h3 id="103-命令行提交应用"   >
@@ -565,7 +565,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">spark-submit --class org.apache.spark.examples.SparkPi --master <span class="built_in">local</span>[2] ../examples/jars/spark-examples_2.12-3.0.0.jar 10</span><br></pre></td></tr></table></div></figure>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328161045.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328161045.png"  alt="" />
       </p>
 
         <h2 id="11-部署模式对比"   >
@@ -573,7 +573,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
       
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328161149.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328161149.png"  alt="" />
       </p>
 
         <h2 id="12-端口号"   >
@@ -612,7 +612,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
           10.2 启动本地环境</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#103-命令行提交应用"><span class="toc-text">
           10.3 命令行提交应用</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-部署模式对比"><span class="toc-text">
           11. 部署模式对比</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-端口号"><span class="toc-text">
-          12. 端口号</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">133</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">21</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">61</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+          12. 端口号</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">134</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">21</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">61</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2022</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
   var isXML = true;
   var search_path = 'search.json';
 

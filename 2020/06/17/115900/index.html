@@ -5,37 +5,37 @@
 <meta property="og:site_name" content="Layne&#39;s Blog">
 <meta property="og:description" content="由于平时写代码和博客常常用到git和github，每次用到都去百度，感觉太麻烦了，也大大降低了效率，索性自己整理一下常用到的git指令和使用方法，对git的使用能有一个系统的认识。这里只介绍一下基本用法，对更高级的用法如果以后用到再进行补充。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125501.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125536.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125612.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130149.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125701.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130230.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130230.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125804.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125909.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130403.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130427.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130454.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130516.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130558.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130558.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130633.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130807.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130807.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130943.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130943.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131003.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131140.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131213.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131310.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131337.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125501.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125536.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125612.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130149.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125701.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130230.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130230.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125804.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125909.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130403.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130427.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130454.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130516.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130558.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130558.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130633.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130807.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130807.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130943.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130943.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131003.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131140.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131213.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131310.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131337.png">
 <meta property="article:published_time" content="2020-06-17T03:59:00.000Z">
-<meta property="article:modified_time" content="2021-02-10T02:12:49.201Z">
+<meta property="article:modified_time" content="2022-06-05T15:23:34.069Z">
 <meta property="article:author" content="wxler">
 <meta property="article:tag" content="git">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125501.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>git基本使用方法 | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2020/06/17/115900/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+<meta name="twitter:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125501.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>git基本使用方法 | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2020/06/17/115900/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement('script');
   hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
@@ -69,7 +69,7 @@ var CONFIG = {
   sourcePath: {"js":"js","css":"css","images":"images"},
 };
 
-window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">git基本使用方法</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-06-17</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-02-10</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">3.5k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">20分</span></span></div></header><div class="post-body"><p>由于平时写代码和博客常常用到git和github，每次用到都去百度，感觉太麻烦了，也大大降低了效率，索性自己整理一下常用到的git指令和使用方法，对git的使用能有一个系统的认识。这里只介绍一下基本用法，对更高级的用法如果以后用到再进行补充。</p>
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">git基本使用方法</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2020-06-17</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2022-06-05</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">3.5k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">20分</span></span></div></header><div class="post-body"><p>由于平时写代码和博客常常用到git和github，每次用到都去百度，感觉太麻烦了，也大大降低了效率，索性自己整理一下常用到的git指令和使用方法，对git的使用能有一个系统的认识。这里只介绍一下基本用法，对更高级的用法如果以后用到再进行补充。</p>
 <a id="more"></a>
 
         <h2 id="git安装和配置"   >
@@ -88,13 +88,13 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>Git是分布式版本控制系统，那么它就没有中央服务器的，每个人的电脑就是一个完整的版本库，这样，工作的时候就不需要联网了，因为版本都是在自己的电脑上。既然每个人的电脑都有一个完整的版本库，那多个人如何协作呢？比如说自己在电脑上改了文件A，其他人也在电脑上改了文件A，这时，你们两之间只需把各自的修改推送给对方，就可以互相看到对方的修改了。Git在执行更新操作时，更像是对数据的一组快照，每次你提交更新，它主要对当时的全部文件制作一个快照并保存这个快照的索引。为了高效，如果文件没有修改，Git不再重新存储该文件，而是只保留一个链接指向之前存储的文件。<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125501.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125501.png"  alt="" />
       <br />
 如上图所示，在version2中的B即是因为File B没有改变，所以直接存储了一个指向FileB的链接。只有修改了的文件才会产生一个新的文件，覆盖原来的文件。<br />
 git的工作原理/流程如下:<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125536.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125536.png"  alt="" />
       </p>
 <ul>
 <li>Workspace：工作区(本地目录文件)</li>
@@ -120,12 +120,12 @@ git的工作原理/流程如下:<br />
 <p>通过<code>git status</code>来查看仓库状态，执行效果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125612.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125612.png"  alt="" />
       <br />
 可以看到nothing to commit，表示本地工作区没有要提交的文件，我们再创建一个one.txt的文件，然后在执行<code>git status</code>，效果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130149.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130149.png"  alt="" />
       <br />
 从结果Untracked files可以看到，one.txt还没有被add到暂存区。</p>
 
@@ -136,7 +136,7 @@ git的工作原理/流程如下:<br />
 <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git add one.txt</span><br></pre></td></tr></table></div></figure>
 <p>将one.txt添加到暂存区后，再次执行<code>git status</code>,可看到如下效果：  
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125701.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125701.png"  alt="" />
       <br />
 从Changes to be committed可以看出，one.txt已被添加到暂存区，但还未被添加到本地仓库。</p>
 
@@ -153,12 +153,12 @@ git的工作原理/流程如下:<br />
 <p>使用<code>git diff</code>命令可以查看<strong>工作区和暂存区的区别</strong>，在one.txt里面写入一行hello world，然后执行<code>git diff</code>命令，结果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130230.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130230.png"  alt="" />
       <br />
 根据结果可以看到新增了一行hello world，如果我们要比较<strong>工作区与最新本地版本库的区别</strong>，可以执行<code>git diff HEAD</code>，结果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130230.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130230.png"  alt="" />
       </p>
 
         <h3 id="查看提交历史"   >
@@ -167,7 +167,7 @@ git的工作原理/流程如下:<br />
 <p>使用<code>git log</code>查看提交历史，我们首先将工作区的内容提交到本地仓库，执行<code>git add one.txt</code>将更改后的one.txt添加到暂存区，执行<code>git commit -m '添加了一行hello world'</code>将暂存区的内容提交到本地仓库，然后执行<code>git log</code>，结果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125804.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125804.png"  alt="" />
       </p>
 
         <h2 id="git撤销修改"   >
@@ -180,7 +180,7 @@ git的工作原理/流程如下:<br />
 <p>使用<code>git checkout</code>撤销工作区的代码。我们先向one.txt添加一行hello everyone，执行<code>cat one.txt</code>查看内容，再执行<code>git checkout -- one.txt</code>撤销之前的操作，让one,txt恢复之前的状态，然后执行<code>cat one.txt</code>再次查看内容，效果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124125909.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124125909.png"  alt="" />
       <br />
 可以看到，工作区的内容已经被修改,这时候本地文件刚刚添加的内容就被撤销了。</p>
 
@@ -190,7 +190,7 @@ git的工作原理/流程如下:<br />
 <p>使用<code>git reset HEAD</code>撤销暂存区的代码。首先在one.txt添加一行hello people，执行<code>git add one.txt</code>将更改的内容提交到暂存区，<code>git reset HEAD</code>来撤销暂存区的代码，如下图：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130403.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130403.png"  alt="" />
       <br />
 撤销暂存区的代码之后，如需要将代码添加到暂存区，则需要再次执行<code>git add</code>命令</p>
 
@@ -208,13 +208,13 @@ git的工作原理/流程如下:<br />
 <p>执行<code>git reset --hard head^</code>后的效果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130427.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130427.png"  alt="" />
       <br />
 可以从结果看出，前半部分816b208是执行撤销操作以后，当前版本的版本号前七位，后半部分是该版本的备注，可以用<code>git log</code>来查看不同版本的版本号和备注。</p>
 <p>再次查看本地one.txt文件，发现本地目录的刚刚添加的内容已经没有了，如需要再次提交到本地仓库，则可执行<code>git add</code>和<code>git commit</code>命令。<strong>需要注意的是，当撤销到最开始版本的时候，<code>git reset --hard head^</code>就不能再用了，否则会报如下的错误：</strong><br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130454.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130454.png"  alt="" />
       </p>
 
         <h2 id="git分支管理"   >
@@ -227,7 +227,7 @@ git的工作原理/流程如下:<br />
 <p>通过<code>git branch</code>来查看当前仓库有哪些分支和我们处于哪一分支中，如下所示：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130516.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130516.png"  alt="" />
       <br />
 可以看到，当前本地仓库只有一个master分支，这是git默认创建出来的，master前面的*表示我们当前处于这一个分支中。</p>
 
@@ -237,7 +237,7 @@ git的工作原理/流程如下:<br />
 <p>可以利用<code>git branch &lt;分支名&gt;</code>来创建一个分支，利用<code>git checkout &lt;分支名&gt;</code>来切换分支，如下所示：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130558.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130558.png"  alt="" />
       </p>
 
         <h3 id="分支合并"   >
@@ -246,13 +246,13 @@ git的工作原理/流程如下:<br />
 <p>由于math分支是从master分支中创建出来的，所以此时math分支的内容和master分支的内容是一致的，现在，我们在math分支向one.txt添加一行hello branch math(由于刚刚执行了<a href="#%E6%9C%AC%E5%9C%B0%E4%BB%93%E5%BA%93%E7%9A%84%E4%BB%A3%E7%A0%81%E6%92%A4%E9%94%80">本地仓库的代码撤销</a>，所以one.txt现在的内容是空白的)，此时math分支的one.txt和math分支的one.txt就不同了，具体效果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130558.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130558.png"  alt="" />
       <br />
 执行完毕后，我们也可以在本地查看，先在math分支下，打开one.txt可以看到我们刚刚添加的内容，然后再切换到master分支，再从本地打开one.txt文件，就看不到内容了。<br />
 <strong>可以通过<code>git merge &lt;分支名&gt;</code>合并分支</strong>，先切换到master分支，然后执行<code>git merge math</code>合并math分支到master分支上，效果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130633.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130633.png"  alt="" />
       <br />
 可以看到再次在master分支下查看one.txt，就可以显示math分支的内容了。</p>
 <p>通常合并分支时，git一般使用”Fast forward”模式，fast-forward方式表示当条件允许时，git直接把HEAD指针指向合并分支的头，完成合并，这种方式合并速度快，但是在整个过程中没有创建commit。在这种模式下，删除分支后，会丢掉分支信息，可使用带参数 <code>–no-ff</code>来禁用”Fast forward”模式，即删除时可以实用<code>git merge --no-ff &lt;分支名&gt;</code></p>
@@ -263,12 +263,12 @@ git的工作原理/流程如下:<br />
 <p>可以用<code>git log --graph</code>命令来直观的查看分支的创建和合并等操作，合并math和master分支前的效果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130807.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130807.png"  alt="" />
       <br />
 合并math和master分支后的效果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130807.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130807.png"  alt="" />
       </p>
 
         <h3 id="解决冲突"   >
@@ -277,22 +277,22 @@ git的工作原理/流程如下:<br />
 <p>我们创建一个新的分支dev,并在dev分支下给one.txt添加一行12345，然后提交，如下所示：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130943.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130943.png"  alt="" />
       <br />
 同样，我们现在切换到master分支上来，也在one.txt添加一行内容，内容为56789，并提交，如下所示：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124130943.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124130943.png"  alt="" />
       <br />
 现在，我们将dev分支合并到master上来，如下所示：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131003.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131003.png"  alt="" />
       <br />
 从结果中可以看出，=======之前是主分支的内容，=======之后是dev分支的内容，此时我们用文本编辑器修改one.txt的冲突然后提交即可，如下所示：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131140.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131140.png"  alt="" />
       </p>
 <p><strong>分支策略：首先master主分支应该是非常稳定的，也就是用来发布新版本，一般情况下不允许在上面干活，干活一般情况下在新建的dev分支上干活，干完后，dev分支代码可以合并到主分支master上来。</strong></p>
 
@@ -312,7 +312,7 @@ git的工作原理/流程如下:<br />
 <p>把本地库的内容推送到远程，使用<code>git push -u origin master</code>命令，实际上是把当前分支master推送到远程。由于远程库是空的，我们第一次推送master分支时，加上了–u参数，Git不但会把本地的master分支内容推送的远程新的master分支，还会把本地的master分支和远程的master分支关联起来，在以后的推送或者拉取时就可以简化命令,不用加-u了,效果如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131213.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131213.png"  alt="" />
       <br />
 推送成功后，可以立刻在github页面中看到远程库的内容已经和本地一模一样了。从现在起，只要本地作了提交，就可以通过命令：<code>git push origin master</code>把本地master分支的最新修改推送到github上了，现在你就拥有了真正的分布式版本库了。<br />
 **我们一般不把其它分支推送到远程仓库，master主分支是最稳定的版本，一般情况下不允许在上面干活，干活一般情况下在新建的分支上干活，干完后，把分支代码可以合并到主分支master上来。**当然，你也可以将其它分支推送到远程仓库，可以执行如下命令：</p>
@@ -326,7 +326,7 @@ git的工作原理/流程如下:<br />
 <p>此时克隆的是master分支到本地仓库，我们可以通过<code>git branch -a</code>来查看本地仓库和远程仓库的信息，-a参数可以同时显示本地仓库和远程仓库的信息，如下：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131310.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131310.png"  alt="" />
       <br />
 我们也可以把远程仓库其它分支的内容clone下来，可以执行如下命令：</p>
 <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ git branch fa origin/dev</span><br><span class="line">$ git checkout dev</span><br></pre></td></tr></table></div></figure>
@@ -344,7 +344,7 @@ git的工作原理/流程如下:<br />
 <p>git常用命令速查表，方便查阅：<br />
 
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20201124131337.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20201124131337.png"  alt="" />
       </p>
 
         <h2 id="遗留问题"   >
@@ -394,7 +394,7 @@ git的工作原理/流程如下:<br />
           从远程仓库更新</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#git命令大全"><span class="toc-text">
           git命令大全</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#遗留问题"><span class="toc-text">
           遗留问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文档"><span class="toc-text">
-          参考文档</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">133</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">21</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">61</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+          参考文档</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">134</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">21</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">61</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2022</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
   var isXML = true;
   var search_path = 'search.json';
 

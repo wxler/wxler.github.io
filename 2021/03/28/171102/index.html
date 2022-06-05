@@ -5,22 +5,22 @@
 <meta property="og:site_name" content="Layne&#39;s Blog">
 <meta property="og:description" content="Spark 计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构，用于处理不同的应用场景。三大数据结构分别是：   RDD :  弹性分布式数据集   累加器：分布式共享只写变量   广播变量：分布式共享只读变量   接下来我们一起看看这三大数据结构是如何在数据处理中使用的。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328211236.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328211547.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328211917.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328212430.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328215609.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328220624.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328221037.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328221106.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328221446.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328221859.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328211236.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328211547.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328211917.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328212430.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328215609.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328220624.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328221037.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328221106.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328221446.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328221859.png">
 <meta property="article:published_time" content="2021-03-28T09:11:02.000Z">
-<meta property="article:modified_time" content="2021-03-28T15:41:45.152Z">
+<meta property="article:modified_time" content="2022-06-05T15:23:36.733Z">
 <meta property="article:author" content="wxler">
 <meta property="article:tag" content="Spark">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328211236.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>四、RDD弹性分布式数据集介绍 | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/03/28/171102/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+<meta name="twitter:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328211236.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>四、RDD弹性分布式数据集介绍 | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/03/28/171102/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement('script');
   hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
@@ -54,7 +54,7 @@ var CONFIG = {
   sourcePath: {"js":"js","css":"css","images":"images"},
 };
 
-window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">四、RDD弹性分布式数据集介绍</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-28</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-03-28</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">2k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">13分</span></span></div></header><div class="post-body"><p>Spark 计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构，用于处理不同的应用场景。三大数据结构分别是：</p>
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">四、RDD弹性分布式数据集介绍</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-28</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2022-06-05</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">2k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">13分</span></span></div></header><div class="post-body"><p>Spark 计算框架为了能够进行高并发和高吞吐的数据处理，封装了三大数据结构，用于处理不同的应用场景。三大数据结构分别是：</p>
 <ul>
 <li>
 <p>RDD :  弹性分布式数据集</p>
@@ -92,14 +92,14 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">InputStream in = <span class="keyword">new</span> FileInputStream(<span class="string">"path"</span>)</span><br><span class="line"><span class="keyword">int</span> i = -<span class="number">1</span></span><br><span class="line"><span class="keyword">while</span> ( (i = in.read()) != -<span class="number">1</span> ) &#123;</span><br><span class="line">    println(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328211236.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328211236.png"  alt="" />
       </p>
 <p>FileInputStream 每次读取一个字节都需要和磁盘进行交互。</p>
 <p>（2）BufferedInputStream</p>
 <figure class="highlight java"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">InputStream in = <span class="keyword">new</span> BufferedInputStream(<span class="keyword">new</span> FileInputStream(<span class="string">"path"</span>))</span><br><span class="line"><span class="keyword">int</span> i = -<span class="number">1</span></span><br><span class="line"><span class="keyword">while</span> ( (i = in.read()) != -<span class="number">1</span> ) &#123;</span><br><span class="line">    println(i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></div></figure>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328211547.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328211547.png"  alt="" />
       </p>
 <p>BufferedInputStream通过封装FileInputStream，把FileInputStream读取的一个个字节封装到Bufffer里，再从Buffer里获取数据</p>
 <p>（3）BufferedReader</p>
@@ -107,7 +107,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>BufferedReader封装InputStreamReader，InputStreamReader封装了FileInputStream。首先，InputStreamReader将底层的字节流转成字符流，再放入其缓冲区，BufferedReader通过<code>UTF-8</code>编码格式，每遇到三个字节编码成一个中文，放入BufferedReader缓冲区中。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328211917.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328211917.png"  alt="" />
       </p>
 <p>上面提到的一级一级封装，其实就是装饰者设计模式，执行的具体操作还是在最底层类。</p>
 <p>（4）Scala的WordCount</p>
@@ -115,7 +115,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>执行过程如下图所示：</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328212430.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328212430.png"  alt="" />
       </p>
 <p>上面每个操作都继承了RDD这个抽象类，完成一个基本的功能。</p>
 <ul>
@@ -127,7 +127,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>举一个小例子，比如我们想要（1,2,3,4）中的每个元素都乘以2，提交Spark实现，这时候Spark会封装成2个RDD（注意：RDD只封装了计算逻辑，不保存数据），以分片的方式将数据分成2个区，然后通过Drive将RDD封装的计算逻辑分发给不同的Executor，从而实现并行计算。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328215609.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328215609.png"  alt="" />
       </p>
 
         <h2 id="2-什么是-rdd"   >
@@ -176,7 +176,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>如下图所示，如果需要的数据实现存在这个Executor所在的节点上，将计算逻辑分发给这个节点就行，不需要移动数据到其他地方。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328220624.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328220624.png"  alt="" />
       </p>
 
         <h2 id="4-执行原理"   >
@@ -190,28 +190,28 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328221037.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328221037.png"  alt="" />
       </p>
 <ol start="2">
 <li>Spark 通过申请资源创建调度节点和计算节点</li>
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328221106.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328221106.png"  alt="" />
       </p>
 <ol start="3">
 <li>Spark 框架根据需求将计算逻辑根据分区划分成不同的任务，并放到任务池当中</li>
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328221446.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328221446.png"  alt="" />
       </p>
 <ol start="4">
 <li>调度节点从任务池中将任务取出，根据计算节点状态发送到对应的计算节点进行计算</li>
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210328221859.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210328221859.png"  alt="" />
       </p>
 <p>从以上流程可以看出 RDD 在整个流程中主要用于将逻辑进行封装，并生成 Task 发送给Executor 节点执行计算，接下来我们就一起看看 Spark 框架中 RDD 是具体是如何进行数据处理的。</p>
 <p>【资料推荐】</p>
@@ -223,7 +223,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
           1. IO与RDD</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-什么是-rdd"><span class="toc-text">
           2. 什么是 RDD</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-rdd核心属性"><span class="toc-text">
           3. RDD核心属性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-执行原理"><span class="toc-text">
-          4. 执行原理</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">133</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">21</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">61</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+          4. 执行原理</span></a></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">134</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">21</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">61</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2022</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
   var isXML = true;
   var search_path = 'search.json';
 

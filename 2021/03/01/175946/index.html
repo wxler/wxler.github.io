@@ -5,39 +5,39 @@
 <meta property="og:site_name" content="Layne&#39;s Blog">
 <meta property="og:description" content="我参考了几十篇文章，总结了里面最重要的部分，并增加了许多自己的思考和理解，完成了这篇博客。我认为这篇博客很全，里面的内容也通俗易懂，想要了解Zookeeper的原理，本文应该就够了。另外，所有的参考文章链接已放到本文末尾，有需要的读者可自行查阅。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210308193345.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210308193736.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309102817.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309202934.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309204307.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309205602.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309214242.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309215027.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309215338.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309140525.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309224615.jpg">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309163108.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175457.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175518.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175541.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175609.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175635.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175800.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175823.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175847.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175913.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175937.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309180014.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309172415.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309232621.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309180848.png">
-<meta property="og:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309181007.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210308193345.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210308193736.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309102817.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309202934.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309204307.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309205602.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309214242.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309215027.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309215338.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309140525.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309224615.jpg">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309163108.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175457.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175518.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175541.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175609.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175635.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175800.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175823.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175847.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175913.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175937.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309180014.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309172415.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309232621.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309180848.png">
+<meta property="og:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309181007.png">
 <meta property="article:published_time" content="2021-03-01T09:59:46.000Z">
-<meta property="article:modified_time" content="2021-03-10T08:26:38.277Z">
+<meta property="article:modified_time" content="2022-06-05T15:23:36.708Z">
 <meta property="article:author" content="wxler">
 <meta property="article:tag" content="zookeeper">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://gitee.com/wxler/blogimg/raw/master/imgs/20210308193345.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>史上最全的Zookeeper原理详解(万字长文) | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/03/01/175946/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
+<meta name="twitter:image" content="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210308193345.png"><meta name="keywords" content="wxler, Layne's Blog"><meta name="description" content="博客，分享，开源，心得"><title>史上最全的Zookeeper原理详解(万字长文) | Layne's Blog</title><link ref="canonical" href="https://wxler.github.io/2021/03/01/175946/"><link rel="dns-prefetch" href="https://cdn.jsdelivr.net"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.12.1/css/all.min.css" type="text/css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/css/share.min.css" type="text/css"><link rel="stylesheet" href="/css/index.css?v=2.0.0"><link rel="dns-prefetch" href="https://hm.baidu.com"><script>var _hmt = _hmt || [];
 (function() {
   var hm = document.createElement('script');
   hm.src = 'https://hm.baidu.com/hm.js?01911aa0fc6bdb840626994292397110';
@@ -71,7 +71,7 @@ var CONFIG = {
   sourcePath: {"js":"js","css":"css","images":"images"},
 };
 
-window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">史上最全的Zookeeper原理详解(万字长文)</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-01</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2021-03-10</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">14.8k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">84分</span></span></div></header><div class="post-body"><p>我参考了几十篇文章，总结了里面最重要的部分，并增加了许多自己的思考和理解，完成了这篇博客。我认为这篇博客很全，里面的内容也通俗易懂，想要了解Zookeeper的原理，本文应该就够了。另外，所有的参考文章链接已放到本文末尾，有需要的读者可自行查阅。</p>
+window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></head><body><div class="container" id="container"><header class="header" id="header"><div class="header-inner"><nav class="header-nav header-nav--fixed"><div class="header-nav-inner"><div class="header-nav-menubtn"><i class="fas fa-bars"></i></div><div class="header-nav-menu"><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/"><span class="header-nav-menu-item__icon"><i class="fas fa-home"></i></span><span class="header-nav-menu-item__text">首页</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/archives/"><span class="header-nav-menu-item__icon"><i class="fas fa-folder-open"></i></span><span class="header-nav-menu-item__text">归档</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/categories/"><span class="header-nav-menu-item__icon"><i class="fas fa-layer-group"></i></span><span class="header-nav-menu-item__text">分类</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/tags/"><span class="header-nav-menu-item__icon"><i class="fas fa-tags"></i></span><span class="header-nav-menu-item__text">标签</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/message/"><span class="header-nav-menu-item__icon"><i class="fa fa-comment"></i></span><span class="header-nav-menu-item__text">留言板</span></a></div><div class="header-nav-menu-item"><a class="header-nav-menu-item__link" href="/about/"><span class="header-nav-menu-item__icon"><i class="fas fa-user"></i></span><span class="header-nav-menu-item__text">关于</span></a></div></div><div class="header-nav-search"><span class="header-nav-search__icon"><i class="fas fa-search"></i></span><span class="header-nav-search__text">搜索</span></div><div class="header-nav-mode"><div class="mode"><div class="mode-track"><span class="mode-track-moon"></span><span class="mode-track-sun"></span></div><div class="mode-thumb"></div></div></div></div></nav><div class="header-banner"><div class="header-banner-info"><div class="header-banner-info__title">Layne's Blog</div><div class="header-banner-info__subtitle">一个爱好coding的男孩纸</div></div><div class="header-banner-arrow"><div class="header-banner-arrow__icon"><i class="fas fa-angle-down"></i></div></div></div></div></header><main class="main" id="main"><div class="main-inner"><div class="content-wrap" id="content-wrap"><div class="content" id="content"><!-- Just used to judge whether it is an article page--><div id="is-post"></div><div class="post"><header class="post-header"><h1 class="post-title">史上最全的Zookeeper原理详解(万字长文)</h1><div class="post-meta"><span class="post-meta-item post-meta-item--createtime"><span class="post-meta-item__icon"><i class="far fa-calendar-plus"></i></span><span class="post-meta-item__info">发表于</span><span class="post-meta-item__value">2021-03-01</span></span><span class="post-meta-item post-meta-item--updatetime"><span class="post-meta-item__icon"><i class="far fa-calendar-check"></i></span><span class="post-meta-item__info">更新于</span><span class="post-meta-item__value">2022-06-05</span></span><span class="post-meta-item post-meta-item--wordcount"><span class="post-meta-item__icon"><i class="far fa-file-word"></i></span><span class="post-meta-item__info">字数统计</span><span class="post-meta-item__value">14.8k</span></span><span class="post-meta-item post-meta-item--readtime"><span class="post-meta-item__icon"><i class="far fa-clock"></i></span><span class="post-meta-item__info">阅读时长</span><span class="post-meta-item__value">84分</span></span></div></header><div class="post-body"><p>我参考了几十篇文章，总结了里面最重要的部分，并增加了许多自己的思考和理解，完成了这篇博客。我认为这篇博客很全，里面的内容也通俗易懂，想要了解Zookeeper的原理，本文应该就够了。另外，所有的参考文章链接已放到本文末尾，有需要的读者可自行查阅。</p>
 <a id="more"></a>
 <p><strong>文章目录</strong></p>
 <p><ul class="markdownIt-TOC">
@@ -148,12 +148,12 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>举一个例子来说明，现在有一个网上商城购物系统，并发量太大单机系统承受不住，那我们可以多加几台服务器支持大并发量的访问需求，这个就是所谓的**<code>Cluster</code> 集群** 。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210308193345.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210308193345.png"  alt="" />
       </p>
 <p>如果我们将这个网上商城购物系统拆分成多个子系统，比如订单系统、积分系统、购物车系统等等，<strong>然后将这些子系统部署在不同的服务器上</strong> ，这个时候就是 <strong><code>Distributed</code> 分布式</strong> 。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210308193736.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210308193736.png"  alt="" />
       </p>
 <p>对于集群来说，多加几台服务器就行（当然还得解决session共享，负载均衡等问题），而对于分布式来说，你首先需要将业务进行拆分，然后再加服务器，同时还要去解决分布式带来的一系列问题。比如各个分布式组件如何<strong>协调</strong>起来，如何减少各个系统之间的耦合度，如何处理分布式事务，如何去配置整个分布式系统，如何解决各分布式子系统的数据不一致问题等等。<code>ZooKeeper</code> 主要就是解决这些问题的。</p>
 
@@ -205,7 +205,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 </blockquote>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309102817.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309102817.png"  alt="" />
       </p>
 <ol>
 <li><strong>集群</strong>：Zookeeper是一个领导者（Leader），多个跟随者（Follower）组成的集群。</li>
@@ -243,7 +243,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p><strong>ZooKeeper</strong> 采用全局递增的事务 id 来标识，所有 proposal(提议)在被提出的时候加上了<strong>ZooKeeper Transaction Id</strong> 。ZXID是64位的Long类型，<strong>这是保证事务的顺序一致性的关键</strong>。ZXID中高32位表示纪元<strong>epoch</strong>，低32位表示事务标识<strong>xid</strong>。你可以认为zxid越大说明存储数据越新，如下图所示：</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309202934.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309202934.png"  alt="" />
       </p>
 <ol>
 <li>每个leader都会具有不同的<strong>epoch</strong>值，表示一个纪元/朝代，用来标识 leader周期。每个新的选举开启时都会生成一个新的epoch，从1开始，每次选出新的Leader，epoch递增1，并会将该值更新到所有的zkServer的zxid的epoch。</li>
@@ -268,13 +268,13 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>ZAB协议两种模式：消息广播模式和崩溃恢复模式。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309204307.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309204307.png"  alt="" />
       </p>
 <p>说白了就是 <code>ZAB</code> 协议是如何处理写请求的，上面我们不是说只有 <code>Leader</code> 能处理写请求嘛？那么我们的 <code>Follower</code> 和 <code>Observer</code> 是不是也需要 <strong>同步更新数据</strong> 呢？总不能数据只在 <code>Leader</code> 中更新了，其他角色都没有得到更新吧。</p>
 <p>第一步肯定需要 <code>Leader</code> 将写请求 <strong>广播</strong> 出去呀，让 <code>Leader</code> 问问 <code>Followers</code> 是否同意更新，如果超过半数以上的同意那么就进行 <code>Follower</code> 和 <code>Observer</code> 的更新（和 <code>Paxos</code> 一样）。消息广播机制是通过如下图流程<strong>保证事务的顺序一致性</strong>的：</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309205602.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309205602.png"  alt="" />
       </p>
 <ol>
 <li>leader从客户端收到一个写请求</li>
@@ -318,19 +318,19 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>假设 <code>Leader (server2)</code> 发送 <code>commit</code> 请求（忘了请看上面的消息广播模式），他发送给了 <code>server3</code>，然后要发给 <code>server1</code> 的时候突然挂了。这个时候重新选举的时候我们如果把 <code>server1</code> 作为 <code>Leader</code> 的话，那么肯定会产生数据不一致性，因为 <code>server3</code> 肯定会提交刚刚 <code>server2</code> 发送的 <code>commit</code> 请求的提案，而 <code>server1</code> 根本没收到所以会丢弃。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309214242.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309214242.png"  alt="" />
       </p>
 <p>那怎么解决呢？</p>
 <p><strong>这个时候 <code>server1</code> 已经不可能成为 <code>Leader</code> 了，因为 <code>server1</code> 和 <code>server3</code> 进行投票选举的时候会比较 <code>ZXID</code> ，而此时 <code>server3</code> 的 <code>ZXID</code> 肯定比 <code>server1</code> 的大了</strong>（后面讲到选举机制时就明白了）。同理，只能由server3当Leader，server3当上Leader之后，在同步阶段，会将最新提议历史同步给集群中所有的Follower，这就保证数据一致性了。如果server2在某个时刻又重新恢复了，它作为<code>Follower</code> 的身份进入集群中，再向Leader同步当前最新提议和Zxid即可。</p>
 <p>（2）<strong>确保跳过那些已经被丢弃的提案</strong></p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309215027.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309215027.png"  alt="" />
       </p>
 <p>假设 <code>Leader (server2)</code> 此时同意了提案N1，自身提交了这个事务并且要发送给所有 <code>Follower</code> 要 <code>commit</code> 的请求，却在这个时候挂了，此时肯定要重新进行 <code>Leader</code> 的选举，假如此时选 <code>server1</code> 为 <code>Leader</code> （这无所谓，server1和server2都可以当选）。但是过了一会，这个 <strong>挂掉的 <code>Leader</code> 又重新恢复了</strong> ，此时它肯定会作为 <code>Follower</code> 的身份进入集群中，需要注意的是刚刚 <code>server2</code> 已经同意提交了提案N1，但其他 <code>server</code> 并没有收到它的 <code>commit</code> 信息，所以其他 <code>server</code> 不可能再提交这个提案N1了，这样就会出现数据不一致性问题了，所以 <strong>该提案N1最终需要被抛弃掉</strong> 。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309215338.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309215338.png"  alt="" />
       </p>
 
         <h3 id="46-脑裂问题"   >
@@ -459,7 +459,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>监听通知机制的流程如下：</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309140525.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309140525.png"  alt="" />
       </p>
 <ol>
 <li>首先要有一个main()线程</li>
@@ -564,7 +564,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>请求发送完毕后，会立即将该Packet保存到pendingQueue队列中，以便等待服务端响应返回后进行相应的处理，处理完毕后返回给客户端</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309224615.jpg"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309224615.jpg"  alt="" />
       </p>
 <p><strong>接收响应</strong></p>
 <p>客户端获取到来自服务端的完整响应数据后，根据不同的客户端请求类型，进行不同的处理：</p>
@@ -598,7 +598,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>Session是由ZK服务端来进行管理的，一个服务端可以为多个客户端服务，也就是说，有多个Session，那这些Session是怎么样被管理的呢？而分桶机制可以说就是其管理的一个手段。ZK服务端会维护着一个个&quot;桶&quot;,然后把Session们分配到一个个的桶里面。而这个区分的维度，就是<strong>ExpirationTime</strong></p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309163108.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309163108.png"  alt="" />
       </p>
 <p>为什么要如此区分呢？因为ZK的服务端会在运行期间定时地对会话进行超时检测，如果不对Session进行维护的话，那在检测的时候岂不是要遍历所有的Session？这显然不是一个好办法，所以才以超时时间为维度来存放Session，这样在检测的时候，只需要扫描对应的桶就可以了。</p>
 <p>那这样的话，新的问题就来了：每个Session的超时时间是一个很分散的值，假设有1000个Session，很可能就会有1000个不同的超时时间，进而有1000个桶，这样有啥意义吗？因此zk的ExpirationTime 用了下面的计算方式：</p>
@@ -684,28 +684,28 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>首先，在Zookeeper当中创建一个持久节点ParentLock。当第一个客户端想要获得锁时，需要在ParentLock这个节点下面创建一个<strong>临时顺序节点</strong> Lock1。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175457.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175457.png"  alt="" />
       </p>
 <p>之后，Client1查找ParentLock下面所有的临时顺序节点并排序，判断自己所创建的节点Lock1是不是顺序最靠前的一个。如果是第一个节点，则成功获得锁。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175518.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175518.png"  alt="" />
       </p>
 <p>这时候，如果再有一个客户端 Client2 前来获取锁，则在ParentLock下载再创建一个临时顺序节点Lock2。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175541.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175541.png"  alt="" />
       </p>
 <p>Client2查找ParentLock下面所有的临时顺序节点并排序，判断自己所创建的节点Lock2是不是顺序最靠前的一个，结果发现节点Lock2并不是最小的。</p>
 <p>于是，Client2向排序仅比它靠前的节点Lock1注册<strong>Watcher</strong>，用于监听Lock1节点是否存在。这意味着Client2抢锁失败，进入了等待状态。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175609.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175609.png"  alt="" />
       </p>
 <p>这时候，如果又有一个客户端Client3前来获取锁，则在ParentLock下载再创建一个临时顺序节点Lock3。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175635.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175635.png"  alt="" />
       </p>
 <p>Client3查找ParentLock下面所有的临时顺序节点并排序，判断自己所创建的节点Lock3是不是顺序最靠前的一个，结果同样发现节点Lock3并不是最小的。</p>
 <p>于是，Client3向排序仅比它靠前的节点<strong>Lock2</strong>注册Watcher，用于监听Lock2节点是否存在。这意味着Client3同样抢锁失败，进入了等待状态。</p>
@@ -719,28 +719,28 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>当任务完成时，Client1会显示调用删除节点Lock1的指令。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175800.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175800.png"  alt="" />
       </p>
 <p><strong>2.任务执行过程中，客户端崩溃</strong></p>
 <p>获得锁的Client1在任务执行过程中，如果Duang的一声崩溃，则会断开与Zookeeper服务端的链接。根据临时节点的特性，相关联的节点Lock1会随之自动删除。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175823.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175823.png"  alt="" />
       </p>
 <p>由于Client2一直监听着Lock1的存在状态，当Lock1节点被删除，Client2会立刻收到通知。这时候Client2会再次查询ParentLock下面的所有节点，确认自己创建的节点Lock2是不是目前最小的节点。如果是最小，则Client2顺理成章获得了锁。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175847.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175847.png"  alt="" />
       </p>
 <p>同理，如果Client2也因为任务完成或者节点崩溃而删除了节点Lock2，那么Client3就会接到通知。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175913.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175913.png"  alt="" />
       </p>
 <p>最终，Client3成功得到了锁。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309175937.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309175937.png"  alt="" />
       </p>
 
         <h3 id="93-zk和redis分布式锁的比较"   >
@@ -749,7 +749,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>下面的表格总结了Zookeeper和Redis分布式锁的优缺点：</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309180014.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309180014.png"  alt="" />
       </p>
 <p>有人说Zookeeper实现的分布式锁支持可重入，Redis实现的分布式锁不支持可重入，这是<strong>错误的观点</strong>。两者都可以在客户端实现可重入逻辑。</p>
 <blockquote>
@@ -782,7 +782,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 </ol>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309172415.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309172415.png"  alt="" />
       </p>
 
         <h3 id="93-统一集群管理"   >
@@ -802,7 +802,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
 <p>如下图所示，监控系统在<code>/manage</code>节点上注册一个Watcher，如果<code>/manage</code>子节点列表有变动，监控系统就能够实时知道集群中机器的增减情况，至于后续处理就是监控系统的业务了。</p>
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309232621.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309232621.png"  alt="" />
       </p>
 
         <h3 id="94-负载均衡"   >
@@ -810,7 +810,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
       
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309180848.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309180848.png"  alt="" />
       </p>
 <p>多个相同的jar包在不同的服务器上开启相同的服务，可以通过nginx在服务端进行负载均衡的配置。也可以通过ZooKeeper在客户端进行负载均衡配置。</p>
 <ol>
@@ -829,7 +829,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
       
 <p>
         <img   class="lazyload lazyload-gif"
-          src="/images/loading.svg" data-src="https://gitee.com/wxler/blogimg/raw/master/imgs/20210309181007.png"  alt="" />
+          src="/images/loading.svg" data-src="https://fastly.jsdelivr.net/gh/wxler/cdnPicture/imgs/20210309181007.png"  alt="" />
       </p>
 <p>命名服务是指通过指定的名字来获取资源或者服务的地址，利用 zk 创建一个全局唯一的路径，这个路径就可以作为一个名字，指向集群中某个具体的服务器，提供的服务的地址，或者一个远程的对象等等。</p>
 <p>阿里巴巴集团开源的分布式服务框架 Dubbo 中使用 ZooKeeper 来作为其命名服务，维护全局的服务地址列表。在 Dubbo 的实现中：</p>
@@ -904,7 +904,7 @@ window.CONFIG = CONFIG;</script><meta name="generator" content="Hexo 4.2.1"></he
           9.2 统一配置管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#93-统一集群管理"><span class="toc-text">
           9.3 统一集群管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#94-负载均衡"><span class="toc-text">
           9.4 负载均衡</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#95-命名服务"><span class="toc-text">
-          9.5 命名服务</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">133</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">21</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">61</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2021</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
+          9.5 命名服务</span></a></li></ol></li></ol></section><!-- ov = overview--><section class="sidebar-ov hide"><div class="sidebar-ov-author"><div class="sidebar-ov-author__avatar"><img class="sidebar-ov-author__avatar_img" src="/assets/myhexo.jpg" alt="avatar"></div><p class="sidebar-ov-author__text">Practical And Realistic</p></div><div class="sidebar-ov-social"><a class="sidebar-ov-social-item" href="https://github.com/wxler" target="_blank" rel="noopener" data-popover="Github" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fab fa-github"></i></span></a><a class="sidebar-ov-social-item" href="mailto:wangxiaolei1516@qq.com" target="_blank" rel="noopener" data-popover="邮箱" data-popover-pos="up"><span class="sidebar-ov-social-item__icon"><i class="fa fa-envelope"></i></span></a></div><div class="sidebar-ov-state"><a class="sidebar-ov-state-item sidebar-ov-state-item--posts" href="/archives/"><div class="sidebar-ov-state-item__count">134</div><div class="sidebar-ov-state-item__name">归档</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--categories" href="/categories/"><div class="sidebar-ov-state-item__count">21</div><div class="sidebar-ov-state-item__name">分类</div></a><a class="sidebar-ov-state-item sidebar-ov-state-item--tags" href="/tags/"><div class="sidebar-ov-state-item__count">61</div><div class="sidebar-ov-state-item__name">标签</div></a></div><div class="sidebar-ov-cc"><a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.en" target="_blank" rel="noopener" data-popover="知识共享许可协议" data-popover-pos="up"><img src="/images/cc-by-nc-sa.svg"></a></div></section></aside></div><div class="clearfix"></div></div></main><footer class="footer" id="footer"><div class="footer-inner"><div><span>Copyright © 2020~2022</span><span class="footer__icon"><i class="fas fa-heart"></i></span><span>wxler. All Rights Reserved.</span></div><div><span>由 <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a> 强力驱动</span><span> v4.2.1</span><span class="footer__devider">|</span><span>主题 - <a href="https://github.com/liuyib/hexo-theme-stun/" title="Stun" target="_blank" rel="noopener">Stun</a></span><span> v2.0.0</span></div><div>托管于 <a href="https://github.com/wxler/" rel="noopener" target="_blank">Github</a></div></div></footer><div class="loading-bar" id="loading-bar"><div class="loading-bar__progress"></div></div><div class="back2top" id="back2top"><span class="back2top__icon"><i class="fas fa-rocket"></i></span></div></div><div class="search-mask"></div><div class="search-popup"><span class="search-close"></span><div class="search-input"><input placeholder="搜索文章（支持多关键词，请用空格分隔）"></div><div class="search-results"></div></div><script src="https://cdn.jsdelivr.net/npm/jquery@v3.4.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.min.js"></script><script src="https://cdn.jsdelivr.net/npm/velocity-animate@1.5.2/velocity.ui.min.js"></script><script src="https://cdn.jsdelivr.net/npm/ribbon.js@latest/dist/ribbon.min.js" size="120" alpha="0.6" zIndex="-1"></script><script src="https://cdn.jsdelivr.net/npm/lazyload@2.0.0-rc.2/lazyload.min.js"></script><script src="https://cdn.jsdelivr.net/npm/social-share.js@1.0.16/dist/js/social-share.min.js"></script><script>function initSearch() {
   var isXML = true;
   var search_path = 'search.json';
 
